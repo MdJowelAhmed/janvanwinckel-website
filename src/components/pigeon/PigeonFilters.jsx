@@ -34,7 +34,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i)
 
   return (
-    <Card className="bg-slate-700 text-white">
+    <div className="bg-foreground text-white rounded-b-lg">
       <CardContent className="p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {/* Search */}
@@ -84,8 +84,8 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               </SelectTrigger>
               <SelectContent className="bg-slate-600 border-slate-500">
                 <SelectItem value="all">All Genders</SelectItem>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
+                <SelectItem value="Hen">Hen</SelectItem>
+                <SelectItem value="Cock">Cock</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -129,7 +129,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
           </div>
         </div>
       </CardContent>
-    </Card>
+    </div>
   )
 }
 

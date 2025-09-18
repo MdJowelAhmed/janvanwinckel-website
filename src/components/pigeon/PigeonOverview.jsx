@@ -57,12 +57,12 @@ const PigeonOverview = ({ data }) => {
   ]
 
   return (
-    <Card className="bg-slate-700 text-white">
-      <CardContent className="p-6">
+    <div className="bg-[#44505E] text-white rounded-t-lg">
+      <CardContent className="p-4">
         <div className="flex flex-wrap items-center gap-4 md:gap-6">
           {statItems.map((item, index) => (
             <div key={index} className="flex items-center gap-2">
-              <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
+              <div className={`w-3 h-2 rounded-r-2xl ${item.color}`}></div>
               <Badge 
                 variant={item.active ? "default" : "secondary"}
                 className={`
@@ -79,7 +79,7 @@ const PigeonOverview = ({ data }) => {
           ))}
         </div>
       </CardContent>
-    </Card>
+    </div>
   )
 }
 
