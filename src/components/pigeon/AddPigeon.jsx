@@ -46,7 +46,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [photos, setPhotos] = useState([]);
 
   const [raceResults, setRaceResults] = useState([]);
-  const [showPigeonResult, setShowPigeonResult] = useState(true);
+  const [showPigeonResult, setShowPigeonResult] = useState(false);
 
   // Add a new race result entry
   const addRaceResult = () => {
@@ -129,8 +129,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         status: pigeon.status || "Active",
         location: pigeon.location || "Dhaka",
         notes: pigeon.notes || "",
-        racingRating: pigeon.racingRating || 0,
-        // racherRating: pigeon.racherRating || "Good",
+        // racingRating: pigeon.racingRating || 0,
+        racherRating: pigeon.racherRating || "Good",
         racherRating: pigeon.racherRating || 0,
         breederRating: pigeon.breederRating || 0,
         fatherRingId: pigeon.fatherRingId || "",
@@ -199,13 +199,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       const formDataToSend = new FormData();
 
       // Format race results properly
-      const formattedResults = raceResults.map((result) => ({
+      const formattedResults = showPigeonResult ? raceResults.map((result) => ({
         name: result.name,
         date: result.date,
         distance: result.distance,
         total: parseInt(result.total) || 0,
         place: result.place,
-      }));
+      })) : [];
 
       // Create the data object matching backend format
       const dataObject = {
@@ -217,8 +217,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         breeder: data.breeder, // This should be breeder ID
         color: data.color,
         racingRating: parseInt(data.racingRating) || 0,
-        racingRating: parseInt(data.racherRating) || 0,
-        // racherRating: data.racherRating || "Good", // Fixed spelling
+        // racingRating: parseInt(data.racherRating) || 0,
+        racherRating: data.racherRating || "Good", // Fixed spelling
         breederRating: parseInt(data.breederRating) || 0,
         gender: data.gender,
         status: data.status,
@@ -255,11 +255,11 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         toast.success("Pigeon added successfully!");
       }
 
-      router.push("/");
-    } catch (error) {
-      console.error("Submit error:", error);
-      toast.error(
-        error.message || `Failed to ${isEditMode ? "update" : "add"} pigeon`
+      router.push("/loft-overview");
+    } catch (errorMessages) {
+      console.error("Submit error:", errorMessages);
+      toast.errorMessages(
+        errorMessages.message || `Failed to ${isEditMode ? "update" : "add"} pigeon`
       );
     }
   };
@@ -472,7 +472,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
               <div className="">
                 <h2 className="text-lg font-semibold mb-4">Ratings</h2>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Racer Rating
                     </label>
@@ -494,9 +494,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         {errors.racherRating.message}
                       </p>
                     )}
-                  </div> */}
+                  </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Racher Rating
                     </label>
@@ -510,7 +510,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         </option>
                       ))}
                     </select>
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -671,16 +671,26 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
             </div>
 
             <div className="flex items-center justify-between my-4">
-              {showPigeonResult && (
-                <Button
-                  type="button"
-                  onClick={addRaceResult}
-                  className="flex items-center gap-2 px-3 py-1 text-white transition-colors text-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Result Race
-                </Button>
-              )}
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="race-results-switch"
+                    checked={showPigeonResult}
+                    onCheckedChange={setShowPigeonResult}
+                  />
+                  <Label htmlFor="race-results-switch">Race Results</Label>
+                </div>
+                {showPigeonResult && (
+                  <Button
+                    type="button"
+                    onClick={addRaceResult}
+                    className="flex items-center gap-2 px-3 py-1 text-white transition-colors text-sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Result Race
+                  </Button>
+                )}
+              </div>
             </div>
 
             {showPigeonResult && (
