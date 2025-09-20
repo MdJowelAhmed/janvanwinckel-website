@@ -1,8 +1,11 @@
+import PigeonDatabasePage from '@/components/pigeonDatabase/PigeonDatabasePage'
 import React from 'react'
 
 const PigeonDatabase = () => {
   return (
-    <div>PigeonDatabase</div>
+    <div>
+        <PigeonDatabasePage />
+    </div>
   )
 }
 
