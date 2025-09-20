@@ -64,24 +64,24 @@ const PigeonTable = ({
   const pigeons = data.data.data;
   const pagination = data.data.pagination;
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "racing":
-        return "bg-blue-100 text-blue-800";
-      case "breeding":
-        return "bg-purple-100 text-purple-800";
-      case "sold":
-        return "bg-yellow-100 text-yellow-800";
-      case "lost":
-        return "bg-red-100 text-red-800";
-      case "deceased":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // const getStatusColor = (status) => {
+  //   switch (status?.toLowerCase()) {
+  //     case "active":
+  //       return "bg-green-100 text-green-800";
+  //     case "racing":
+  //       return "bg-blue-100 text-blue-800";
+  //     case "breeding":
+  //       return "bg-purple-100 text-purple-800";
+  //     case "sold":
+  //       return "bg-yellow-100 text-yellow-800";
+  //     case "lost":
+  //       return "bg-red-100 text-red-800";
+  //     case "deceased":
+  //       return "bg-gray-100 text-gray-800";
+  //     default:
+  //       return "bg-gray-100 text-gray-800";
+  //   }
+  // };
 
   const getRatingStars = (rating) => {
     const stars = Math.floor(rating / 20); // Convert to 5-star scale
@@ -128,13 +128,13 @@ const PigeonTable = ({
     <div className="space-y-4">
       <idv>
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-lg mb-4">
             <Table>
-              <TableHeader className="bg-background p-0">
-                <TableRow className="bg-foreground">
-                  <TableHead className="text-white w-12">
+              <TableHeader className="bg-background py-6">
+                <TableRow className="bg-foreground py-5">
+                  {/* <TableHead className="text-white w-12 ">
                     <Checkbox className="border-slate-400" />
-                  </TableHead>
+                  </TableHead> */}
                   <TableHead className="text-white">Image</TableHead>
                   <TableHead className="text-white">Name</TableHead>
                   <TableHead className="text-white">Country</TableHead>
@@ -159,9 +159,9 @@ const PigeonTable = ({
                     key={pigeon._id}
                     className="bg-background hover:bg-foreground text-white"
                   >
-                    <TableCell>
+                    {/* <TableCell>
                       <Checkbox />
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell>
                       <Avatar className="w-10 h-10">
@@ -290,7 +290,7 @@ const PigeonTable = ({
 
       {/* Pagination */}
       {pagination && (
-        <div className="flex items-center justify-between px-4 py-3 bg-white border rounded-lg">
+        <div className="flex items-center justify-between px-4 py-3 bg-white  rounded-lg">
           <div className="flex items-center text-sm text-white">
             Showing {(currentPage - 1) * pagination.limit + 1} to{" "}
             {Math.min(currentPage * pagination.limit, pagination.total)} of{" "}
@@ -316,10 +316,12 @@ const PigeonTable = ({
                   return (
                     <Button
                       key={page}
-                      variant={page === currentPage ? "default" : "outline"}
+                      variant={page === currentPage ? "default" : "ghost"}
                       size="sm"
                       onClick={() => onPageChange(page)}
-                      className="h-8 w-8"
+                      className={`pigeon-pagination-button ${
+                        page === currentPage ? "bg-background text-white" : ""
+                      }`}
                     >
                       {page}
                     </Button>
@@ -363,3 +365,4 @@ const TableSkeleton = () => (
 );
 
 export default PigeonTable;
+

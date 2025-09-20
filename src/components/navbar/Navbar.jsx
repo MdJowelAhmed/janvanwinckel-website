@@ -3,7 +3,17 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   FaBell,
   FaUser,
@@ -73,8 +83,6 @@ export default function Navbar() {
   const access = accessData?.data;
   console.log(access);
 
-
-
   // Constants
   const NOTIFICATIONS_PER_PAGE = 30;
   const MAX_RECONNECTION_ATTEMPTS = 5;
@@ -86,17 +94,19 @@ export default function Navbar() {
     data: notificationData,
     isLoading,
     refetch,
-  } = useGetNotificationQuery({
-    page: currentPage,
-    limit: NOTIFICATIONS_PER_PAGE,
-  }, {
-    pollingInterval: 30000, // Poll every 30 seconds
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-  });
+  } = useGetNotificationQuery(
+    {
+      page: currentPage,
+      limit: NOTIFICATIONS_PER_PAGE,
+    },
+    {
+      pollingInterval: 30000, // Poll every 30 seconds
+      refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    }
+  );
   console.log(notificationData);
-
 
   const [readOneNotification] = useReadOneNotificationMutation();
   const [readAllNotification] = useReadAllNotificationMutation();
@@ -106,7 +116,6 @@ export default function Navbar() {
   // Calculate unread count from API response
   const unreadCount = notificationData?.data?.unreadCount || 0;
   console.log(unreadCount);
-
 
   // Improved Socket.IO setup with better error handling and reconnection
   useEffect(() => {
@@ -141,7 +150,7 @@ export default function Navbar() {
         console.log("New notification received:", data);
         // Force refetch to get latest notifications
         refetch();
-        
+
         // Show toast notification if data is provided
         if (data && data.message) {
           toast.success(`New notification: ${data.message}`);
@@ -150,7 +159,10 @@ export default function Navbar() {
 
       // Connection event handlers
       socketRef.current.on("connect", () => {
-        console.log("Socket connected successfully with ID:", socketRef.current.id);
+        console.log(
+          "Socket connected successfully with ID:",
+          socketRef.current.id
+        );
         setIsSocketConnected(true);
         setConnectionAttempts(0);
 
@@ -158,10 +170,10 @@ export default function Navbar() {
         socketRef.current.emit("join-user-room", userData._id, (response) => {
           console.log("Joined user room response:", response);
         });
-        
+
         // Also emit join-room event as fallback
         socketRef.current.emit("join-room", userData._id);
-        
+
         console.log(`User ${userData._id} joined notification room`);
       });
 
@@ -223,10 +235,13 @@ export default function Navbar() {
         `notification::${userData._id}`,
         handleNewNotification
       );
-      
+
       socketRef.current.on("new-notification", handleNewNotification);
       socketRef.current.on("notification", handleNewNotification);
-      socketRef.current.on(`user-${userData._id}-notification`, handleNewNotification);
+      socketRef.current.on(
+        `user-${userData._id}-notification`,
+        handleNewNotification
+      );
     };
 
     // Initial connection
@@ -260,41 +275,41 @@ export default function Navbar() {
 
     // Debug logs
 
-
     try {
       // Call the API
-      const result = await userDeleteAccount({ password: deletePassword }).unwrap();
-      
+      const result = await userDeleteAccount({
+        password: deletePassword,
+      }).unwrap();
+
       console.log("Account deletion API response:", result);
-      
+
       // Success - update Redux state
       dispatch(deleteAccountSuccess());
-      
+
       toast.success("Account deleted successfully");
       setDeletePassword("");
       setOpen(false);
-      
+
       // Disconnect socket
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
       }
-      
+
       // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
-      
+
       // Force redirect after a brief delay
       setTimeout(() => {
         window.location.href = "/login";
       }, 1500);
-      
     } catch (error) {
       console.error("=== Account Deletion Error ===");
-      
+
       // Handle specific error cases
       let errorMessage = "Failed to delete account. Please try again.";
-      
+
       if (error?.status === 400) {
         errorMessage = "Invalid request. Please check your password.";
       } else if (error?.status === 401) {
@@ -310,7 +325,7 @@ export default function Navbar() {
       } else if (error?.message) {
         errorMessage = error.message;
       }
-      
+
       toast.error(errorMessage);
       setDeletePassword("");
     }
@@ -383,11 +398,11 @@ export default function Navbar() {
 
     // Dispatch logout action
     dispatch(logout());
-    
+
     // Clear storage
     localStorage.clear();
     sessionStorage.clear();
-    
+
     setIsProfileOpen(false);
     window.location.href = "/login";
   };
@@ -405,8 +420,8 @@ export default function Navbar() {
     { name: "Home", path: "/" },
     { name: "Add Pigeon", path: "/add-pigeon" },
     { name: "Loft Overview", path: "/loft-overview" },
-
     { name: "Subscription", path: "/subscription" },
+    { name: "Pigeon Database", path: "/pigeon-database" },
   ];
 
   // Profile menu items with icons
@@ -463,7 +478,6 @@ export default function Navbar() {
               width={100}
               height={100}
               className="w-16 h-10 object-cover"
-             
             />
           </Link>
 
@@ -564,7 +578,9 @@ export default function Navbar() {
 
                   {/* User info - hidden on mobile */}
                   <div className="hidden lg:block text-left">
-                    <p className="text-sm text-gray-900">{userData?.userName}</p>
+                    <p className="text-sm text-gray-900">
+                      {userData?.userName}
+                    </p>
                     {/* <p className="text-xs text-gray-500">{userData?.email}</p> */}
                   </div>
 
@@ -663,7 +679,7 @@ export default function Navbar() {
                                 </span>
                               </Link>
                             ))}
-                            
+
                             {/* Delete Account in Settings */}
                             <button
                               onClick={() => {
@@ -708,9 +724,11 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden bg-[#fff] text-black overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}>
+        <div
+          className={`md:hidden bg-[#fff] text-black overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
           <ul className="p-4 text-center space-y-3">
             {navItems.map((item) => (
               <li key={item.name}>
@@ -811,16 +829,21 @@ export default function Navbar() {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Enhanced Delete Account Modal */}
-      <AlertDialog open={open} onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (!isOpen) {
-          setDeletePassword("");
-        }
-      }}>
+      <AlertDialog
+        open={open}
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) {
+            setDeletePassword("");
+          }
+        }}
+      >
         <AlertDialogTrigger asChild>
-          <Button variant="destructive" className="hidden">Delete Account</Button>
+          <Button variant="destructive" className="hidden">
+            Delete Account
+          </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -829,8 +852,13 @@ export default function Navbar() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               <div className="space-y-2">
-                <p>This action cannot be undone. This will permanently delete your account and remove your data from our servers.</p>
-                <p className="font-medium text-gray-800">Please enter your password to confirm:</p>
+                <p>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </p>
+                <p className="font-medium text-gray-800">
+                  Please enter your password to confirm:
+                </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -842,7 +870,11 @@ export default function Navbar() {
               onChange={(e) => setDeletePassword(e.target.value)}
               className="w-full"
               onKeyPress={(e) => {
-                if (e.key === 'Enter' && deletePassword.trim() && !isDeleteLoading) {
+                if (
+                  e.key === "Enter" &&
+                  deletePassword.trim() &&
+                  !isDeleteLoading
+                ) {
                   handleDeleteAccount();
                 }
               }}
@@ -855,13 +887,13 @@ export default function Navbar() {
             )}
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel 
+            <AlertDialogCancel
               onClick={() => setDeletePassword("")}
               disabled={isDeleteLoading}
             >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDeleteAccount}
               disabled={isDeleteLoading || !deletePassword.trim()}
               className="bg-red-600 hover:bg-red-700 disabled:opacity-50"

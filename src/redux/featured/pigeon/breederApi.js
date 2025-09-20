@@ -10,10 +10,19 @@ const breederApi = api.injectEndpoints({
         };
       },
       invalidatesTags: ["Newsletter"],
+   }),
+   getAllSiblings: builder.query({
+    query: (id) => {
+        return {
+          url: `/pigeon/siblings/${id}`,
+        method: "GET"
+        };
+      },
+      invalidatesTags: ["Newsletter"],
    })
 
     }),
 });
 
-export const { useGetBreederQuery } = breederApi;
+export const { useGetBreederQuery, useGetAllSiblingsQuery } = breederApi;
 
