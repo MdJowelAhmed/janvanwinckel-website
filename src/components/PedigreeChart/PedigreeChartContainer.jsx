@@ -1,4 +1,4 @@
-// "use client"
+"use client";
 
 import React, { useCallback } from "react";
 import {
@@ -21,17 +21,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { User, Calendar, Crown, Award, Info } from "lucide-react";
-import { initialEdges, initialNodes } from "@/data/pedigree-chart-data";
+import { initialEdges, initialNodes } from "./PigeonData";
+// import { initialEdges, initialNodes } from "@/data/pedigree-chart-data";
 
 // // Custom Node Component for Pigeon Pedigree
-// const PigeonNode = ({ data }) => {
-//   const getGenderIcon = (gender) => {
-//     return gender === 'male' ? '♂' : '♀';
-//   };
+const PigeonNode = ({ data }) => {
+  console.log(data.color);
+  const getGenderIcon = (gender) => {
+    return gender === "male" ? "♂" : "♀";
+  };
 
-//   const getGenderColor = (gender) => {
-//     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
-//   };
+  const getGenderColor = (gender) => {
+    return gender === "male" ? "bg-blue-500" : "bg-pink-500";
+  };
 
   const getGenerationColor = (generation) => {
     switch (generation) {
@@ -68,43 +70,48 @@ import { initialEdges, initialNodes } from "@/data/pedigree-chart-data";
   };
 
   return (
-    <Card
-      className={`${getCardSize(
-        data.generation
-      )} shadow-lg rounded-none transition-all duration-300 ${getGenerationColor(
-        data.generation
-      )} border`}
+    <div
+      style={{ backgroundColor: data.color }}
+      className={`${getCardSize(data?.generation)} 
+            
+            border-b-8 border-r-10 border-black
+              text-white rounded-none transition-all duration-300 
+              ${getGenerationColor(data?.generation)} border`}
     >
       <Handle
         type="target"
         position={Position.Left}
         className="w-3 h-3 !bg-slate-400"
       />
-
-      <CardHeader className="pb-2 p-3">
+      <div className="flex items-center justify-between px-3">
+        <span variant="outline" className="text-xs px-1 text-black">
+          Gen {data.generation}
+        </span>
+       
+           <Crown className="w-3 h-3 text-amber-600" />
+              <span
+            className={`${getGenderColor(
+              data.gender
+            )} text-black text-xs px-1 py-0.5`}
+          >
+            {getGenderIcon(data.gender)}
+          </span>
+      </div>
+      <CardHeader className="pb-2 ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Crown className="w-3 h-3 text-amber-600" />
-            <h3 className="font-bold text-xs text-gray-900 truncate">
+           
+            <h3 className="font-bold text-black text-xl truncate">
               {data.name}
             </h3>
           </div>
-          <Badge
-            className={`${getGenderColor(
-              data.gender
-            )} text-white text-xs px-1 py-0.5`}
-          >
-            {getGenderIcon(data.gender)}
-          </Badge>
+        <span variant="secondary" className="text-xs px-1 text-black">
+            {data.position}
+          </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <Badge variant="outline" className="text-xs px-1">
-            Gen {data.generation}
-          </Badge>
-          <Badge variant="secondary" className="text-xs px-1">
-            {data.position}
-          </Badge>
+          
         </div>
       </CardHeader>
 
@@ -198,8 +205,9 @@ import { initialEdges, initialNodes } from "@/data/pedigree-chart-data";
         position={Position.Right}
         className="w-3 h-3 !bg-slate-400"
       />
-    </Card>
+    </div>
   );
+};
 
 const nodeTypes = {
   pigeonNode: PigeonNode,
@@ -217,7 +225,7 @@ export default function PigeonPedigreeChart() {
   const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-[1800px] flex justify-start items-center ">
       {/* --- ReactFlow (static) --- */}
       <ReactFlow
         nodes={nodes}

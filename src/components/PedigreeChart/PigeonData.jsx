@@ -1,6 +1,7 @@
-// pigeonData.js - সব পিজিয়ন ডাটা এবং এজেস
 
-export const pigeonNodes = [
+
+
+const initialNodes = [
   // Generation 0 - Subject (1 pigeon) - Now on the LEFT
   {
     id: "subject",
@@ -13,7 +14,7 @@ export const pigeonNodes = [
       generation: 0,
       position: "Subject",
       birthYear: "2020",
-      color: "bg-blue-600",
+      color: "#FFFFE0",
       colorName: "Blue Bar",
       description:
         "Championship winning pigeon with exceptional racing performance and breeding capabilities.",
@@ -26,7 +27,7 @@ export const pigeonNodes = [
   {
     id: "father_1",
     type: "pigeonNode",
-    position: { x: 450, y: 400 },
+    position: { x: 450, y: 0 },
     data: {
       name: "Thunder King",
       owner: "Jon Johnson",
@@ -44,7 +45,7 @@ export const pigeonNodes = [
   {
     id: "mother_1",
     type: "pigeonNode",
-    position: { x: 450, y: 600 },
+    position: { x: 450, y:window.screen.height - 30 },
     data: {
       name: "Royal Belle",
       owner: "Jon Johnson",
@@ -52,7 +53,7 @@ export const pigeonNodes = [
       generation: 1,
       position: "Mother",
       birthYear: "2019",
-      color: "bg-red-500",
+      color: "#ADD8E6",
       colorName: "Red Checker",
       description:
         "Outstanding hen with strong maternal instincts and racing bloodline.",
@@ -64,7 +65,7 @@ export const pigeonNodes = [
   {
     id: "father_2_1", // Father of father_1
     type: "pigeonNode",
-    position: { x: 800, y: 300 },
+    position: { x: 800, y: 0 },
     data: {
       name: "Storm Lightning",
       owner: "Jon Johnson",
@@ -72,17 +73,16 @@ export const pigeonNodes = [
       generation: 2,
       position: "Grandfather (P)",
       birthYear: "2016",
-      color: "bg-gray-600",
+      color: "#fff",
       colorName: "Blue",
-      description:
-        "Foundation sire with legendary racing and breeding record.",
+      description: "Foundation sire with legendary racing and breeding record.",
       achievements: "Hall of Fame inductee, Multiple race champion",
     },
   },
   {
     id: "mother_2_1", // Mother of father_1
     type: "pigeonNode",
-    position: { x: 800, y: 450 },
+    position: { x: 800, y: 420 },
     data: {
       name: "Silver Queen",
       owner: "Jon Johnson",
@@ -90,7 +90,7 @@ export const pigeonNodes = [
       generation: 2,
       position: "Grandmother (P)",
       birthYear: "2017",
-      color: "bg-gray-400",
+      color: "#fff",
       colorName: "Silver",
       description: "Elite breeding hen from champion bloodlines.",
       achievements: "Mother of champions, Proven genetics",
@@ -99,15 +99,15 @@ export const pigeonNodes = [
   {
     id: "father_2_2", // Father of mother_1
     type: "pigeonNode",
-    position: { x: 800, y: 600 },
+    position: { x: 800, y: 920 },
     data: {
       name: "Golden Arrow",
-      owner: "Jon Johnson",
+      owner: "Jon Johnson22",
       gender: "male",
       generation: 2,
       position: "Grandfather (M)",
       birthYear: "2017",
-      color: "bg-yellow-600",
+      color: "#fff",
       colorName: "Yellow",
       description: "Fast racing pigeon with excellent navigation abilities.",
       achievements: "Speed record holder, Long distance specialist",
@@ -116,15 +116,15 @@ export const pigeonNodes = [
   {
     id: "mother_2_2", // Mother of mother_1
     type: "pigeonNode",
-    position: { x: 800, y: 750 },
+    position: { x: 800, y: 1350 },
     data: {
       name: "Ruby Princess",
-      owner: "Jon Johnson",
+      owner: "Jon Johnson33",
       gender: "female",
       generation: 2,
       position: "Grandmother (M)",
       birthYear: "2018",
-      color: "bg-red-600",
+      color: "#fff",
       colorName: "Red",
       description: "Beautiful hen with strong racing instincts.",
       achievements: "Regional champion, Excellent mother",
@@ -135,7 +135,7 @@ export const pigeonNodes = [
   {
     id: "father_3_1", // Father of father_2_1
     type: "pigeonNode",
-    position: { x: 1150, y: 200 },
+    position: { x: 1150, y: 0 },
     data: {
       name: "Thunder Bolt",
       owner: "Jon Johnson",
@@ -143,7 +143,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GF (PP)",
       birthYear: "2014",
-      color: "bg-indigo-600",
+      color: "#90EE90",
       colorName: "Dark Blue",
       description: "Legendary foundation bird.",
       achievements: "Foundation sire",
@@ -152,7 +152,7 @@ export const pigeonNodes = [
   {
     id: "mother_3_1", // Mother of father_2_1
     type: "pigeonNode",
-    position: { x: 1150, y: 300 },
+    position: { x: 1150, y: 210 },
     data: {
       name: "Lightning Lady",
       owner: "Jon Johnson",
@@ -160,7 +160,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GM (PP)",
       birthYear: "2015",
-      color: "bg-purple-500",
+      color: "#FFFFE0",
       colorName: "Purple",
       description: "Fast racing hen with proven genetics.",
       achievements: "Racing champion",
@@ -169,7 +169,7 @@ export const pigeonNodes = [
   {
     id: "father_3_2", // Father of mother_2_1
     type: "pigeonNode",
-    position: { x: 1150, y: 400 },
+    position: { x: 1150, y: 420 },
     data: {
       name: "Silver Storm",
       owner: "Jon Johnson",
@@ -177,7 +177,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GF (PM)",
       birthYear: "2015",
-      color: "bg-gray-500",
+      color: "#fff",
       colorName: "Silver",
       description: "Strong breeding cock.",
       achievements: "Proven breeder",
@@ -186,7 +186,7 @@ export const pigeonNodes = [
   {
     id: "mother_3_2", // Mother of mother_2_1
     type: "pigeonNode",
-    position: { x: 1150, y: 500 },
+    position: { x: 1150, y: 630 },
     data: {
       name: "Pearl Beauty",
       owner: "Jon Johnson",
@@ -194,7 +194,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GM (PM)",
       birthYear: "2016",
-      color: "bg-slate-300",
+      color: "#fff",
       colorName: "White",
       description: "Beautiful white hen with excellent qualities.",
       achievements: "Show winner",
@@ -203,7 +203,7 @@ export const pigeonNodes = [
   {
     id: "father_3_3", // Father of father_2_2
     type: "pigeonNode",
-    position: { x: 1150, y: 600 },
+    position: { x: 1150, y: 840 },
     data: {
       name: "Golden Eagle",
       owner: "Jon Johnson",
@@ -211,7 +211,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GF (MP)",
       birthYear: "2015",
-      color: "bg-yellow-700",
+      color: "#fff",
       colorName: "Golden",
       description: "Outstanding racing cock.",
       achievements: "Multi-race winner",
@@ -220,7 +220,7 @@ export const pigeonNodes = [
   {
     id: "mother_3_3", // Mother of father_2_2
     type: "pigeonNode",
-    position: { x: 1150, y: 700 },
+    position: { x: 1150, y: 1050 },
     data: {
       name: "Amber Star",
       owner: "Jon Johnson",
@@ -228,7 +228,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GM (MP)",
       birthYear: "2016",
-      color: "bg-amber-600",
+      color: "#fff",
       colorName: "Amber",
       description: "Exceptional breeding hen.",
       achievements: "Mother of winners",
@@ -237,7 +237,7 @@ export const pigeonNodes = [
   {
     id: "father_3_4", // Father of mother_2_2
     type: "pigeonNode",
-    position: { x: 1150, y: 800 },
+    position: { x: 1150, y: 1260 },
     data: {
       name: "Ruby King",
       owner: "Jon Johnson",
@@ -245,7 +245,7 @@ export const pigeonNodes = [
       generation: 3,
       position: "Great-GF (MM)",
       birthYear: "2016",
-      color: "bg-red-700",
+      color: "#90EE90",
       colorName: "Dark Red",
       description: "Strong red cock with racing ability.",
       achievements: "Regional winner",
@@ -254,15 +254,15 @@ export const pigeonNodes = [
   {
     id: "mother_3_4", // Mother of mother_2_2
     type: "pigeonNode",
-    position: { x: 1150, y: 900 },
+    position: { x: 1150, y: 1550 },
     data: {
-      name: "Crimson Rose",
+      name: "Crimson Rose333",
       owner: "Jon Johnson",
       gender: "female",
       generation: 3,
       position: "Great-GM (MM)",
       birthYear: "2017",
-      color: "bg-rose-600",
+      color: "#FFFFE0",
       colorName: "Rose",
       description: "Beautiful rose colored hen.",
       achievements: "Quality breeder",
@@ -274,7 +274,7 @@ export const pigeonNodes = [
   {
     id: "father_4_1",
     type: "pigeonNode",
-    position: { x: 1500, y: 100 },
+    position: { x: 1500, y: 0 },
     data: {
       name: "Ancient King",
       owner: "Jon Johnson",
@@ -282,7 +282,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GF (1)",
       birthYear: "2012",
-      color: "bg-stone-700",
+      color: "#90EE90",
       colorName: "Stone",
       description: "Foundation bloodline patriarch.",
       achievements: "Ancestral sire",
@@ -291,7 +291,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_1",
     type: "pigeonNode",
-    position: { x: 1500, y: 180 },
+    position: { x: 1500, y: 110 },
     data: {
       name: "Royal Ancestor",
       owner: "Jon Johnson",
@@ -299,7 +299,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GM (1)",
       birthYear: "2013",
-      color: "bg-violet-600",
+      color: "#90EE90",
       colorName: "Violet",
       description: "Royal bloodline matriarch.",
       achievements: "Foundation hen",
@@ -309,7 +309,7 @@ export const pigeonNodes = [
   {
     id: "father_4_2",
     type: "pigeonNode",
-    position: { x: 1500, y: 260 },
+    position: { x: 1500, y: 220 },
     data: {
       name: "Storm Master",
       owner: "Jon Johnson",
@@ -317,7 +317,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GF (2)",
       birthYear: "2013",
-      color: "bg-slate-800",
+      color: "#FFFFE0",
       colorName: "Dark",
       description: "Master of storms.",
       achievements: "Weather champion",
@@ -326,7 +326,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_2",
     type: "pigeonNode",
-    position: { x: 1500, y: 340 },
+    position: { x: 1500, y: 330 },
     data: {
       name: "Wind Dancer",
       owner: "Jon Johnson",
@@ -334,7 +334,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GM (2)",
       birthYear: "2014",
-      color: "bg-cyan-500",
+      color: "#FFFFE0",
       colorName: "Cyan",
       description: "Graceful in flight.",
       achievements: "Flight champion",
@@ -344,7 +344,7 @@ export const pigeonNodes = [
   {
     id: "father_4_3",
     type: "pigeonNode",
-    position: { x: 1500, y: 420 },
+    position: { x: 1500, y: 440 },
     data: {
       name: "Silver Bullet",
       owner: "Jon Johnson",
@@ -361,7 +361,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_3",
     type: "pigeonNode",
-    position: { x: 1500, y: 500 },
+    position: { x: 1500, y: 550 },
     data: {
       name: "Moon Beam",
       owner: "Jon Johnson",
@@ -379,7 +379,7 @@ export const pigeonNodes = [
   {
     id: "father_4_4",
     type: "pigeonNode",
-    position: { x: 1500, y: 580 },
+    position: { x: 1500, y: 660 },
     data: {
       name: "Purple Rain",
       owner: "Jon Johnson",
@@ -396,7 +396,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_4",
     type: "pigeonNode",
-    position: { x: 1500, y: 660 },
+    position: { x: 1500, y: 770 },
     data: {
       name: "Lavender Dream",
       owner: "Jon Johnson",
@@ -414,7 +414,7 @@ export const pigeonNodes = [
   {
     id: "father_4_5",
     type: "pigeonNode",
-    position: { x: 1500, y: 740 },
+    position: { x: 1500, y: 880 },
     data: {
       name: "Golden Flash",
       owner: "Jon Johnson",
@@ -431,7 +431,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_5",
     type: "pigeonNode",
-    position: { x: 1500, y: 820 },
+    position: { x: 1500, y: 990 },
     data: {
       name: "Sunset Glory",
       owner: "Jon Johnson",
@@ -448,7 +448,7 @@ export const pigeonNodes = [
   {
     id: "father_4_6",
     type: "pigeonNode",
-    position: { x: 1500, y: 900 },
+    position: { x: 1500, y: 1100 },
     data: {
       name: "Ruby Storm",
       owner: "Jon Johnson",
@@ -465,7 +465,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_6",
     type: "pigeonNode",
-    position: { x: 1500, y: 980 },
+    position: { x: 1500, y: 1210 },
     data: {
       name: "Cherry Blossom",
       owner: "Jon Johnson",
@@ -482,7 +482,7 @@ export const pigeonNodes = [
   {
     id: "father_4_7",
     type: "pigeonNode",
-    position: { x: 1500, y: 1060 },
+    position: { x: 1500, y: 1320 },
     data: {
       name: "Crimson Knight",
       owner: "Jon Johnson",
@@ -490,7 +490,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GF (7)",
       birthYear: "2014",
-      color: "bg-red-900",
+      color: "#90EE90",
       colorName: "Crimson",
       description: "Noble crimson knight.",
       achievements: "Noble bloodline",
@@ -499,7 +499,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_7",
     type: "pigeonNode",
-    position: { x: 1500, y: 1140 },
+    position: { x: 1500, y: 1430 },
     data: {
       name: "Rose Garden",
       owner: "Jon Johnson",
@@ -507,7 +507,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GM (7)",
       birthYear: "2015",
-      color: "bg-rose-500",
+      color: "#90EE90",
       colorName: "Rose",
       description: "Beautiful as rose garden.",
       achievements: "Garden of beauty",
@@ -516,7 +516,7 @@ export const pigeonNodes = [
   {
     id: "father_4_8",
     type: "pigeonNode",
-    position: { x: 1500, y: 1220 },
+    position: { x: 1500, y: 1540 },
     data: {
       name: "Scarlet Warrior",
       owner: "Jon Johnson",
@@ -524,7 +524,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GF (8)",
       birthYear: "2015",
-      color: "bg-red-700",
+      color: "#FFFFE0",
       colorName: "Scarlet",
       description: "Brave scarlet warrior.",
       achievements: "Warrior spirit",
@@ -533,7 +533,7 @@ export const pigeonNodes = [
   {
     id: "mother_4_8",
     type: "pigeonNode",
-    position: { x: 1500, y: 1300 },
+    position: { x: 1500, y: 1650 },
     data: {
       name: "Coral Queen",
       owner: "Jon Johnson",
@@ -541,7 +541,7 @@ export const pigeonNodes = [
       generation: 4,
       position: "GG-GM (8)",
       birthYear: "2016",
-      color: "bg-coral-500",
+      color: "#FFFFE0",
       colorName: "Coral",
       description: "Regal coral queen.",
       achievements: "Queenly grace",
@@ -549,8 +549,8 @@ export const pigeonNodes = [
   },
 ];
 
-// Edge connections - LEFT to RIGHT direction
-export const pigeonEdges = [
+// Reversed edge connections - now flowing from LEFT to RIGHT
+const initialEdges = [
   // Subject to Parents (LEFT to RIGHT direction)
   {
     id: "subject-father_1",
@@ -771,3 +771,5 @@ export const pigeonEdges = [
     style: { stroke: "#ec4899", strokeWidth: 1.5 },
   },
 ];
+
+export { initialNodes, initialEdges };

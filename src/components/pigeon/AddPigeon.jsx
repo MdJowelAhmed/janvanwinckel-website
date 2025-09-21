@@ -25,6 +25,7 @@ import {
   useGetSinglePigeonQuery,
 } from "@/redux/featured/pigeon/pigeonApi";
 import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
+import Image from "next/image";
 
 const AddPigeonContainer = ({ pigeonId = null }) => {
   const router = useRouter();
@@ -626,9 +627,11 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   <div key={index} className="relative">
                     {photos[index] ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                        <img
+                        <Image
                           src={photos[index].url}
                           alt={`Pigeon photo ${index + 1}`}
+                          width={200}
+                          height={200}
                           className="w-full h-full object-cover"
                         />
                         <button
