@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
+const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
   console.log("selected" , selectedStatus)
   console.log("onFilter" , onStatusFilter)
   // Calculate statistics from the data
@@ -178,4 +178,4 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
   )
 }
 
-export default PigeonOverview
+export default PigeonDatabaseOverview

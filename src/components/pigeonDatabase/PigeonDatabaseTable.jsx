@@ -32,7 +32,7 @@ import { useRouter } from "next/navigation";
 import { useDeletePigeonMutation } from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
 
-const PigeonTable = ({
+const PigeonDatabaseTable = ({
   data,
   isLoading,
   currentPage,
@@ -235,11 +235,7 @@ const PigeonTable = ({
 
                     <TableCell>{pigeon.color}</TableCell>
 
-                    <TableCell>
-                      {pigeon.location && pigeon.location.length > 20
-                        ? pigeon.location.slice(0, 20) + "..."
-                        : pigeon.location}
-                    </TableCell>
+                    <TableCell>{pigeon.location}</TableCell>
 
                     <TableCell>
                       <DropdownMenu>
@@ -253,13 +249,13 @@ const PigeonTable = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem
+                          {/* <DropdownMenuItem
                             onClick={() => onEdit(pigeon._id)}
                             className="cursor-pointer"
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Pigeon
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                           <DropdownMenuItem
                             onClick={() => handleView(pigeon._id)}
                             className="cursor-pointer"
@@ -267,7 +263,7 @@ const PigeonTable = ({
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem
+                          {/* <DropdownMenuItem
                             onClick={() => handlePedigree(pigeon._id)}
                             className="cursor-pointer"
                           >
@@ -280,7 +276,7 @@ const PigeonTable = ({
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Pigeon
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -368,4 +364,5 @@ const TableSkeleton = () => (
   </Card>
 );
 
-export default PigeonTable;
+export default PigeonDatabaseTable;
+

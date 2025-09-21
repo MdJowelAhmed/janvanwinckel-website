@@ -1,5 +1,4 @@
-// PigeonNode.jsx - কাস্টম নোড কম্পোনেন্ট
-
+// PigeonNode.jsx - Custom Node Component
 import React from "react";
 import { Handle, Position } from "reactflow";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -14,57 +13,102 @@ import {
 } from "@/components/ui/dialog";
 import { User, Calendar, Crown, Award, Info } from "lucide-react";
 
-// Custom Node Component for Pigeon Pedigree
 const PigeonNode = ({ data }) => {
-  const getGenderIcon = (gender) => {
-    return gender === "male" ? "♂" : "♀";
-  };
+  const getGenderIcon = (gender) => (gender === "male" ? "♂" : "♀");
+  const getGenderColor = (gender) =>
+    gender === "male" ? "bg-blue-500" : "bg-pink-500";
 
-  const getGenderColor = (gender) => {
-    return gender === "male" ? "bg-blue-500" : "bg-pink-500";
-  };
-
+  // Generation অনুযায়ী background color
   const getGenerationColor = (generation) => {
     switch (generation) {
       case 0:
         return "bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-400"; // Subject
       case 1:
-        return "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300"; // Parents (2)
+        return "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300"; // Parents
       case 2:
-        return "bg-gradient-to-br from-green-50 to-green-100 border-green-300"; // Grandparents (4)
+        return "bg-gradient-to-br from-green-50 to-green-100 border-green-300"; // Grandparents
       case 3:
-        return "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300"; // Great-grandparents (8)
+        return "bg-gradient-to-br from-purple-50 to-purple-100 border-purple-300"; // Great-grandparents
       case 4:
-        return "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300"; // Great-great-grandparents (16)
+        return "bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300"; // Great-great-grandparents
       default:
         return "bg-gradient-to-br from-gray-50 to-gray-100 border-gray-300";
     }
   };
 
-  const getCardSize = (generation) => {
+  // Generation অনুযায়ী dynamic height এবং width
+  const getCardDimensions = (generation) => {
     switch (generation) {
       case 0:
-        return "w-72 h-96"; // Subject - largest
+        return "w-80 h-300"; // Subject - largest
       case 1:
-        return "w-64 h-36"; // Parents
+        return "w-72 h-150"; // Parents - medium large
       case 2:
-        return "w-56 h-32"; // Grandparents
+        return "w-64 h-100"; // Grandparents - medium
       case 3:
-        return "w-48 h-28"; // Great-grandparents
+        return "w-56 h-75"; // Great-grandparents - small
       case 4:
-        return "w-40 h-24"; // Great-great-grandparents - smallest
+        return "w-48 h-50"; // Great-great-grandparents - smallest
       default:
-        return "w-40 h-24";
+        return "w-64 h-32";
     }
   };
 
+  // Text size based on generation
+  const getTextSizes = (generation) => {
+    switch (generation) {
+      case 0:
+        return {
+          name: "text-lg",
+          details: "text-sm",
+          badge: "text-sm",
+          button: "text-sm",
+        };
+      case 1:
+        return {
+          name: "text-base",
+          details: "text-xs",
+          badge: "text-xs",
+          button: "text-xs",
+        };
+      case 2:
+        return {
+          name: "text-sm",
+          details: "text-xs",
+          badge: "text-xs",
+          button: "text-xs",
+        };
+      case 3:
+        return {
+          name: "text-xs",
+          details: "text-xs",
+          badge: "text-xs",
+          button: "text-xs",
+        };
+      case 4:
+        return {
+          name: "text-xs",
+          details: "text-xs",
+          badge: "text-xs",
+          button: "text-xs",
+        };
+      default:
+        return {
+          name: "text-sm",
+          details: "text-xs",
+          badge: "text-xs",
+          button: "text-xs",
+        };
+    }
+  };
+
+  const cardDimensions = getCardDimensions(data.generation);
+  const textSizes = getTextSizes(data.generation);
+
   return (
     <Card
-      className={`${getCardSize(
-        data.generation
-      )} shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 ${getGenerationColor(
-        data.generation
-      )} border-2`}
+      className={`${cardDimensions} shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 
+      ${getGenerationColor(data.generation)} border-2 mx-2 my-1`}
     >
       <Handle
         type="target"
@@ -76,24 +120,26 @@ const PigeonNode = ({ data }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Crown className="w-3 h-3 text-amber-600" />
-            <h3 className="font-bold text-xs text-gray-900 truncate">
+            <h3
+              className={`font-bold ${textSizes.name} text-gray-900 truncate`}
+            >
               {data.name}
             </h3>
           </div>
           <Badge
-            className={`${getGenderColor(
-              data.gender
-            )} text-white text-xs px-1 py-0.5`}
+            className={`${getGenderColor(data.gender)} text-white ${
+              textSizes.badge
+            } px-1 py-0.5`}
           >
             {getGenderIcon(data.gender)}
           </Badge>
         </div>
 
         <div className="flex items-center justify-between">
-          <Badge variant="outline" className="text-xs px-1">
+          <Badge variant="outline" className={`${textSizes.badge} px-1`}>
             Gen {data.generation}
           </Badge>
-          <Badge variant="secondary" className="text-xs px-1">
+          <Badge variant="secondary" className={`${textSizes.badge} px-1`}>
             {data.position}
           </Badge>
         </div>
@@ -101,17 +147,23 @@ const PigeonNode = ({ data }) => {
 
       <CardContent className="pt-0 p-3">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs text-gray-600">
+          <div
+            className={`flex items-center gap-2 ${textSizes.details} text-gray-600`}
+          >
             <User className="w-3 h-3" />
             <span className="truncate">{data.owner}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-gray-600">
+          <div
+            className={`flex items-center gap-2 ${textSizes.details} text-gray-600`}
+          >
             <Calendar className="w-3 h-3" />
             <span>{data.birthYear}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-gray-600">
+          <div
+            className={`flex items-center gap-2 ${textSizes.details} text-gray-600`}
+          >
             <div className={`w-3 h-3 rounded-full ${data.color}`}></div>
             <span className="truncate">{data.colorName}</span>
           </div>
@@ -121,7 +173,7 @@ const PigeonNode = ({ data }) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-5 w-full text-xs mt-1 p-0"
+                className={`h-5 w-full ${textSizes.button} mt-1 p-0`}
               >
                 <Info className="w-3 h-3 mr-1" />
                 View Details
@@ -185,10 +237,45 @@ const PigeonNode = ({ data }) => {
       </CardContent>
 
       <Handle
-        type="source"
-        position={Position.Right}
+        type="target"
+        position={Position.Left}
         className="w-3 h-3 !bg-slate-400"
       />
+
+    
+      {data.generation === 0 ? (
+        <>
+          <Handle
+            type="source"
+            id="top-center"
+            position={Position.Right}
+            style={{
+              top: "20%", 
+              background: "#475569",
+              width: 12,
+              height: 12,
+            }}
+          />
+          <Handle
+            type="source"
+            id="bottom-center"
+            position={Position.Right}
+            style={{
+              bottom: "20%", 
+              top: "auto",
+              background: "#475569",
+              width: 12,
+              height: 12,
+            }}
+          />
+        </>
+      ) : (
+        <Handle
+          type="source"
+          position={Position.Right}
+          className="w-3 h-3 !bg-slate-400"
+        />
+      )}
     </Card>
   );
 };

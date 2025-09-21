@@ -2,12 +2,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "../ui/separator";
 
 export default function Footer() {
   return (
     <div className="flex flex-col border-t mt-12 md:mt-20">
-      {/* Footer with Teal Background - Updated to match image */}
+      {/*  */}
       <footer className="bg-primary py-8">
+        <div className="text-center  max-w-lg mx-auto font-semibold text-3xl text-white mb-6">
+          <h2>Learn how to grow 💪audience fast in Pigeon Hub</h2>
+        </div>
+        <Separator />
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
             {/* Left Section - Company Info */}
@@ -38,12 +43,12 @@ export default function Footer() {
               <Link href="/" className="text-white hover:text-teal-200 text-sm">
                 Home
               </Link>
-              <Link
+              {/* <Link
                 href="/help"
                 className="text-white hover:text-teal-200 text-sm"
               >
                 Help
-              </Link>
+              </Link> */}
 
               <Link
                 href="/terms"

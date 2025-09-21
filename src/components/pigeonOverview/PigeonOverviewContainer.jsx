@@ -23,30 +23,60 @@ import { getImageUrl } from "../share/imageUrl";
 import Image from "next/image";
 import Spinner from "@/app/(commonLayout)/Spinner";
 import moment from "moment";
+import { useGetAllSiblingsQuery } from "@/redux/featured/pigeon/breederApi";
+import { FaRegEye } from "react-icons/fa";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 const PigeonOverviewContainer = () => {
   const { id } = useParams();
   console.log(id);
-  const [showSiblings, setShowSiblings] = useState(false);
+  const [showSiblings, setShowSiblings] = useState(true);
   const [showRaceResults, setShowRaceResults] = useState(true);
+  const [showPigeonModal, setShowPigeonModal] = useState(false);
+  const [selectedPigeon, setSelectedPigeon] = useState(null);
+  
   const { data, isLoading } = useGetSinglePigeonQuery(id);
-  const pigeon = data?.data;
-  console.log(pigeon);
-  console.log(pigeon?.photos[0]);
-  console.log(pigeon?.results);
+  const { data: siblingsData, isLoading: siblingsLoading } = useGetAllSiblingsQuery(id);
+  
+  console.log("siblingsData", siblingsData);
+  const siblings = siblingsData?.data?.siblings || [];
+  console.log("siblings", siblings);
 
-  if (isLoading) <Spinner />;
+  const pigeon = data?.data;
+  // console.log(pigeon);
+  // console.log(pigeon?.photos?.[0]);
+  // console.log(pigeon?.results);
+
+  // Fix 1: Return spinner properly
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  // Fix 2: Handle case when pigeon data is not available
+  if (!pigeon) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">No pigeon data found</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen  md:p-6 lg:p-8">
+    <div className="min-h-screen md:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Pigeon Image */}
           <div className="lg:col-span-1">
             <div className="overflow-hidden p-2">
-              <div className="aspect-square  flex items-center justify-center">
-                <div className="w-full h-full mx-auto   rounded-full ">
+              <div className="aspect-square flex items-center justify-center">
+                <div className="w-full h-full mx-auto rounded-full">
                   {pigeon?.photos?.[0] ? (
                     <Image
                       src={getImageUrl(pigeon.photos[0])}
@@ -61,7 +91,6 @@ const PigeonOverviewContainer = () => {
                     </div>
                   )}
                 </div>
-                {/* <p className="text-sm font-medium">{pigeon?.name}</p> */}
               </div>
             </div>
           </div>
@@ -82,47 +111,45 @@ const PigeonOverviewContainer = () => {
                     <div className="flex items-center gap-3">
                       <div className="space-y-4">
                         <p className="text-sm text-gray-600">
-                          Name :{" "}
+                          Name:{" "}
                           <strong className="text-accent-foreground">
-                            {pigeon?.name}
+                            {pigeon?.name || "N/A"}
                           </strong>
                         </p>
                         <p className="text-sm text-gray-600">
-                          Ring Number :{" "}
+                          Ring Number:{" "}
                           <strong className="text-accent-foreground">
-                            {" "}
-                            {pigeon?.ringNumber}
+                            {pigeon?.ringNumber || "N/A"}
                           </strong>
                         </p>
                         <p className="text-sm text-gray-600">
-                          Birth Year :{" "}
+                          Birth Year:{" "}
                           <strong className="text-accent-foreground">
-                            {pigeon?.birthYear}
+                            {pigeon?.birthYear || "N/A"}
                           </strong>
                         </p>
                         <p className="text-sm text-gray-600">
-                          Gender :{" "}
+                          Gender:{" "}
                           <strong className="text-accent-foreground">
-                            {pigeon?.gender}
+                            {pigeon?.gender || "N/A"}
                           </strong>
                         </p>
                         <p className="text-sm text-gray-600">
-                          Color :{" "}
+                          Color:{" "}
                           <strong className="text-accent-foreground">
-                            {pigeon?.color}
+                            {pigeon?.color || "N/A"}
                           </strong>
                         </p>
                         <p className="text-sm text-gray-600">
-                          Country :{" "}
+                          Country:{" "}
                           <strong className="text-accent-foreground">
-                            {pigeon?.country}
+                            {pigeon?.country || "N/A"}
                           </strong>
                         </p>
-
                         <p className="text-sm text-gray-600">
-                          Status :{" "}
+                          Status:{" "}
                           <strong className="text-accent-foreground">
-                            Racing
+                            {pigeon?.status || "Racing"}
                           </strong>
                         </p>
                       </div>
@@ -145,7 +172,7 @@ const PigeonOverviewContainer = () => {
             <CardContent>
               {pigeon?.fatherRingId ? (
                 <p className="text-gray-500 italic">
-                  Father :{" "}
+                  Father:{" "}
                   <strong className="text-accent-foreground">
                     {pigeon?.fatherRingId?.name || "N/A"}
                   </strong>
@@ -167,7 +194,7 @@ const PigeonOverviewContainer = () => {
             <CardContent>
               {pigeon?.motherRingId ? (
                 <p className="text-gray-500 italic">
-                  Mother :{" "}
+                  Mother:{" "}
                   <strong className="text-accent-foreground">
                     {pigeon?.motherRingId?.name || "N/A"}
                   </strong>
@@ -193,49 +220,58 @@ const PigeonOverviewContainer = () => {
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
               <div className="space-y-4">
                 <p className="text-sm text-gray-600">
-                  Breeder : <strong className="text-accent">Breeder</strong>
+                  Breeder:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.breeder?.breederName || "N/A"}
+                  </strong>
                 </p>
                 <p className="text-sm text-gray-600">
-                  Breeder Quality:{" "}
-                  <strong className="text-accent"> Like New</strong>
+                  Breeder Loft Name:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.breeder?.loftName || "N/A"}
+                  </strong>
                 </p>
                 <p className="text-sm text-gray-600">
-                  Location : <strong className="text-accent">Germany</strong>
+                  Location:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.location || "N/A"}
+                  </strong>
                 </p>
                 <p className="text-sm text-gray-600">
-                  Father Ring Number :{" "}
-                  <strong className="text-accent">
-                    {" "}
+                  Father Ring Number:{" "}
+                  <strong className="text-accent-foreground">
                     {pigeon?.fatherRingId?.ringNumber || "N/A"}
                   </strong>
                 </p>
                 <p className="text-sm text-gray-600">
-                  Mother Ring Number :{" "}
-                  <strong className="text-accent">
+                  Mother Ring Number:{" "}
+                  <strong className="text-accent-foreground">
                     {pigeon?.motherRingId?.ringNumber || "N/A"}
                   </strong>
                 </p>
                 <p className="text-sm text-gray-600">
-                  Country : <strong className="text-accent">Germany</strong>
+                  Country:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.country || "N/A"}
+                  </strong>
                 </p>
-
                 <p className="text-sm text-gray-600">
-                  Status : <strong className="text-accent">Racing</strong>
+                  Status:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.status || "N/A"}
+                  </strong>
                 </p>
               </div>
             </div>
 
-            {/* <Separator /> */}
-
             <div>
-              <p className="">
-                <strong className="text-accent font-semibold">
-                  Your Story :{" "}
+              <p>
+                <strong className="text-accent-foreground font-semibold">
+                  Your Story:{" "}
                 </strong>
                 <span>
-                  The Blue Thunder pigeon is a blue-gray bird with dark bars,
-                  known for its calm nature and strong racing performance. It's
-                  popular among experienced breeders and racing enthusiasts.
+                  {pigeon?.story || 
+                    "The Blue Thunder pigeon is a blue-gray bird with dark bars, known for its calm nature and strong racing performance. It's popular among experienced breeders and racing enthusiasts."}
                 </span>
               </p>
             </div>
@@ -245,14 +281,14 @@ const PigeonOverviewContainer = () => {
         {/* Siblings Information */}
         <Card>
           <CardHeader>
+            {/* Fix 3: Use proper button component */}
             <button
               variant="ghost"
               className="w-full justify-between p-0 h-auto"
               onClick={() => setShowSiblings(!showSiblings)}
             >
-              <CardTitle className="text-xl font-bold text-accent  flex items-center justify-between gap-2">
+              <CardTitle className="text-xl font-bold text-accent flex items-center justify-between gap-2 w-full">
                 Siblings Information
-                {/* <Baby className="w-5 h-5" /> */}
                 {showSiblings ? (
                   <ChevronUp className="w-4 h-4" />
                 ) : (
@@ -263,89 +299,60 @@ const PigeonOverviewContainer = () => {
           </CardHeader>
           {showSiblings && (
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b bg-gray-50">
-                      <th className="text-left p-3 font-semibold">Name</th>
-                      <th className="text-left p-3 font-semibold">Wing Ring</th>
-                      <th className="text-left p-3 font-semibold">
-                        Extra Position
-                      </th>
-                      <th className="text-left p-3 font-semibold">
-                        Birth Year
-                      </th>
-                      <th className="text-left p-3 font-semibold">
-                        Quality Breeder
-                      </th>
-                      <th className="text-left p-3 font-semibold">
-                        Quality Name
-                      </th>
-                      <th className="text-left p-3 font-semibold">Father</th>
-                      <th className="text-left p-3 font-semibold">Mother</th>
-                      <th className="text-left p-3 font-semibold">Gender</th>
-                      <th className="text-left p-3 font-semibold">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      {
-                        name: "The Ace",
-                        wingRing: "Full Sibling-1 Power Edition",
-                        extraPos: "BE 6971204",
-                        year: "2021",
-                        quality: "Like New",
-                        qualityName: "Fast Racer",
-                        father: "The Ace",
-                        mother: "The Ace",
-                        gender: "Cock",
-                        status: "",
-                      },
-                      {
-                        name: "The Ace",
-                        wingRing: "Half Sibling-1 Power Edition",
-                        extraPos: "BE 6971204",
-                        year: "2020",
-                        quality: "Like New",
-                        qualityName: "Fast Racer",
-                        father: "The Ace",
-                        mother: "The Ace",
-                        gender: "Cock",
-                        status: "",
-                      },
-                      {
-                        name: "The Ace",
-                        wingRing: "Half Sibling-1 Power Edition",
-                        extraPos: "BE 6971204",
-                        year: "2019",
-                        quality: "Like New",
-                        qualityName: "Fast Racer",
-                        father: "The Ace",
-                        mother: "The Ace",
-                        gender: "Cock",
-                        status: "",
-                      },
-                    ].map((sibling, index) => (
-                      <tr key={index} className="border-b hover:bg-gray-50">
-                        <td className="p-3 text-blue-600 font-medium">
-                          {sibling.name}
-                        </td>
-                        <td className="p-3">{sibling.wingRing}</td>
-                        <td className="p-3 text-blue-600">
-                          {sibling.extraPos}
-                        </td>
-                        <td className="p-3">{sibling.year}</td>
-                        <td className="p-3">{sibling.quality}</td>
-                        <td className="p-3">{sibling.qualityName}</td>
-                        <td className="p-3">{sibling.father}</td>
-                        <td className="p-3">{sibling.mother}</td>
-                        <td className="p-3">{sibling.gender}</td>
-                        <td className="p-3">{sibling.status}</td>
+              {siblingsLoading ? (
+                <div className="flex justify-center p-4">
+                  <Spinner />
+                </div>
+              ) : siblings.length > 0 ? (
+                <div className="overflow-x-auto rounded-lg">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b bg-foreground text-white">
+                        <th className="text-left p-3 font-semibold">Name</th>
+                        <th className="text-left p-3 font-semibold">Siblings Type</th>
+                        <th className="text-left p-3 font-semibold">Ring Number</th>
+                        <th className="text-left p-3 font-semibold">Birth Year</th>
+                        <th className="text-left p-3 font-semibold">Breeder Rating</th>
+                        <th className="text-left p-3 font-semibold">Racer Rating</th>
+                        <th className="text-left p-3 font-semibold">Father</th>
+                        <th className="text-left p-3 font-semibold">Mother</th>
+                        <th className="text-left p-3 font-semibold">Gender</th>
+                        <th className="text-left p-3 font-semibold">Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {siblings.map((sibling, index) => (
+                        <tr key={sibling._id || index} className="border-b bg-background text-white">
+                          <td className="p-3 font-medium">
+                            {sibling.name || "N/A"}
+                          </td>
+                          <td className="p-3">{sibling.type || "N/A"}</td>
+                          <td className="p-3">{sibling.ringNumber || "N/A"}</td>
+                          <td className="p-3">{sibling.birthYear || "N/A"}</td>
+                          <td className="p-3">{sibling.breederRating || "N/A"}</td>
+                          <td className="p-3">{sibling.racerRating || "N/A"}</td>
+                          <td className="p-3">{sibling.father?.ringNumber || "N/A"}</td>
+                          <td className="p-3">{sibling.mother?.ringNumber || "N/A"}</td>
+                          <td className="p-3">{sibling.gender || "N/A"}</td>
+                          <td className="p-3">
+                            <Button
+                              className="text-white rounded-md"
+                              onClick={() => {
+                                setSelectedPigeon(sibling);
+                                setShowPigeonModal(true);
+                              }}
+                            >
+                              <FaRegEye />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic text-center p-4">No siblings found</p>
+              )}
             </CardContent>
           )}
         </Card>
@@ -353,74 +360,191 @@ const PigeonOverviewContainer = () => {
         {/* Race Results */}
         <Card>
           <CardHeader>
+            {/* Fix 4: Use proper button component */}
             <button
               variant="ghost"
               className="w-full justify-between p-0 h-auto"
               onClick={() => setShowRaceResults(!showRaceResults)}
             >
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-xl font-bold text-blue-600 flex items-center gap-2">
+              <div className="flex justify-between items-center w-full">
+                <CardTitle className="text-xl font-bold text-accent flex items-center gap-2">
                   <Award className="w-5 h-5" />
                   Race Result
                 </CardTitle>
-                <div>
-                  {" "}
-                  {showRaceResults ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </div>
+                {showRaceResults ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
               </div>
             </button>
           </CardHeader>
           {showRaceResults && (
             <CardContent>
-              <div className="overflow-x-auto rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-foreground text-white">
-                    <tr>
-                      <th className="text-left p-3 font-semibold">Name</th>
-                      <th className="text-left p-3 font-semibold">Date</th>
-                      <th className="text-left p-3 font-semibold">Distance</th>
-                      <th className="text-left p-3 font-semibold">
-                        Total Birds
-                      </th>
-                      <th className="text-left p-3 font-semibold">Place</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pigeon?.results?.map((race, index) => (
-                      <tr key={index} className="bg-background text-white">
-                        <td className="p-3 text-blue-600 font-medium">
-                          {race.name}
-                        </td>
-                        <td className="p-3">
-                          {moment(race.date).format("DD MMM YYYY")}
-                        </td>
-                        <td className="p-3">{race.distance}</td>
-                        <td className="p-3">{race.total}</td>
-                        <td className="p-3">{race.place}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {pigeon?.results && pigeon.results.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto rounded-lg overflow-hidden">
+                    <table className="w-full">
+                      <thead className="bg-foreground text-white">
+                        <tr>
+                          <th className="text-left p-3 font-semibold">Name</th>
+                          <th className="text-left p-3 font-semibold">Date</th>
+                          <th className="text-left p-3 font-semibold">Distance</th>
+                          <th className="text-left p-3 font-semibold">Total Birds</th>
+                          <th className="text-left p-3 font-semibold">Place</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pigeon.results.map((race, index) => (
+                          <tr key={race._id || index} className="bg-background text-white">
+                            <td className="p-3 font-medium">{race.name || "N/A"}</td>
+                            <td className="p-3">
+                              {race.date ? moment(race.date).format("DD MMM YYYY") : "N/A"}
+                            </td>
+                            <td className="p-3">{race.distance || "N/A"}</td>
+                            <td className="p-3">{race.total || "N/A"}</td>
+                            <td className="p-3">{race.place || "N/A"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">
-                  <strong>Additional Notes:</strong>
-                </p>
-                <p className="text-sm text-gray-700">
-                  The Blue Thunder pigeon is a blue-gray bird with dark bars,
-                  known for its calm nature and strong racing performance. It's
-                  popular among experienced breeders and racing enthusiasts.
-                </p>
-              </div>
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-2">
+                      <strong>Additional Notes:</strong>
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {pigeon?.raceNotes || 
+                        "The Blue Thunder pigeon is a blue-gray bird with dark bars, known for its calm nature and strong racing performance. It's popular among experienced breeders and racing enthusiasts."}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <p className="text-gray-500 italic text-center p-4">No race results found</p>
+              )}
             </CardContent>
           )}
         </Card>
       </div>
+
+      {/* Pigeon Details Modal */}
+      <Dialog open={showPigeonModal} onOpenChange={setShowPigeonModal} >
+        <DialogContent className="sm:max-w-md md:max-w-lg lg:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-accent flex items-center justify-between">
+              <span>Sibling Pigeon Details</span>
+              {selectedPigeon?.verified && (
+                <Badge className="bg-green-500 text-white">Verified</Badge>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedPigeon && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Pigeon Image */}
+              <div className="flex flex-col items-center">
+                <div className="w-full aspect-square rounded-md overflow-hidden mb-4">
+                  {selectedPigeon?.photos?.[0] ? (
+                    <Image
+                      src={getImageUrl(selectedPigeon.photos[0])}
+                      alt={selectedPigeon?.name || "Pigeon"}
+                      height={300}
+                      width={300}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span className="text-accent">No Image</span>
+                    </div>
+                  )}
+                </div>
+                <h3 className="text-lg font-semibold text-accent">{selectedPigeon.name || "N/A"}</h3>
+                <p className="text-sm text-accent">
+                  Ring Number: {selectedPigeon.ringNumber || "N/A"}
+                </p>
+              </div>
+
+              {/* Pigeon Details */}
+              <div className="space-y-4 text-white">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-semibold">Birth Year</p>
+                    <p className="text-white">{selectedPigeon.birthYear || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Gender</p>
+                    <p className="text-white">{selectedPigeon.gender || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Color</p>
+                    <p className="text-white">{selectedPigeon.color || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Country</p>
+                    <p className="text-white">{selectedPigeon.country || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Status</p>
+                    <p className="text-white">{selectedPigeon.status || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Type</p>
+                    <p className="text-white">{selectedPigeon.type || "N/A"}</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2 text-white">
+                  <h4 className="font-semibold">Ratings</h4>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm font-semibold">Breeder Rating</p>
+                      <p className="text-white">{selectedPigeon.breederRating || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Racer Rating</p>
+                      <p className="text-white">{selectedPigeon.racerRating || "N/A"}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Racing Rating</p>
+                      <p className="text-white">{selectedPigeon.racingRating || "N/A"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Location</h4>
+                  <p className="text-white">{selectedPigeon.location || "N/A"}</p>
+                </div>
+
+                {selectedPigeon.notes && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Notes</h4>
+                      <p className="text-white">{selectedPigeon.notes}</p>
+                    </div>
+                  </>
+                )}
+
+                {selectedPigeon.shortInfo && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">Short Info</h4>
+                      <p className="text-white">{selectedPigeon.shortInfo}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

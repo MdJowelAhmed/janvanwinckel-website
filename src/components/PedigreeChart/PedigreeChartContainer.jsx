@@ -1,4 +1,4 @@
-"use client";
+// "use client"
 
 import React, { useCallback } from "react";
 import {
@@ -23,15 +23,15 @@ import {
 import { User, Calendar, Crown, Award, Info } from "lucide-react";
 import { initialEdges, initialNodes } from "@/data/pedigree-chart-data";
 
-// Custom Node Component for Pigeon Pedigree
-const PigeonNode = ({ data }) => {
-  const getGenderIcon = (gender) => {
-    return gender === "male" ? "♂" : "♀";
-  };
+// // Custom Node Component for Pigeon Pedigree
+// const PigeonNode = ({ data }) => {
+//   const getGenderIcon = (gender) => {
+//     return gender === 'male' ? '♂' : '♀';
+//   };
 
-  const getGenderColor = (gender) => {
-    return gender === "male" ? "bg-blue-500" : "bg-pink-500";
-  };
+//   const getGenderColor = (gender) => {
+//     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
+//   };
 
   const getGenerationColor = (generation) => {
     switch (generation) {
@@ -200,7 +200,6 @@ const PigeonNode = ({ data }) => {
       />
     </Card>
   );
-};
 
 const nodeTypes = {
   pigeonNode: PigeonNode,
