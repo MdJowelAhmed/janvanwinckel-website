@@ -6,7 +6,7 @@ import PigeonTable from "./PigeonTable";
 import { Button } from "@/components/ui/button";
 import { Plus, FileDown, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useGetPigeonPackagesQuery } from "@/redux/featured/pigeon/pigeonApi";
+import { useGetMyPigeonPackagesQuery, useGetPigeonPackagesQuery } from "@/redux/featured/pigeon/pigeonApi";
 import { Badge } from "@/components/ui/badge";
 
 const PigeonContainer = () => {
@@ -29,7 +29,7 @@ const PigeonContainer = () => {
     data: pigeonData,
     isLoading,
     error,
-  } = useGetPigeonPackagesQuery(queryParams);
+  } = useGetMyPigeonPackagesQuery(queryParams);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -79,7 +79,7 @@ const PigeonContainer = () => {
       import("jspdf").then((jsPDFModule) => {
         const jsPDF = jsPDFModule.default;
         import("jspdf-autotable").then((autoTableModule) => {
-          const autoTable = autoTableModule.default; // <-- এখানে ধরতে হবে
+          const autoTable = autoTableModule.default; 
           try {
             const doc = new jsPDF();
 
@@ -114,7 +114,6 @@ const PigeonContainer = () => {
               ]);
             });
 
-            // এখানে direct call করতে হবে
             autoTable(doc, {
               head: [tableColumn],
               body: tableRows,

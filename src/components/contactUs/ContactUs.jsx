@@ -124,7 +124,7 @@ export default function ContactForm() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-red text-white rounded-md py-7 mt-10"
+            className="w-full bg-accent text-white rounded-md py-7 mt-10"
           >
             {isLoading ? "Sending..." : "Send Message"}
           </Button>

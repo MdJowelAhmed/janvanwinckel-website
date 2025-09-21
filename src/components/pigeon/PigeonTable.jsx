@@ -235,7 +235,11 @@ const PigeonTable = ({
 
                     <TableCell>{pigeon.color}</TableCell>
 
-                    <TableCell>{pigeon.location}</TableCell>
+                    <TableCell>
+                      {pigeon.location && pigeon.location.length > 20
+                        ? pigeon.location.slice(0, 20) + "..."
+                        : pigeon.location}
+                    </TableCell>
 
                     <TableCell>
                       <DropdownMenu>
@@ -365,4 +369,3 @@ const TableSkeleton = () => (
 );
 
 export default PigeonTable;
-

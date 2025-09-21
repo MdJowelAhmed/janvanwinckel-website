@@ -23,6 +23,27 @@ const pigeonApi = api.injectEndpoints({
       },
       providesTags: ["Pigeon"],
     }),
+    getMyPigeonPackages: builder.query({
+      query: (args) => {
+        const params = new URLSearchParams();
+        if (args && args.length > 0) {
+          args.forEach((arg) => {
+            if (
+              arg.value !== "" &&
+              arg.value !== null &&
+              arg.value !== undefined
+            ) {
+              params.append(arg.name, arg.value);
+            }
+          });
+        }
+        return {
+          method: "GET",
+          url: `/pigeon/myAllpigeons?${params.toString()}`,
+        };
+      },
+      providesTags: ["Pigeon"],
+    }),
 
     // Fix for your pigeonApi.js
     getPigeonSearch: builder.query({
@@ -174,6 +195,7 @@ const pigeonApi = api.injectEndpoints({
 
 export const {
   useGetPigeonPackagesQuery,
+  useGetMyPigeonPackagesQuery,
   useGetPigeonSearchQuery,
   useGetSinglePigeonQuery,
   useCreatePigeonMutation,

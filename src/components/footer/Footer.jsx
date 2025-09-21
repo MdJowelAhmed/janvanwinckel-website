@@ -43,12 +43,12 @@ export default function Footer() {
               <Link href="/" className="text-white hover:text-teal-200 text-sm">
                 Home
               </Link>
-              <Link
+              {/* <Link
                 href="/help"
                 className="text-white hover:text-teal-200 text-sm"
               >
                 Help
-              </Link>
+              </Link> */}
 
               <Link
                 href="/terms"
