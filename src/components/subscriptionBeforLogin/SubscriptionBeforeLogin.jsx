@@ -30,7 +30,7 @@ const SubscriptionBeforeLogin = () => {
   };
 
   return (
-    <div className="my-20">
+    <div className="my-20 px-4 md:px-8 lg:px-12">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -102,7 +102,7 @@ const SubscriptionBeforeLogin = () => {
               </div>
             </div>
           ) : dynamicPackage ? (
-            <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden">
+            <div className="bg-[#088395] rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12"></div>
               

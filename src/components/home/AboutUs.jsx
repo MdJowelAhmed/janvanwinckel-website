@@ -3,7 +3,7 @@ import React from 'react'
 
 const AboutUs = () => {
   return (
-    <div className='my-20'>
+    <div className='my-20 px-4 md:px-8 lg:px-12'>
         <div className='max-w-3xl mx-auto flex flex-col items-center'>
 
 

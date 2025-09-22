@@ -26,11 +26,14 @@ export default function ContactForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Updated payload to match backend expectations
     const payload = {
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       email: formData.email,
+      phone: formData.phone,
       subject: formData.subject,
-      message: formData.message,
+      description: formData.message, // Changed from 'message' to 'description'
     };
 
     try {
@@ -99,6 +102,7 @@ export default function ContactForm() {
               placeholder="Phone"
               value={formData.phone}
               onChange={handleChange}
+              required
               className="rounded-md py-7"
             />
           </div>

@@ -13,7 +13,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User", "Posts", "Comments", "Likes","Community", "Package", "Subscription", "Access", "Pigeon","Notification"], 
+  tagTypes: ["User", "Posts", "Comments", "Likes","Community", "Package", "Subscription", "Access", "Pigeon","Notification","Contact"], 
 
 
 

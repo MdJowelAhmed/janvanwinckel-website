@@ -584,17 +584,16 @@ export default function Navbar() {
                     {/* <p className="text-xs text-gray-500">{userData?.email}</p> */}
                   </div>
 
-                  <FaChevronDown
+                  {/* <FaChevronDown
                     className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
                       isProfileOpen ? "rotate-180" : ""
                     }`}
-                  />
+                  /> */}
                 </button>
 
                 {/* Profile Modal */}
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-3 w-72 bg-white border border-gray-200 shadow-xl rounded-xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                    {/* Header */}
                     <div className="p-4 bg-primary border-gray-100">
                       <div className="flex items-center space-x-3">
                         <ProfileIcon
@@ -611,8 +610,8 @@ export default function Navbar() {
                           <p className="text-sm text-white">
                             {userData?.email || "user@example.com"}
                           </p>
-                          {/* Connection status */}
-                          <p
+
+                          {/* <p
                             className={`text-xs ${
                               isSocketConnected
                                 ? "text-green-200"
@@ -620,14 +619,13 @@ export default function Navbar() {
                             }`}
                           >
                             {isSocketConnected ? "Online" : "Offline"}
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </div>
 
-                    {/* Menu Items */}
                     <div className="py-2">
-                      {profileMenuItems.map((item, index) => (
+                      {/* {profileMenuItems.map((item, index) => (
                         <Link
                           key={index}
                           href={item.href}
@@ -641,9 +639,8 @@ export default function Navbar() {
                             {item.label}
                           </span>
                         </Link>
-                      ))}
-
-                      {/* Settings Dropdown */}
+                      ))} */}
+{/* 
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
                           className="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-50 transition-colors duration-150 group"
@@ -663,7 +660,6 @@ export default function Navbar() {
                           />
                         </button>
 
-                        {/* Settings Submenu */}
                         {isSettingsOpen && (
                           <div className="bg-gray-50 border-l-2 border-primary ml-4">
                             {settingsItems.map((item, index) => (
@@ -680,7 +676,6 @@ export default function Navbar() {
                               </Link>
                             ))}
 
-                            {/* Delete Account in Settings */}
                             <button
                               onClick={() => {
                                 setOpen(true);
@@ -695,9 +690,8 @@ export default function Navbar() {
                             </button>
                           </div>
                         )}
-                      </div>
+                      </div> */}
 
-                      {/* Logout */}
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
                           onClick={handleLogout}
@@ -710,7 +704,7 @@ export default function Navbar() {
                         </button>
                       </div>
                     </div>
-                    {/* Footer */}
+
                     <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
                       <p className="text-xs text-gray-500 text-center">
                         Last login: Today

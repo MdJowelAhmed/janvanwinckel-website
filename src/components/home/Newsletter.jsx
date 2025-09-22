@@ -31,7 +31,7 @@ const Newsletter = () => {
   };
 
   return (
-    <div className="my-10 lg:my-20">
+    <div className="my-10 lg:my-20 px-4 md:px-8 lg:px-12">
       <div className="max-w-lg mx-auto text-center mb-6">
         <h2 className="text-3xl font-bold">Our Newsletter</h2>
         <p>Subscribe to our newsletter to get the latest updates and news from us.</p>

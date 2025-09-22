@@ -25,8 +25,8 @@ import { User, Calendar, Crown, Award, Info } from "lucide-react";
 import { useGetPigeonPedigreeChartDataQuery } from "@/redux/featured/pigeon/pigeonApi";
 import { convertBackendToExistingFormat } from "./PigeonData";
 import { useParams } from "next/navigation";
+import Spinner from "@/app/(commonLayout)/Spinner";
 
-// ✅ PigeonNode component কে এখানে define করুন (nodeTypes এর আগে)
 const PigeonNode = ({ data }) => {
   console.log(data.color);
   const getGenderIcon = (gender) => {
@@ -261,10 +261,9 @@ const nodeTypes = {
   pigeonNode: PigeonNode,
 };
 
-// ✅ Main component
 export default function PigeonPedigreeChart() {
   const { id } = useParams();
-  const { data: pedigreeData } = useGetPigeonPedigreeChartDataQuery(id);
+  const { data: pedigreeData, isLoading } = useGetPigeonPedigreeChartDataQuery(id);
 
   const { nodes: dynamicNodes, edges: dynamicEdges } = useMemo(() => {
     return convertBackendToExistingFormat(pedigreeData);
@@ -284,6 +283,7 @@ export default function PigeonPedigreeChart() {
   );
 
   const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
+if(isLoading) return <Spinner />
 
   return (
     <div className="w-full h-[1800px] flex justify-start items-center ">
