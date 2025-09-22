@@ -25,11 +25,16 @@ const PigeonContainer = () => {
     ...filters,
   ];
 
+  // const {
+  //   data: pigeonData,
+  //   isLoading,
+  //   error,
+  // } = useGetMyPigeonPackagesQuery(queryParams);
   const {
     data: pigeonData,
     isLoading,
     error,
-  } = useGetMyPigeonPackagesQuery(queryParams);
+  } = useGetPigeonPackagesQuery(queryParams);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);

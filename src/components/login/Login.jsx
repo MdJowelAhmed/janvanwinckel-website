@@ -144,7 +144,7 @@ const handleSubmit = async (e) => {
             {/* Sign In Button */}
             <Button
               type="submit"
-              className="w-full h-10 md:h-12 bg-primary text-white rounded-md"
+              className="w-full h-10 md:h-12 bg-accent-foreground text-white rounded-md"
               disabled={isLoading}
             >
               {isLoading ? "Signing In..." : "Sign In"}
@@ -153,7 +153,7 @@ const handleSubmit = async (e) => {
             {/* Links */}
             <div className="text-white text-sm text-center mt-6 md:mt-8 gap-4 md:gap-0">
               Don`t have an account ? 
-              <Link href="/register" className="text-white hover:text-primary ml-1 font-bold">
+              <Link href="/register" className="text-white hover:text-accent-foreground ml-1 font-bold">
                Sign Up
               </Link>
             

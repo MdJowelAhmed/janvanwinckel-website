@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   ReactFlow,
   useNodesState,
@@ -21,10 +21,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { User, Calendar, Crown, Award, Info } from "lucide-react";
-import { initialEdges, initialNodes } from "./PigeonData";
-// import { initialEdges, initialNodes } from "@/data/pedigree-chart-data";
+// import { convertBackendToExistingFormat } from "./DataConverter";
+import { useGetPigeonPedigreeChartDataQuery } from "@/redux/featured/pigeon/pigeonApi";
+import { convertBackendToExistingFormat } from "./PigeonData";
+import { useParams } from "next/navigation";
 
-// // Custom Node Component for Pigeon Pedigree
+// ✅ PigeonNode component কে এখানে define করুন (nodeTypes এর আগে)
 const PigeonNode = ({ data }) => {
   console.log(data.color);
   const getGenderIcon = (gender) => {
@@ -73,10 +75,10 @@ const PigeonNode = ({ data }) => {
     <div
       style={{ backgroundColor: data.color }}
       className={`${getCardSize(data?.generation)} 
-            
-            border-b-8 border-r-10 border-black
-              text-white rounded-none transition-all duration-300 
-              ${getGenerationColor(data?.generation)} border`}
+        
+        border-b-8 border-r-10 border-black
+          text-white rounded-none transition-all duration-300 
+          ${getGenerationColor(data?.generation)} border`}
     >
       <Handle
         type="target"
@@ -84,53 +86,84 @@ const PigeonNode = ({ data }) => {
         className="w-3 h-3 !bg-slate-400"
       />
       <div className="flex items-center justify-between px-3">
-        <span variant="outline" className="text-xs px-1 text-black">
-          Gen {data.generation}
-        </span>
-       
-           <Crown className="w-3 h-3 text-amber-600" />
-              <span
+        {data.generation && (
+          <span variant="outline" className="text-xs px-1 text-black">
+            Gen {data.generation}
+          </span>
+        )}
+
+        <Crown className="w-3 h-3 text-amber-600" />
+
+        {data.gender && (
+          <span
             className={`${getGenderColor(
               data.gender
             )} text-black text-xs px-1 py-0.5`}
           >
             {getGenderIcon(data.gender)}
           </span>
+        )}
       </div>
+
       <CardHeader className="pb-2 ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-           
-            <h3 className="font-bold text-black text-xl truncate">
-              {data.name}
-            </h3>
+            {data.name && (
+              <h3 className="font-bold text-black text-xl truncate">
+                {data.name}
+              </h3>
+            )}
           </div>
-        <span variant="secondary" className="text-xs px-1 text-black">
-            {data.position}
-          </span>
+          {data.position && (
+            <span variant="secondary" className="text-xs px-1 text-black">
+              {data.position}
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center justify-between">
-          
-        </div>
+        <div className="flex items-center justify-between"></div>
       </CardHeader>
+      {/* <CardHeader className="pb-2 ">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {data.achievements && (
+              <h3 className="font-bold text-black text-xl truncate">
+                {data.achievements}
+              </h3>
+            )}
+          </div>
+          {data.position && (
+            <span variant="secondary" className="text-xs px-1 text-black">
+              {data.position}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between"></div>
+      </CardHeader> */}
 
       <CardContent className="pt-0 p-3">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <User className="w-3 h-3" />
-            <span className="truncate">{data.owner}</span>
-          </div>
+          {data.owner && (
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <User className="w-3 h-3" />
+              <span className="truncate">{data.owner}</span>
+            </div>
+          )}
 
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <Calendar className="w-3 h-3" />
-            <span>{data.birthYear}</span>
-          </div>
+          {data.birthYear && (
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <Calendar className="w-3 h-3" />
+              <span>{data.birthYear}</span>
+            </div>
+          )}
 
-          <div className="flex items-center gap-2 text-xs text-gray-600">
-            <div className={`w-3 h-3 rounded-full ${data.color}`}></div>
-            <span className="truncate">{data.colorName}</span>
-          </div>
+          {data.color && data.colorName && (
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <div className={`w-3 h-3 rounded-full ${data.color}`}></div>
+              <span className="truncate">{data.colorName}</span>
+            </div>
+          )}
 
           <Dialog>
             <DialogTrigger asChild>
@@ -147,39 +180,51 @@ const PigeonNode = ({ data }) => {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                   <Crown className="w-4 h-4 text-amber-600" />
-                  {data.name}
-                  <Badge
-                    className={`${getGenderColor(data.gender)} text-white`}
-                  >
-                    {getGenderIcon(data.gender)}
-                  </Badge>
+                  {data.name || "Unknown"}
+                  {data.gender && (
+                    <Badge
+                      className={`${getGenderColor(data.gender)} text-white`}
+                    >
+                      {getGenderIcon(data.gender)}
+                    </Badge>
+                  )}
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-semibold">Owner</p>
-                    <p className="text-xs text-gray-600">{data.owner}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">Birth Year</p>
-                    <p className="text-xs text-gray-600">{data.birthYear}</p>
-                  </div>
+                  {data.owner && (
+                    <div>
+                      <p className="text-sm font-semibold">Owner</p>
+                      <p className="text-xs text-gray-600">{data.owner}</p>
+                    </div>
+                  )}
+                  {data.birthYear && (
+                    <div>
+                      <p className="text-sm font-semibold">Birth Year</p>
+                      <p className="text-xs text-gray-600">{data.birthYear}</p>
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <p className="text-sm font-semibold">Position</p>
-                  <p className="text-xs text-gray-600">{data.position}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-semibold">Color</p>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 rounded-full ${data.color}`}></div>
-                    <p className="text-xs text-gray-600">{data.colorName}</p>
+                {data.position && (
+                  <div>
+                    <p className="text-sm font-semibold">Position</p>
+                    <p className="text-xs text-gray-600">{data.position}</p>
                   </div>
-                </div>
+                )}
+
+                {data.color && data.colorName && (
+                  <div>
+                    <p className="text-sm font-semibold">Color</p>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-4 h-4 rounded-full ${data.color}`}
+                      ></div>
+                      <p className="text-xs text-gray-600">{data.colorName}</p>
+                    </div>
+                  </div>
+                )}
 
                 {data.achievements && (
                   <div>
@@ -191,9 +236,11 @@ const PigeonNode = ({ data }) => {
                   </div>
                 )}
 
-                <div className="bg-slate-50 p-3 rounded-lg">
-                  <p className="text-sm text-slate-700">{data.description}</p>
-                </div>
+                {data.description && (
+                  <div className="bg-slate-50 p-3 rounded-lg">
+                    <p className="text-sm text-slate-700">{data.description}</p>
+                  </div>
+                )}
               </div>
             </DialogContent>
           </Dialog>
@@ -209,13 +256,27 @@ const PigeonNode = ({ data }) => {
   );
 };
 
+
 const nodeTypes = {
   pigeonNode: PigeonNode,
 };
 
+// ✅ Main component
 export default function PigeonPedigreeChart() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const { id } = useParams();
+  const { data: pedigreeData } = useGetPigeonPedigreeChartDataQuery(id);
+
+  const { nodes: dynamicNodes, edges: dynamicEdges } = useMemo(() => {
+    return convertBackendToExistingFormat(pedigreeData);
+  }, [pedigreeData]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(dynamicNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(dynamicEdges);
+
+  useEffect(() => {
+    setNodes(dynamicNodes);
+    setEdges(dynamicEdges);
+  }, [dynamicNodes, dynamicEdges, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -226,7 +287,7 @@ export default function PigeonPedigreeChart() {
 
   return (
     <div className="w-full h-[1800px] flex justify-start items-center ">
-      {/* --- ReactFlow (static) --- */}
+      {/* --- ReactFlow (now dynamic) --- */}
       <ReactFlow
         nodes={nodes}
         edges={edges}
