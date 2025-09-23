@@ -90,6 +90,7 @@ export default function Navbar() {
 
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
+  console.log(userData);
   const {
     data: notificationData,
     isLoading,
@@ -129,8 +130,8 @@ export default function Navbar() {
       }
 
       // Initialize socket connection with improved configuration
-      // socketRef.current = io("http://10.10.7.62:7000", {
-      socketRef.current = io("https://api.yogawithjen.life", {
+      socketRef.current = io("http://10.10.7.41:5001/api/v1", {
+      // socketRef.current = io("https://api.yogawithjen.life", {
         transports: ["websocket", "polling"], // Fallback to polling if websocket fails
         upgrade: true,
         rememberUpgrade: true,

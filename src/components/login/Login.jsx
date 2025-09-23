@@ -42,15 +42,14 @@ const handleSubmit = async (e) => {
       localStorage.setItem("token", accessToken);
 
 
-      // Dispatch only accessToken (no user)
       dispatch(loginSuccess(accessToken));
 
       // Redirect
       router.push("/");
     } catch (error) {
       console.error("Login failed:", error);
-      const errorMessage = error?.data?.message || error?.message || "Login failed";
-      toast.error(errorMessage);
+      // const errorMessage = error?.data?.message || error?.message || "Login failed";
+      toast.error(error);
     }
   };
 
@@ -136,7 +135,7 @@ const handleSubmit = async (e) => {
 
               <Link
                 href="/forgot-password"
-                className="text-white hover:text-primary"
+                className="text-white hover:text-accent-foreground"
               >
                 Forgot password?
               </Link>
@@ -144,7 +143,7 @@ const handleSubmit = async (e) => {
             {/* Sign In Button */}
             <Button
               type="submit"
-              className="w-full h-10 md:h-12 bg-accent-foreground text-white rounded-md"
+              className="w-full h-10 md:h-12 bg-accent-foreground hover:bg-accent-foreground/90 text-white rounded-md"
               disabled={isLoading}
             >
               {isLoading ? "Signing In..." : "Sign In"}

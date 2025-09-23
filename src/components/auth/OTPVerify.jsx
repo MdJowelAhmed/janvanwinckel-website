@@ -80,8 +80,9 @@ const handleSubmit = async (e) => {
     // Send OTP and email to the backend to verify
     const response = await otpVerify({ email, oneTimeCode });
     console.log(response);
-    const success = response?.data?.data;
+    const success = response?.data;
     const verifyToken = response?.data?.data;
+    console.log(success)
 
     if (success) {
       if (type === "password-reset") {

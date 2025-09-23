@@ -28,13 +28,15 @@ export default function UserCreate() {
   const [registrationStatus, setRegistrationStatus] = useState("");
 
 const onSubmit = async (data) => {
+  console.log(data)
   try {
     // registration data prepare
     const registrationData = {
-      userName: data.userName.trim().toLowerCase(),
+      name: data.userName.trim().toLowerCase(),
       email: data.email.trim().toLowerCase(),
       password: data.password,
     };
+    console.log(registrationData);
 
     // API call
     const response = await registerUser(registrationData).unwrap();
@@ -51,12 +53,10 @@ const onSubmit = async (data) => {
 
       toast.success("Account created successfully!");
 
-      // যদি verification দরকার হয়
       if (response.needsVerification || !response.accessToken) {
         const email = encodeURIComponent(registrationData.email);
         router.push(`/otp-verify?email=${email}&type=registration`);
       } else {
-        // auto login successful হলে
         toast.success("Welcome! You're now logged in.");
         router.push("/");
       }
@@ -298,7 +298,7 @@ const onSubmit = async (data) => {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="bg-primary text-white w-full h-10 md:h-12 rounded-md my-4 md:my-6"
+              className="bg-accent-foreground hover:bg-accent-foreground/90 text-white w-full h-10 md:h-12 rounded-md my-4 md:my-6"
               disabled={isLoading}
             >
               {isLoading ? "Creating..." : "Sing Up"}

@@ -6,7 +6,7 @@ const notificationSlice = api.injectEndpoints({
     getNotification: builder.query({
       query: ({ page = 1, limit = 10 } = {}) => {
         return {
-          url: `/notifications?page=${page}&limit=${limit}`,
+          url: `/notification?page=${page}&limit=${limit}`,
           method: "GET",
         };
       },

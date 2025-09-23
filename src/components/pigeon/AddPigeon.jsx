@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Plus, X, Upload } from "lucide-react";
+import { ArrowLeft, Plus, X, Upload, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import {
   useCreatePigeonMutation,
@@ -26,6 +26,7 @@ import {
 } from "@/redux/featured/pigeon/pigeonApi";
 import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
 import Image from "next/image";
+import { getImageUrl } from "../share/imageUrl";
 
 const AddPigeonContainer = ({ pigeonId = null }) => {
   const router = useRouter();
@@ -43,11 +44,27 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     });
   const { data: breeder } = useGetBreederQuery();
   const breederList = breeder?.data?.breeder;
-  console.log(breederList);
-  const [photos, setPhotos] = useState([]);
 
+  const [photos, setPhotos] = useState([]);
   const [raceResults, setRaceResults] = useState([]);
   const [showPigeonResult, setShowPigeonResult] = useState(false);
+
+  // Color Pattern Selection States
+  const [colorDropdownOpen, setColorDropdownOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedPattern, setSelectedPattern] = useState("");
+  const [showPatterns, setShowPatterns] = useState(false);
+
+  const colorPatternMap = {
+    Blue: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    Black: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    White: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    Ash_Red: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    Brown: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    Red: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    Grizzle: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+    Mealy: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
+  };
 
   // Add a new race result entry
   const addRaceResult = () => {
@@ -74,6 +91,36 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         result.id === id ? { ...result, [field]: value } : result
       )
     );
+  };
+
+  // Color Pattern Handlers
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    setSelectedPattern(""); // Reset pattern when color changes
+    setShowPatterns(true);
+    setValue("color", ""); // Clear form value until pattern is selected
+  };
+
+  const handlePatternSelect = (pattern) => {
+    setSelectedPattern(pattern);
+    setColorDropdownOpen(false);
+    setShowPatterns(false);
+  };
+
+  const resetColorSelection = () => {
+    setSelectedColor("");
+    setSelectedPattern("");
+    setShowPatterns(false);
+    setValue("color", "");
+  };
+
+  const getColorDisplayValue = () => {
+    if (selectedColor && selectedPattern) {
+      return `${selectedColor.replace('_', ' ')} & ${selectedPattern}`;
+    } else if (selectedColor) {
+      return selectedColor.replace('_', ' ');
+    }
+    return "Select Color & Pattern";
   };
 
   const {
@@ -113,6 +160,14 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   // Get available pigeons for parent selection
   const availablePigeons = pigeonData?.data?.data || [];
 
+  // Sync color pattern with form
+  useEffect(() => {
+    if (selectedColor && selectedPattern) {
+      const colorValue = `${selectedColor.replace('_', ' ')} & ${selectedPattern}`;
+      setValue("color", colorValue);
+    }
+  }, [selectedColor, selectedPattern, setValue]);
+
   // Load pigeon data for edit mode
   useEffect(() => {
     if (isEditMode && singlePigeon?.data) {
@@ -130,9 +185,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         status: pigeon.status || "Active",
         location: pigeon.location || "Dhaka",
         notes: pigeon.notes || "",
-        // racingRating: pigeon.racingRating || 0,
         racherRating: pigeon.racherRating || "Good",
-        racherRating: pigeon.racherRating || 0,
         breederRating: pigeon.breederRating || 0,
         fatherRingId: pigeon.fatherRingId || "",
         motherRingId: pigeon.motherRingId || "",
@@ -140,6 +193,16 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         iconic: pigeon.iconic || false,
         iconicScore: pigeon.iconicScore || 0,
       });
+
+      // Handle color pattern for edit mode
+      if (pigeon.color) {
+        const colorString = pigeon.color;
+        const parts = colorString.split(' & ');
+        if (parts.length === 2) {
+          setSelectedColor(parts[0].replace(' ', '_'));
+          setSelectedPattern(parts[1]);
+        }
+      }
 
       if (pigeon.photos && pigeon.photos.length > 0) {
         setPhotos(
@@ -199,15 +262,6 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     try {
       const formDataToSend = new FormData();
 
-      // Format race results properly
-      const formattedResults = showPigeonResult ? raceResults.map((result) => ({
-        name: result.name,
-        date: result.date,
-        distance: result.distance,
-        total: parseInt(result.total) || 0,
-        place: result.place,
-      })) : [];
-
       // Create the data object matching backend format
       const dataObject = {
         ringNumber: data.ringNumber,
@@ -218,7 +272,6 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         breeder: data.breeder, // This should be breeder ID
         color: data.color,
         racingRating: parseInt(data.racingRating) || 0,
-        // racingRating: parseInt(data.racherRating) || 0,
         racherRating: data.racherRating || "Good", // Fixed spelling
         breederRating: parseInt(data.breederRating) || 0,
         gender: data.gender,
@@ -230,24 +283,50 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         verified: Boolean(data.verified),
         iconic: Boolean(data.iconic),
         iconicScore: parseInt(data.iconicScore) || 0,
-        results: formattedResults,
+        // only for update -> keep remaining old images
+        remaining: isEditMode
+          ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
+          : [],
       };
+
+      // Only add results if race results are enabled and there are results
+      if (showPigeonResult && raceResults.length > 0) {
+        const formattedResults = raceResults.map((result) => ({
+          name: result.name,
+          date: result.date,
+          distance: result.distance,
+          total: parseInt(result.total) || 0,
+          place: result.place,
+        }));
+        dataObject.results = formattedResults;
+      }
 
       // Append data as JSON string
       formDataToSend.append("data", JSON.stringify(dataObject));
 
-      // Append images
-      photos.forEach((photo) => {
-        if (photo.file) {
+      // Handle images for update vs create
+      if (isEditMode) {
+        const newImages = photos.filter((photo) => photo.file);
+
+        // Append only new images
+        newImages.forEach((photo) => {
           formDataToSend.append("image", photo.file);
-        }
-      });
+        });
+      } else {
+        // For create: append all images
+        photos.forEach((photo) => {
+          if (photo.file) {
+            formDataToSend.append("image", photo.file);
+          }
+        });
+      }
 
       // Debug log
       for (let [key, value] of formDataToSend.entries()) {
         console.log("FormData entry:", key, value);
       }
 
+      // API call
       if (isEditMode) {
         await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
         toast.success("Pigeon updated successfully!");
@@ -259,8 +338,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       router.push("/loft-overview");
     } catch (errorMessages) {
       console.error("Submit error:", errorMessages);
-      toast.errorMessages(
-        errorMessages.message || `Failed to ${isEditMode ? "update" : "add"} pigeon`
+      toast.error(
+        errorMessages.data.message ||
+          `Failed to ${isEditMode ? "update" : "add"} pigeon`
       );
     }
   };
@@ -419,21 +499,99 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   Physical Characteristics
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
+                  {/* Dynamic Color & Pattern Selector */}
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Color & Pattern
                     </label>
-                    <select
-                      {...register("color")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    
+                    {/* Main Button */}
+                    <button
+                      type="button"
+                      onClick={() => setColorDropdownOpen(!colorDropdownOpen)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 flex items-center justify-between bg-white text-left"
+                      style={{
+                        color: selectedColor && selectedPattern ? "#000" : "#999",
+                      }}
                     >
-                      <option value="">Select Color</option>
-                      <option value="Blue - Solid">Blue - Solid</option>
-                      <option value="White - Solid">White - Solid</option>
-                      <option value="Red - Solid">Red - Solid</option>
-                      <option value="Black - Solid">Black - Solid</option>
-                      <option value="Checkered">Checkered</option>
-                    </select>
+                      <span>{getColorDisplayValue()}</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${colorDropdownOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {/* Dropdown Content */}
+                    {colorDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 z-50 bg-white border border-gray-300 rounded-lg shadow-lg mt-1">
+                        {!showPatterns ? (
+                          // Color Selection
+                          <div className="p-2">
+                            <div className="text-xs text-gray-500 px-2 py-1 border-b">
+                              Select Color:
+                            </div>
+                            <div className="max-h-48 overflow-y-auto">
+                              {Object.keys(colorPatternMap).map((color) => (
+                                <button
+                                  key={color}
+                                  type="button"
+                                  onClick={() => handleColorSelect(color)}
+                                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                >
+                                  {color.replace('_', ' ')}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          // Pattern Selection
+                          <div className="p-2">
+                            <div className="flex items-center justify-between px-2 py-1 border-b">
+                              <span className="text-xs text-gray-500">
+                                Select Pattern for {selectedColor.replace('_', ' ')}:
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setShowPatterns(false)}
+                                className="text-xs text-teal-600 hover:text-teal-800"
+                              >
+                                ← Back
+                              </button>
+                            </div>
+                            <div className="max-h-48 overflow-y-auto">
+                              {colorPatternMap[selectedColor]?.map((pattern) => (
+                                <button
+                                  key={pattern}
+                                  type="button"
+                                  onClick={() => handlePatternSelect(pattern)}
+                                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                >
+                                  {pattern}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Reset Option */}
+                        {(selectedColor || selectedPattern) && (
+                          <div className="border-t p-2">
+                            <button
+                              type="button"
+                              onClick={resetColorSelection}
+                              className="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 focus:bg-red-50 focus:outline-none text-sm"
+                            >
+                              Clear Selection
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Hidden input for react-hook-form */}
+                    <input
+                      type="hidden"
+                      {...register("color")}
+                    />
                   </div>
 
                   <div>
@@ -496,22 +654,6 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       </p>
                     )}
                   </div>
-
-                  {/* <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Racher Rating
-                    </label>
-                    <select
-                      {...register("racherRating", { valueAsNumber: true })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    >
-                      {Array.from({ length: 101 }, (_, i) => (
-                        <option key={i} value={i}>
-                          {i}
-                        </option>
-                      ))}
-                    </select>
-                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -628,12 +770,17 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     {photos[index] ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
                         <Image
-                          src={photos[index].url}
+                          src={
+                            photos[index].file
+                              ? photos[index].url // Freshly uploaded
+                              : getImageUrl(photos[index].url) // Existing from backend
+                          }
                           alt={`Pigeon photo ${index + 1}`}
                           width={200}
                           height={200}
                           className="w-full h-full object-cover"
                         />
+
                         <button
                           type="button"
                           onClick={() => removePhoto(photos[index].id)}

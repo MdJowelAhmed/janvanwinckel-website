@@ -24,7 +24,7 @@ import Image from "next/image";
 import Spinner from "@/app/(commonLayout)/Spinner";
 import moment from "moment";
 import { useGetAllSiblingsQuery } from "@/redux/featured/pigeon/breederApi";
-import { FaRegEye } from "react-icons/fa";
+import { FaEdit, FaRegEye } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -99,11 +99,11 @@ const PigeonOverviewContainer = () => {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                <CardTitle className="text-xl font-bold text-[#088395] flex items-center gap-2">
+                <CardTitle className="text-xl font-bold text-accent flex items-center gap-2">
                   <Award className="w-5 h-5" />
                   Basic Information
                 </CardTitle>
-                <ExternalLink className="w-4 h-4 text-gray-400" />
+                {/* <FaEdit className="w-4 h-4 text-gray-400" /> */}
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
@@ -165,7 +165,7 @@ const PigeonOverviewContainer = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg text-blue-600">
+              <CardTitle className="text-lg text-accent">
                 Father Information
               </CardTitle>
             </CardHeader>
@@ -187,7 +187,7 @@ const PigeonOverviewContainer = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg text-blue-600">
+              <CardTitle className="text-lg text-accent">
                 Mother Information
               </CardTitle>
             </CardHeader>
@@ -211,7 +211,7 @@ const PigeonOverviewContainer = () => {
         {/* Additional Information */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <CardTitle className="text-xl font-bold text-blue-600">
+            <CardTitle className="text-xl font-bold text-accent">
               Additional Information
             </CardTitle>
             <ExternalLink className="w-4 h-4 text-gray-400" />
