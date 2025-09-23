@@ -46,7 +46,7 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row justify-center">
       {/* Left side image - hidden on small devices */}
-      <div className="hidden lg:flex lg:w-1/2 items-center justify-center">
+      {/* <div className="hidden lg:flex lg:w-1/2 items-center justify-center">
         <div className="h-auto max-h-[700px] w-full max-w-[700px] p-4">
           <Image
             src="/assests/forgotImage.png"
@@ -57,11 +57,11 @@ export default function ForgotPassword() {
             priority
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Right side form - full width on small devices */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-8">
-        <div className="bg-[#FCFCFC3B] border-2 border-[#A92C2C] backdrop-blur-md rounded-lg p-6 md:p-8 w-full max-w-md mx-auto">
+        <div className="bg-[#FCFCFC3B] border-2 border-white backdrop-blur-md rounded-lg p-6 md:p-8 w-full max-w-md mx-auto">
           {/* Email icon */}
           <div className="flex items-center justify-center mb-6 md:mb-10">
             <div className="flex items-center justify-center bg-white w-12 h-12 md:w-16 md:h-16 rounded-full">
@@ -114,7 +114,7 @@ export default function ForgotPassword() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full h-10 md:h-12 bg-button mt-4 md:mt-6"
+                className="w-full h-10 md:h-12 bg-accent-foreground hover:bg-accent-foreground/90 text-white mt-4 md:mt-6"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Sending OTP..." : "Send OTP"}

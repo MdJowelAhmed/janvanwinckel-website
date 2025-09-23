@@ -49,7 +49,7 @@ const authSlice = api.injectEndpoints({
       query: (data) => {
         return {
           method: "POST",
-          url: "/auth/forget-password",
+          url: "/auth/forgot-password",
           body: data,
         };
       },
@@ -65,13 +65,13 @@ const authSlice = api.injectEndpoints({
     }),
     resetPassword: builder.mutation({
       query: (data) => {
-        const resetToken = localStorage.getItem("verifyToken");
+        const token = localStorage.getItem("verifyToken");
         return {
           url: "/auth/reset-password",
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            resetToken: `${resetToken}` || undefined,
+            Authorization: token || undefined,
           },
           body: data,
         };

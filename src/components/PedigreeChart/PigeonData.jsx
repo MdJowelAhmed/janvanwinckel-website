@@ -20,6 +20,25 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     return `${firstResult.name || ''}: ${firstResult.place || ''} (${firstResult.date ? new Date(firstResult.date).getFullYear() : ''})`;
   };
 
+  // Helper function to get gender from data
+  const getGender = (genderData) => {
+    if (typeof genderData === 'string') {
+      return genderData.toLowerCase() === 'hen' ? 'female' : 'male';
+    }
+    return 'male'; // default
+  };
+
+  // Helper function to get breeder name with status check
+  const getBreederInfo = (breeder) => {
+    if (typeof breeder === 'object' && breeder) {
+      const name = breeder.breederName || "Unknown Owner";
+      // const status = breeder.status === true ? " (Active)" : " (Inactive)";
+      return name + status;
+    }
+    return breeder || "Unknown Owner";
+  };
+
+  // Subject node (Generation 0) - All data included
   nodes.push({
     id: "subject",
     type: "pigeonNode",
@@ -27,9 +46,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     data: {
       name: subject.name || "Unknown",
       ringNumber: subject.ringNumber || "Unknown",
-      owner: typeof subject.breeder === 'object' ? (subject.breeder?.breederName || "Unknown Owner") : (subject.breeder || "Unknown Owner"),
+      owner: getBreederInfo(subject.breeder),
       country: subject.country || "Unknown",
-      gender: typeof subject.gender === 'string' ? subject.gender.toLowerCase() : "male",
+      gender: getGender(subject.gender),
       generation: 0,
       position: "Subject",
       birthYear: subject.birthYear?.toString() || "Unknown",
@@ -37,9 +56,11 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       colorName: subject.color || "Unknown",
       description: subject.notes || subject.shortInfo || "No description available",
       achievements: formatResults(subject.results),
+      verified: subject.verified || false,
     },
   });
 
+  // Generation 1 - Father (All data included)
   if (subject.fatherRingId) {
     nodes.push({
       id: "father_1",
@@ -48,11 +69,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.name || "Unknown Father",
         ringNumber: subject.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.breeder),
         country: subject.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.fatherRingId.gender),
         generation: 1,
         position: "Father",
         birthYear: subject.fatherRingId.birthYear?.toString() || "Unknown",
@@ -60,6 +79,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         colorName: subject.fatherRingId.color || "Unknown",
         description: subject.fatherRingId.notes || subject.fatherRingId.shortInfo || "No description available",
         achievements: formatResults(subject.fatherRingId.results),
+        verified: subject.fatherRingId.verified || false,
       },
     });
 
@@ -74,6 +94,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     });
   }
 
+  // Generation 1 - Mother (All data included)
   if (subject.motherRingId) {
     nodes.push({
       id: "mother_1",
@@ -82,11 +103,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.name || "Unknown Mother", 
         ringNumber: subject.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.breeder === 'object' ? 
-          (subject.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.breeder),
         country: subject.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.motherRingId.gender),
         generation: 1,
         position: "Mother",
         birthYear: subject.motherRingId.birthYear?.toString() || "Unknown",
@@ -94,6 +113,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         colorName: subject.motherRingId.color || "Unknown", 
         description: subject.motherRingId.notes || subject.motherRingId.shortInfo || "No description available",
         achievements: formatResults(subject.motherRingId.results),
+        verified: subject.motherRingId.verified || false,
       },
     });
 
@@ -107,7 +127,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     });
   }
 
-  // Generation 2 - Grandparents
+  // Generation 2 - Grandparents (All data included)
   if (subject.fatherRingId?.fatherRingId) {
     nodes.push({
       id: "father_2_1",
@@ -116,11 +136,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.fatherRingId.name || "Unknown GF (FP)",
         ringNumber: subject.fatherRingId.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.fatherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.fatherRingId.breeder),
         country: subject.fatherRingId.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.fatherRingId.fatherRingId.gender),
         generation: 2,
         position: "Grandfather (FP)",
         birthYear: subject.fatherRingId.fatherRingId.birthYear?.toString() || "Unknown",
@@ -128,6 +146,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         colorName: subject.fatherRingId.fatherRingId.color || "Blue",
         description: subject.fatherRingId.fatherRingId.notes || subject.fatherRingId.fatherRingId.shortInfo || "Top racing cock.",
         achievements: formatResults(subject.fatherRingId.fatherRingId.results) || "Multiple race winner",
+        verified: subject.fatherRingId.fatherRingId.verified || false,
       },
     });
 
@@ -149,11 +168,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.motherRingId.name || "Unknown GM (FP)",
         ringNumber: subject.fatherRingId.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.motherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.motherRingId.breeder),
         country: subject.fatherRingId.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.fatherRingId.motherRingId.gender),
         generation: 2,
         position: "Grandmother (FP)",
         birthYear: subject.fatherRingId.motherRingId.birthYear?.toString() || "Unknown",
@@ -161,6 +178,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         colorName: subject.fatherRingId.motherRingId.color || "Sky Blue",
         description: subject.fatherRingId.motherRingId.notes || subject.fatherRingId.motherRingId.shortInfo || "Excellent breeding hen.",
         achievements: formatResults(subject.fatherRingId.motherRingId.results) || "Top producer",
+        verified: subject.fatherRingId.motherRingId.verified || false,
       },
     });
 
@@ -182,11 +200,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.fatherRingId.name || "Unknown GF (MP)",
         ringNumber: subject.motherRingId.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.fatherRingId.breeder === 'object' ? 
-          (subject.motherRingId.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.fatherRingId.breeder),
         country: subject.motherRingId.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.motherRingId.fatherRingId.gender),
         generation: 2,
         position: "Grandfather (MP)",
         birthYear: subject.motherRingId.fatherRingId.birthYear?.toString() || "Unknown",
@@ -194,6 +210,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         colorName: subject.motherRingId.fatherRingId.color || "Royal Blue",
         description: subject.motherRingId.fatherRingId.notes || subject.motherRingId.fatherRingId.shortInfo || "Champion racer.",
         achievements: formatResults(subject.motherRingId.fatherRingId.results) || "National ace",
+        verified: subject.motherRingId.fatherRingId.verified || false,
       },
     });
 
@@ -215,11 +232,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.motherRingId.name || "Unknown GM (MP)",
         ringNumber: subject.motherRingId.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.motherRingId.breeder === 'object' ? 
-          (subject.motherRingId.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.motherRingId.breeder),
         country: subject.motherRingId.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.motherRingId.motherRingId.gender),
         generation: 2,
         position: "Grandmother (MP)",
         birthYear: subject.motherRingId.motherRingId.birthYear?.toString() || "Unknown",
@@ -227,6 +242,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         colorName: subject.motherRingId.motherRingId.color || "Powder Blue",
         description: subject.motherRingId.motherRingId.notes || subject.motherRingId.motherRingId.shortInfo || "Foundation hen.",
         achievements: formatResults(subject.motherRingId.motherRingId.results) || "Mother of champions",
+        verified: subject.motherRingId.motherRingId.verified || false,
       },
     });
 
@@ -240,7 +256,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     });
   }
 
-  // Generation 3 - Great-grandparents 
+  // Generation 3 - Great-grandparents (No description)
   // Father side of father_2_1
   if (subject.fatherRingId?.fatherRingId?.fatherRingId) {
     nodes.push({
@@ -250,18 +266,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.fatherRingId.fatherRingId.name || "Blue Prince",
         ringNumber: subject.fatherRingId.fatherRingId.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.fatherRingId.fatherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.fatherRingId.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.fatherRingId.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.fatherRingId.fatherRingId.breeder),
         country: subject.fatherRingId.fatherRingId.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.fatherRingId.fatherRingId.fatherRingId.gender),
         generation: 3,
         position: "Great-GF (FP)",
         birthYear: subject.fatherRingId.fatherRingId.fatherRingId.birthYear?.toString() || "Unknown",
         color: "#90EE90",
         colorName: subject.fatherRingId.fatherRingId.fatherRingId.color || "Dark Blue",
-        description: subject.fatherRingId.fatherRingId.fatherRingId.notes || subject.fatherRingId.fatherRingId.fatherRingId.shortInfo || "Legendary racer.",
         achievements: formatResults(subject.fatherRingId.fatherRingId.fatherRingId.results) || "Olympic champion",
+        verified: subject.fatherRingId.fatherRingId.fatherRingId.verified || false,
       },
     });
 
@@ -282,18 +296,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.fatherRingId.motherRingId.name || "Sapphire Queen",
         ringNumber: subject.fatherRingId.fatherRingId.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.fatherRingId.motherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.fatherRingId.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.fatherRingId.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.fatherRingId.motherRingId.breeder),
         country: subject.fatherRingId.fatherRingId.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.fatherRingId.fatherRingId.motherRingId.gender),
         generation: 3,
         position: "Great-GM (FP)",
         birthYear: subject.fatherRingId.fatherRingId.motherRingId.birthYear?.toString() || "Unknown",
         color: "#FFFFE0",
         colorName: subject.fatherRingId.fatherRingId.motherRingId.color || "Dodger Blue",
-        description: subject.fatherRingId.fatherRingId.motherRingId.notes || subject.fatherRingId.fatherRingId.motherRingId.shortInfo || "Exceptional breeding hen.",
         achievements: formatResults(subject.fatherRingId.fatherRingId.motherRingId.results) || "Mother of winners",
+        verified: subject.fatherRingId.fatherRingId.motherRingId.verified || false,
       },
     });
 
@@ -315,18 +327,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.motherRingId.fatherRingId.name || "Silver Storm",
         ringNumber: subject.fatherRingId.motherRingId.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.motherRingId.fatherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.motherRingId.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.motherRingId.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.motherRingId.fatherRingId.breeder),
         country: subject.fatherRingId.motherRingId.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.fatherRingId.motherRingId.fatherRingId.gender),
         generation: 3,
         position: "Great-GF (PM)",
         birthYear: subject.fatherRingId.motherRingId.fatherRingId.birthYear?.toString() || "Unknown",
         color: "#fff",
         colorName: subject.fatherRingId.motherRingId.fatherRingId.color || "Silver",
-        description: subject.fatherRingId.motherRingId.fatherRingId.notes || subject.fatherRingId.motherRingId.fatherRingId.shortInfo || "Strong breeding cock.",
         achievements: formatResults(subject.fatherRingId.motherRingId.fatherRingId.results) || "Proven breeder",
+        verified: subject.fatherRingId.motherRingId.fatherRingId.verified || false,
       },
     });
 
@@ -347,18 +357,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.fatherRingId.motherRingId.motherRingId.name || "Pearl Beauty",
         ringNumber: subject.fatherRingId.motherRingId.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.fatherRingId.motherRingId.motherRingId.breeder === 'object' ? 
-          (subject.fatherRingId.motherRingId.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.fatherRingId.motherRingId.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.fatherRingId.motherRingId.motherRingId.breeder),
         country: subject.fatherRingId.motherRingId.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.fatherRingId.motherRingId.motherRingId.gender),
         generation: 3,
         position: "Great-GM (PM)",
         birthYear: subject.fatherRingId.motherRingId.motherRingId.birthYear?.toString() || "Unknown",
         color: "#fff",
         colorName: subject.fatherRingId.motherRingId.motherRingId.color || "White",
-        description: subject.fatherRingId.motherRingId.motherRingId.notes || subject.fatherRingId.motherRingId.motherRingId.shortInfo || "Beautiful white hen with excellent qualities.",
         achievements: formatResults(subject.fatherRingId.motherRingId.motherRingId.results) || "Show winner",
+        verified: subject.fatherRingId.motherRingId.motherRingId.verified || false,
       },
     });
 
@@ -380,18 +388,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.fatherRingId.fatherRingId.name || "Golden Eagle",
         ringNumber: subject.motherRingId.fatherRingId.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.fatherRingId.fatherRingId.breeder === 'object' ? 
-          (subject.motherRingId.fatherRingId.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.fatherRingId.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.fatherRingId.fatherRingId.breeder),
         country: subject.motherRingId.fatherRingId.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.motherRingId.fatherRingId.fatherRingId.gender),
         generation: 3,
         position: "Great-GF (MP)",
         birthYear: subject.motherRingId.fatherRingId.fatherRingId.birthYear?.toString() || "Unknown",
         color: "#fff",
         colorName: subject.motherRingId.fatherRingId.fatherRingId.color || "Golden",
-        description: subject.motherRingId.fatherRingId.fatherRingId.notes || subject.motherRingId.fatherRingId.fatherRingId.shortInfo || "Outstanding racing cock.",
         achievements: formatResults(subject.motherRingId.fatherRingId.fatherRingId.results) || "Multi-race winner",
+        verified: subject.motherRingId.fatherRingId.fatherRingId.verified || false,
       },
     });
 
@@ -412,18 +418,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.fatherRingId.motherRingId.name || "Amber Star",
         ringNumber: subject.motherRingId.fatherRingId.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.fatherRingId.motherRingId.breeder === 'object' ? 
-          (subject.motherRingId.fatherRingId.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.fatherRingId.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.fatherRingId.motherRingId.breeder),
         country: subject.motherRingId.fatherRingId.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.motherRingId.fatherRingId.motherRingId.gender),
         generation: 3,
         position: "Great-GM (MP)",
         birthYear: subject.motherRingId.fatherRingId.motherRingId.birthYear?.toString() || "Unknown",
         color: "#fff",
         colorName: subject.motherRingId.fatherRingId.motherRingId.color || "Amber",
-        description: subject.motherRingId.fatherRingId.motherRingId.notes || subject.motherRingId.fatherRingId.motherRingId.shortInfo || "Exceptional breeding hen.",
         achievements: formatResults(subject.motherRingId.fatherRingId.motherRingId.results) || "Mother of winners",
+        verified: subject.motherRingId.fatherRingId.motherRingId.verified || false,
       },
     });
 
@@ -445,18 +449,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.motherRingId.fatherRingId.name || "Ruby King",
         ringNumber: subject.motherRingId.motherRingId.fatherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.motherRingId.fatherRingId.breeder === 'object' ? 
-          (subject.motherRingId.motherRingId.fatherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.motherRingId.fatherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.motherRingId.fatherRingId.breeder),
         country: subject.motherRingId.motherRingId.fatherRingId.country || "Unknown",
-        gender: "male",
+        gender: getGender(subject.motherRingId.motherRingId.fatherRingId.gender),
         generation: 3,
         position: "Great-GF (MM)",
         birthYear: subject.motherRingId.motherRingId.fatherRingId.birthYear?.toString() || "Unknown",
         color: "#90EE90",
         colorName: subject.motherRingId.motherRingId.fatherRingId.color || "Dark Red",
-        description: subject.motherRingId.motherRingId.fatherRingId.notes || subject.motherRingId.motherRingId.fatherRingId.shortInfo || "Strong red cock with racing ability.",
         achievements: formatResults(subject.motherRingId.motherRingId.fatherRingId.results) || "Regional winner",
+        verified: subject.motherRingId.motherRingId.fatherRingId.verified || false,
       },
     });
 
@@ -477,18 +479,16 @@ export const convertBackendToExistingFormat = (backendResponse) => {
       data: {
         name: subject.motherRingId.motherRingId.motherRingId.name || "Crimson Rose",
         ringNumber: subject.motherRingId.motherRingId.motherRingId.ringNumber || "Unknown",
-        owner: typeof subject.motherRingId.motherRingId.motherRingId.breeder === 'object' ? 
-          (subject.motherRingId.motherRingId.motherRingId.breeder.breederName || "Unknown Owner") : 
-          (subject.motherRingId.motherRingId.motherRingId.breeder || "Unknown Owner"),
+        owner: getBreederInfo(subject.motherRingId.motherRingId.motherRingId.breeder),
         country: subject.motherRingId.motherRingId.motherRingId.country || "Unknown",
-        gender: "female",
+        gender: getGender(subject.motherRingId.motherRingId.motherRingId.gender),
         generation: 3,
         position: "Great-GM (MM)",
         birthYear: subject.motherRingId.motherRingId.motherRingId.birthYear?.toString() || "Unknown",
         color: "#FFFFE0",
         colorName: subject.motherRingId.motherRingId.motherRingId.color || "Rose",
-        description: subject.motherRingId.motherRingId.motherRingId.notes || subject.motherRingId.motherRingId.motherRingId.shortInfo || "Beautiful rose colored hen.",
         achievements: formatResults(subject.motherRingId.motherRingId.motherRingId.results) || "Quality breeder",
+        verified: subject.motherRingId.motherRingId.motherRingId.verified || false,
       },
     });
 
@@ -501,9 +501,9 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     });
   }
 
-  // Generation 4 - Great-great-grandparents (16 possible positions)
+  // Generation 4 - Great-great-grandparents (No description, color, or results)
   // Helper function to add generation 4 nodes
-  const addGen4Node = (parentPath, nodeId, position, defaultName, defaultColor = "#90EE90") => {
+  const addGen4Node = (parentPath, nodeId, position, defaultName) => {
     if (parentPath && parentPath.fatherRingId) {
       nodes.push({
         id: `${nodeId}_father`,
@@ -512,18 +512,13 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         data: {
           name: parentPath.fatherRingId.name || `${defaultName} Father`,
           ringNumber: parentPath.fatherRingId.ringNumber || "Unknown",
-          owner: typeof parentPath.fatherRingId.breeder === 'object' ? 
-            (parentPath.fatherRingId.breeder.breederName || "Unknown Owner") : 
-            (parentPath.fatherRingId.breeder || "Unknown Owner"),
+          owner: getBreederInfo(parentPath.fatherRingId.breeder),
           country: parentPath.fatherRingId.country || "Unknown",
-          gender: "male",
+          gender: getGender(parentPath.fatherRingId.gender),
           generation: 4,
           position: `GG-GF (${nodeId})`,
           birthYear: parentPath.fatherRingId.birthYear?.toString() || "Unknown",
-          color: defaultColor,
-          colorName: parentPath.fatherRingId.color || "Unknown",
-          description: parentPath.fatherRingId.notes || parentPath.fatherRingId.shortInfo || "Foundation bloodline patriarch.",
-          achievements: formatResults(parentPath.fatherRingId.results) || "Ancestral sire",
+          verified: parentPath.fatherRingId.verified || false,
         },
       });
 
@@ -544,18 +539,13 @@ export const convertBackendToExistingFormat = (backendResponse) => {
         data: {
           name: parentPath.motherRingId.name || `${defaultName} Mother`,
           ringNumber: parentPath.motherRingId.ringNumber || "Unknown",
-          owner: typeof parentPath.motherRingId.breeder === 'object' ? 
-            (parentPath.motherRingId.breeder.breederName || "Unknown Owner") : 
-            (parentPath.motherRingId.breeder || "Unknown Owner"),
+          owner: getBreederInfo(parentPath.motherRingId.breeder),
           country: parentPath.motherRingId.country || "Unknown",
-          gender: "female",
+          gender: getGender(parentPath.motherRingId.gender),
           generation: 4,
           position: `GG-GM (${nodeId})`,
           birthYear: parentPath.motherRingId.birthYear?.toString() || "Unknown",
-          color: defaultColor === "#90EE90" ? "#FFFFE0" : defaultColor,
-          colorName: parentPath.motherRingId.color || "Unknown",
-          description: parentPath.motherRingId.notes || parentPath.motherRingId.shortInfo || "Foundation bloodline matriarch.",
-          achievements: formatResults(parentPath.motherRingId.results) || "Ancestral dam",
+          verified: parentPath.motherRingId.verified || false,
         },
       });
 
@@ -569,30 +559,30 @@ export const convertBackendToExistingFormat = (backendResponse) => {
     }
   }
 
-   // Add Generation 4 nodes for all existing Generation 3 nodes
+  // Add Generation 4 nodes for all existing Generation 3 nodes
   addGen4Node(subject.fatherRingId?.fatherRingId?.fatherRingId, "father_3_1", 
-    { father: { x: 1500, y: 0 }, mother: { x: 1500, y: 110 } }, "Ancient", "#90EE90");
+    { father: { x: 1500, y: 0 }, mother: { x: 1500, y: 110 } }, "Ancient");
   
   addGen4Node(subject.fatherRingId?.fatherRingId?.motherRingId, "mother_3_1", 
-    { father: { x: 1500, y: 220 }, mother: { x: 1500, y: 330 } }, "Storm", "#FFFFE0");
+    { father: { x: 1500, y: 220 }, mother: { x: 1500, y: 330 } }, "Storm");
   
   addGen4Node(subject.fatherRingId?.motherRingId?.fatherRingId, "father_3_2", 
-    { father: { x: 1500, y: 440 }, mother: { x: 1500, y: 550 } }, "Silver", "bg-gray-700");
+    { father: { x: 1500, y: 440 }, mother: { x: 1500, y: 550 } }, "Silver");
   
   addGen4Node(subject.fatherRingId?.motherRingId?.motherRingId, "mother_3_2", 
-    { father: { x: 1500, y: 660 }, mother: { x: 1500, y: 770 } }, "Purple", "bg-purple-700");
+    { father: { x: 1500, y: 660 }, mother: { x: 1500, y: 770 } }, "Purple");
   
   addGen4Node(subject.motherRingId?.fatherRingId?.fatherRingId, "father_3_3", 
-    { father: { x: 1500, y: 880 }, mother: { x: 1500, y: 990 } }, "Golden", "bg-yellow-800");
+    { father: { x: 1500, y: 880 }, mother: { x: 1500, y: 990 } }, "Golden");
   
   addGen4Node(subject.motherRingId?.fatherRingId?.motherRingId, "mother_3_3", 
-    { father: { x: 1500, y: 1100 }, mother: { x: 1500, y: 1210 } }, "Ruby", "bg-red-800");
+    { father: { x: 1500, y: 1100 }, mother: { x: 1500, y: 1210 } }, "Ruby");
   
   addGen4Node(subject.motherRingId?.motherRingId?.fatherRingId, "father_3_4", 
-    { father: { x: 1500, y: 1320 }, mother: { x: 1500, y: 1430 } }, "Crimson", "#90EE90");
+    { father: { x: 1500, y: 1320 }, mother: { x: 1500, y: 1430 } }, "Crimson");
   
   addGen4Node(subject.motherRingId?.motherRingId?.motherRingId, "mother_3_4", 
-    { father: { x: 1500, y: 1540 }, mother: { x: 1500, y: 1650 } }, "Scarlet", "#FFFFE0");
+    { father: { x: 1500, y: 1540 }, mother: { x: 1500, y: 1650 } }, "Scarlet");
 
   return { nodes, edges };
 };

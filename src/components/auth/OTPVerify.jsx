@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 
 export default function OTPVerify() {
   const router = useRouter();
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [type, setType] = useState(""); 
@@ -49,7 +49,7 @@ export default function OTPVerify() {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text").trim();
     
-    if (/^\d{6}$/.test(pastedData)) {
+    if (/^\d{4}$/.test(pastedData)) {
       const otpArray = pastedData.split("");
       setOtp(otpArray);
   
@@ -57,7 +57,7 @@ export default function OTPVerify() {
       const lastInput = document.getElementById(`otp-5`);
       if (lastInput) lastInput.focus();
     } else {
-      toast.error("Please paste a 6-digit OTP.");
+      toast.error("Please paste a 4-digit OTP.");
     }
   };
   
@@ -70,19 +70,18 @@ const handleSubmit = async (e) => {
   const enteredOtp = otp.join(""); // Join the OTP array to create a string
   const oneTimeCode = parseInt(enteredOtp); // Convert OTP to integer for backend
 
-  if (isNaN(oneTimeCode) || oneTimeCode.toString().length !== 6) {
-    toast.error("Please enter a valid 6-digit OTP.");
+  if (isNaN(oneTimeCode) || oneTimeCode.toString().length !== 4) {
+    toast.error("Please enter a valid 4-digit OTP.");
     return;
   }
 
-  setIsSubmitting(true); // Start submitting
 
   try {
     // Send OTP and email to the backend to verify
     const response = await otpVerify({ email, oneTimeCode });
     console.log(response);
-    const success = response?.success;
-    const verifyToken = response?.data?.data?.verifyToken;
+    const success = response?.data?.data;
+    const verifyToken = response?.data?.data;
 
     if (success) {
       if (type === "password-reset") {
@@ -94,7 +93,7 @@ const handleSubmit = async (e) => {
         console.log("Reset token:", verifyToken);
 
         router.push(`/reset-password?email=${encodeURIComponent(email)}`);
-      } else if (type === "user-registration") {
+      } else if (type === "registration") {
         router.push("/login");
       }
 
@@ -105,8 +104,6 @@ const handleSubmit = async (e) => {
   } catch (error) {
     console.error("Error verifying OTP:", error);
     toast.error("There was an error verifying the OTP.");
-  } finally {
-    setIsSubmitting(false); // End submitting
   }
 };
 
@@ -135,7 +132,7 @@ const handleSubmit = async (e) => {
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row justify-center">
     {/* Left side image - hidden on small devices */}
-    <div className="hidden lg:flex lg:w-1/2 items-center justify-center">
+    {/* <div className="hidden lg:flex lg:w-1/2 items-center justify-center">
       <div className="h-auto max-h-[700px] w-full max-w-[700px] p-4">
         <Image
           src="/assests/otpImage.png"
@@ -146,11 +143,11 @@ const handleSubmit = async (e) => {
           priority
         />
       </div>
-    </div>
+    </div> */}
 
     {/* Right side form - full width on small devices */}
     <div className="w-full lg:w-1/2 flex items-center justify-center p-4 md:p-8">
-      <div className="bg-[#FCFCFC3B] border-2 border-[#A92C2C] backdrop-blur-md rounded-lg p-6 md:p-8 w-full max-w-md mx-auto">
+      <div className="bg-[#FCFCFC3B] border-2 border-white backdrop-blur-md rounded-lg p-6 md:p-8 w-full max-w-md mx-auto">
         {/* Email icon */}
         <div className="flex items-center justify-center mb-6 md:mb-10">
           <div className="flex items-center justify-center bg-white w-12 h-12 md:w-16 md:h-16 rounded-full">
@@ -214,17 +211,17 @@ const handleSubmit = async (e) => {
                   onChange={(e) => handleOtpChange(e, index)}
                   onPaste={index === 0 ? handlePaste : undefined}
                   onFocus={(e) => e.target.select()}
-                  className="w-10 h-10 md:w-12 md:h-12 text-center bg-white text-black border border-red-500 rounded-lg p-0"
+                  className="w-10 h-10 md:w-12 md:h-12 text-center text-white border border-white rounded-lg p-0"
                 />
               ))}
             </div>
 
             <Button
               type="submit"
-              className="w-full h-10 md:h-12 bg-button mt-6 md:mt-10"
-              disabled={isSubmitting}
+              className="w-full h-10 md:h-12 bg-accent-foreground hover:bg-accent-foreground/90 text-white mt-6 md:mt-10"
+              disabled={isLoading}
             >
-              {isSubmitting ? "Verifying..." : "Verify OTP"}
+              {isLoading ? "Verifying..." : "Verify OTP"}
             </Button>
           </form>
         </div>
