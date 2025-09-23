@@ -503,86 +503,82 @@ export const convertBackendToExistingFormat = (backendResponse) => {
 
   // Generation 4 - Great-great-grandparents (No description, color, or results)
   // Helper function to add generation 4 nodes
-  const addGen4Node = (parentPath, nodeId, position, defaultName) => {
-    if (parentPath && parentPath.fatherRingId) {
-      nodes.push({
-        id: `${nodeId}_father`,
-        type: "pigeonNode",
-        position: position.father,
-        data: {
-          name: parentPath.fatherRingId.name || `${defaultName} Father`,
-          ringNumber: parentPath.fatherRingId.ringNumber || "Unknown",
-          owner: getBreederInfo(parentPath.fatherRingId.breeder),
-          country: parentPath.fatherRingId.country || "Unknown",
-          gender: getGender(parentPath.fatherRingId.gender),
-          generation: 4,
-          position: `GG-GF (${nodeId})`,
-          birthYear: parentPath.fatherRingId.birthYear?.toString() || "Unknown",
-          verified: parentPath.fatherRingId.verified || false,
-        },
-      });
+  // Helper function to add generation 4 nodes with customizable bg colors
+const addGen4Node = (parentPath, nodeId, position, defaultName, fatherColor, motherColor) => {
+  if (parentPath && parentPath.fatherRingId) {
+    nodes.push({
+      id: `${nodeId}_father`,
+      type: "pigeonNode",
+      position: position.father,
+      data: {
+        name: parentPath.fatherRingId.name || `${defaultName} Father`,
+        ringNumber: parentPath.fatherRingId.ringNumber || "Unknown",
+        owner: getBreederInfo(parentPath.fatherRingId.breeder),
+        country: parentPath.fatherRingId.country || "Unknown",
+        gender: getGender(parentPath.fatherRingId.gender),
+        generation: 4,
+        position: `GG-GF (${nodeId})`,
+        birthYear: parentPath.fatherRingId.birthYear?.toString() || "Unknown",
+        color: fatherColor,
+        verified: parentPath.fatherRingId.verified || false,
+      },
+    });
 
-      edges.push({
-        id: `${nodeId}-${nodeId}_father`,
-        source: nodeId,
-        target: `${nodeId}_father`,
-        type: "smoothstep",
-        style: { stroke: "#3b82f6", strokeWidth: 1.5 },
-      });
-    }
-
-    if (parentPath && parentPath.motherRingId) {
-      nodes.push({
-        id: `${nodeId}_mother`,
-        type: "pigeonNode",
-        position: position.mother,
-        data: {
-          name: parentPath.motherRingId.name || `${defaultName} Mother`,
-          ringNumber: parentPath.motherRingId.ringNumber || "Unknown",
-          owner: getBreederInfo(parentPath.motherRingId.breeder),
-          country: parentPath.motherRingId.country || "Unknown",
-          gender: getGender(parentPath.motherRingId.gender),
-          generation: 4,
-          position: `GG-GM (${nodeId})`,
-          birthYear: parentPath.motherRingId.birthYear?.toString() || "Unknown",
-          verified: parentPath.motherRingId.verified || false,
-        },
-      });
-
-      edges.push({
-        id: `${nodeId}-${nodeId}_mother`,
-        source: nodeId,
-        target: `${nodeId}_mother`,
-        type: "smoothstep",
-        style: { stroke: "#ec4899", strokeWidth: 1.5 },
-      });
-    }
+    edges.push({
+      id: `${nodeId}-${nodeId}_father`,
+      source: nodeId,
+      target: `${nodeId}_father`,
+      type: "smoothstep",
+      style: { stroke: "#3b82f6", strokeWidth: 1.5 },
+    });
   }
 
-  // Add Generation 4 nodes for all existing Generation 3 nodes
-  addGen4Node(subject.fatherRingId?.fatherRingId?.fatherRingId, "father_3_1", 
-    { father: { x: 1500, y: 0 }, mother: { x: 1500, y: 110 } }, "Ancient");
-  
-  addGen4Node(subject.fatherRingId?.fatherRingId?.motherRingId, "mother_3_1", 
-    { father: { x: 1500, y: 220 }, mother: { x: 1500, y: 330 } }, "Storm");
-  
-  addGen4Node(subject.fatherRingId?.motherRingId?.fatherRingId, "father_3_2", 
-    { father: { x: 1500, y: 440 }, mother: { x: 1500, y: 550 } }, "Silver");
-  
-  addGen4Node(subject.fatherRingId?.motherRingId?.motherRingId, "mother_3_2", 
-    { father: { x: 1500, y: 660 }, mother: { x: 1500, y: 770 } }, "Purple");
-  
-  addGen4Node(subject.motherRingId?.fatherRingId?.fatherRingId, "father_3_3", 
-    { father: { x: 1500, y: 880 }, mother: { x: 1500, y: 990 } }, "Golden");
-  
-  addGen4Node(subject.motherRingId?.fatherRingId?.motherRingId, "mother_3_3", 
-    { father: { x: 1500, y: 1100 }, mother: { x: 1500, y: 1210 } }, "Ruby");
-  
-  addGen4Node(subject.motherRingId?.motherRingId?.fatherRingId, "father_3_4", 
-    { father: { x: 1500, y: 1320 }, mother: { x: 1500, y: 1430 } }, "Crimson");
-  
-  addGen4Node(subject.motherRingId?.motherRingId?.motherRingId, "mother_3_4", 
-    { father: { x: 1500, y: 1540 }, mother: { x: 1500, y: 1650 } }, "Scarlet");
+  if (parentPath && parentPath.motherRingId) {
+    nodes.push({
+      id: `${nodeId}_mother`,
+      type: "pigeonNode",
+      position: position.mother,
+      data: {
+        name: parentPath.motherRingId.name || `${defaultName} Mother`,
+        ringNumber: parentPath.motherRingId.ringNumber || "Unknown",
+        owner: getBreederInfo(parentPath.motherRingId.breeder),
+        country: parentPath.motherRingId.country || "Unknown",
+        gender: getGender(parentPath.motherRingId.gender),
+        generation: 4,
+        position: `GG-GM (${nodeId})`,
+        birthYear: parentPath.motherRingId.birthYear?.toString() || "Unknown",
+        color: motherColor,
+        verified: parentPath.motherRingId.verified || false,
+      },
+    });
 
-  return { nodes, edges };
+    edges.push({
+      id: `${nodeId}-${nodeId}_mother`,
+      source: nodeId,
+      target: `${nodeId}_mother`,
+      type: "smoothstep",
+      style: { stroke: "#ec4899", strokeWidth: 1.5 },
+    });
+  }
 };
+
+// Add all generation 4 nodes
+addGen4Node(subject.fatherRingId?.fatherRingId?.fatherRingId, "father_3_1", 
+  { father: { x: 1500, y: 0 }, mother: { x: 1500, y: 110 } }, "Ancient", "#90EE90", "#90EE90");
+addGen4Node(subject.fatherRingId?.fatherRingId?.motherRingId, "mother_3_1", 
+  { father: { x: 1500, y: 220 }, mother: { x: 1500, y: 330 } }, "Storm", "#FFFFE0", "#FFFFE0");
+addGen4Node(subject.fatherRingId?.motherRingId?.fatherRingId, "father_3_2", 
+  { father: { x: 1500, y: 440 }, mother: { x: 1500, y: 550 } }, "Silver", );
+addGen4Node(subject.fatherRingId?.motherRingId?.motherRingId, "mother_3_2", 
+  { father: { x: 1500, y: 660 }, mother: { x: 1500, y: 770 } }, "Purple", );
+addGen4Node(subject.motherRingId?.fatherRingId?.fatherRingId, "father_3_3", 
+  { father: { x: 1500, y: 880 }, mother: { x: 1500, y: 990 } }, "Golden", );
+addGen4Node(subject.motherRingId?.fatherRingId?.motherRingId, "mother_3_3", 
+  { father: { x: 1500, y: 1100 }, mother: { x: 1500, y: 1210 } }, "Ruby", );
+addGen4Node(subject.motherRingId?.motherRingId?.fatherRingId, "father_3_4", 
+  { father: { x: 1500, y: 1320 }, mother: { x: 1500, y: 1430 } }, "Crimson", "#90EE90", "#90EE90");
+addGen4Node(subject.motherRingId?.motherRingId?.motherRingId, "mother_3_4", 
+  { father: { x: 1500, y: 1540 }, mother: { x: 1500, y: 1650 } }, "Scarlet", "#FFFFE0", "#FFFFE0");
+
+// Return result
+return { nodes, edges }; }

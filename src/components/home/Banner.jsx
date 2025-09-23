@@ -124,7 +124,7 @@ export default function PigeonHub() {
     }
   }, []);
 
-  // Loading state শুধু initial load এর জন্য
+
   if (isInitialLoad.current && isLoading) {
     return <Spinner />;
   }
@@ -134,6 +134,7 @@ export default function PigeonHub() {
       className="w-full h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden"
       style={{
         backgroundImage: `url('https://i.ibb.co.com/WpnfSfZb/Log-in.png')`,
+       
       }}
     >
       <div className="relative z-10 flex flex-col items-center justify-center h-screen px-4">
@@ -179,7 +180,7 @@ export default function PigeonHub() {
             </div>
           )}
 
-          {/* No results - শুধু যখন search complete এবং কোনো result নেই */}
+      
           {searchTerm.length >= 2 && 
            !isFetching && 
            !isLoading && 

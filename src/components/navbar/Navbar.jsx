@@ -501,15 +501,9 @@ export default function Navbar() {
           </ul>
 
           {/* User Controls */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 lg:space-x-4">
             {/* Mobile Menu Button */}
-            <button
-              className="md:hidden text-black p-2 rounded-md hover:bg-gray-100 transition-colors"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle mobile menu"
-            >
-              {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-            </button>
+          
             {/* Debug Connection Status (for development) */}
             {/* {process.env.NODE_ENV === 'development' && userData?._id && (
               <div className="flex items-center space-x-2">
@@ -552,6 +546,7 @@ export default function Navbar() {
                   Login
                 </button>
               </Link>
+              
             ) : (
               /* Profile Dropdown - Only show if user is logged in */
               <div className="relative" ref={profileRef}>
@@ -563,7 +558,7 @@ export default function Navbar() {
                 >
                   <div className="relative">
                     <ProfileIcon
-                      image={userData?.image}
+                      image={userData?.profile}
                       size={40}
                       showBorder={true}
                       borderColor="border-gray-200"
@@ -579,9 +574,9 @@ export default function Navbar() {
 
                   {/* User info - hidden on mobile */}
                   <div className="hidden lg:block text-left">
-                    <p className="text-sm text-gray-900">
+                    {/* <p className="text-sm text-gray-900">
                       {userData?.userName}
-                    </p>
+                    </p> */}
                     {/* <p className="text-xs text-gray-500">{userData?.email}</p> */}
                   </div>
 
@@ -598,7 +593,7 @@ export default function Navbar() {
                     <div className="p-4 bg-primary border-gray-100">
                       <div className="flex items-center space-x-3">
                         <ProfileIcon
-                          image={userData?.image}
+                          image={userData?.profile}
                           size={48}
                           showBorder={true}
                           borderColor="border-white"
@@ -715,6 +710,13 @@ export default function Navbar() {
                 )}
               </div>
             )}
+              <button
+              className="md:hidden text-black  rounded-md hover:bg-gray-100 transition-colors"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle mobile menu"
+            >
+              {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            </button>
           </div>
         </div>
 

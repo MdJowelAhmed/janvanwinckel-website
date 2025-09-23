@@ -381,7 +381,7 @@ export default function PigeonPedigreeChart() {
       </div>
       <div 
         ref={chartRef}
-        className="w-full h-[1800px] flex justify-start items-center"
+        className="w-full h-[1700px] flex justify-start items-center mt-0"
       >
         {/* --- ReactFlow (now dynamic) --- */}
         <ReactFlow
@@ -404,6 +404,7 @@ export default function PigeonPedigreeChart() {
           zoomOnScroll={false}
           zoomOnPinch={false}
           zoomOnDoubleClick={false}
+            proOptions={{ hideAttribution: true }}
         >
           {/* <Background variant="dots" gap={25} size={1.5} color="#FFFFFF" /> */}
         </ReactFlow>

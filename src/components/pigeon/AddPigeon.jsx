@@ -346,7 +346,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   };
 
   return (
-    <div className="my-8 md:my-12 lg:my-16 xl:my-20">
+    <div className="my-8 md:my-12 lg:my-16 xl:my-20 px-4 md:px-8 lg:px-12">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <div className="text-center max-w-2xl mx-auto">

@@ -6,9 +6,9 @@ import { Separator } from "../ui/separator";
 
 export default function Footer() {
   return (
-    <div className="flex flex-col border-t mt-12 md:mt-20">
+    <div className="flex flex-col border-t mt-12 md:mt-20 ">
       {/*  */}
-      <footer className="bg-primary py-8">
+      <footer className="bg-primary py-8 px-4 md:px-8 lg:px-12">
         <div className="text-center  max-w-lg mx-auto font-semibold text-3xl text-white mb-6">
           <h2>Learn how to grow 💪audience fast in Pigeon Hub</h2>
         </div>
@@ -39,7 +39,7 @@ export default function Footer() {
             </div>
 
             {/* Right Section - Navigation Links */}
-            <div className="flex items-center h-full justify-center lg:mt-20 flex-col lg:flex-row gap-8 lg:gap-12">
+            <div className="flex items-center h-full justify-center lg:mt-20  lg:flex-row gap-8 lg:gap-12">
               <Link href="/" className="text-white hover:text-teal-200 text-sm">
                 Home
               </Link>
@@ -66,7 +66,7 @@ export default function Footer() {
           </div>
 
           {/* Social Media Icons */}
-          <div className="flex gap-4 mt-8">
+          <div className="flex gap-8 items-center  mt-8">
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-teal-600 font-bold text-sm">f</span>
             </div>
