@@ -79,9 +79,9 @@ export default function Navbar() {
   const socketRef = useRef(null);
   const profileRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
-  const { data: accessData } = useGetMyAccessQuery();
-  const access = accessData?.data;
-  console.log(access);
+  // const { data: accessData } = useGetMyAccessQuery();
+  // const access = accessData?.data;
+  // console.log(access);
 
   // Constants
   const NOTIFICATIONS_PER_PAGE = 30;
@@ -336,7 +336,7 @@ export default function Navbar() {
   useEffect(() => {
     if (notificationData?.data) {
       const data = notificationData.data;
-      setNotifications(data.result || []);
+      setNotifications(data.notifications || []);
       setTotalPages(data.pagination?.totalPage || 1);
       setTotalNotifications(data.pagination?.total || 0);
     }
@@ -747,7 +747,7 @@ export default function Navbar() {
       >
         <DialogContent className="w-[400px] max-w-[400px] top-96 right-4 lg:left-auto lg:transform-none max-h-[640px] overflow-hidden">
           <DialogHeader className="px- pt-4">
-            <DialogTitle className="flex items-center justify-between">
+            <DialogTitle className="flex items-center text-white justify-between">
               <span>Notifications </span>
               <div className="flex items-center space-x-2">
                 {unreadCount > 0 && (
@@ -788,7 +788,7 @@ export default function Navbar() {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <p className="text-sm text-gray-800 mb-1">
-                            {notification.message}
+                            {notification?.text}
                           </p>
                           <p className="text-xs text-gray-500">
                             {formatDate(notification.createdAt)}

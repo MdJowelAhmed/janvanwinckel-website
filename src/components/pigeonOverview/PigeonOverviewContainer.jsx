@@ -214,7 +214,7 @@ const PigeonOverviewContainer = () => {
             <CardTitle className="text-xl font-bold text-accent">
               Additional Information
             </CardTitle>
-            <ExternalLink className="w-4 h-4 text-gray-400" />
+            {/* <FaEdit className="w-4 h-4 text-gray-400" /> */}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">

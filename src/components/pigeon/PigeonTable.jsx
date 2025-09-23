@@ -31,6 +31,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useDeletePigeonMutation } from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
+import { getCode } from "country-list";
 
 const PigeonTable = ({
   data,
@@ -144,7 +145,7 @@ const PigeonTable = ({
                   <TableHead className="text-white">Quality Breeder</TableHead>
                   <TableHead className="text-white">Quality Racer</TableHead>
                   <TableHead className="text-white">Racing Rating</TableHead>
-                  <TableHead className="text-white">Pattern</TableHead>
+                  {/* <TableHead className="text-white">Pattern</TableHead> */}
                   <TableHead className="text-white">Status</TableHead>
                   <TableHead className="text-white">Gender</TableHead>
                   {/* <TableHead className="text-white">Rating</TableHead> */}
@@ -182,9 +183,23 @@ const PigeonTable = ({
                       {pigeon.name}
                     </TableCell>
                     <TableCell>
-                      <div className="text-[#3AB27F]">
-                        {pigeon.country.slice(0, 3)}
-                      </div>
+                      {(() => {
+                        const countryCode = pigeon.country
+                          ? getCode(pigeon.country)
+                          : null;
+                        return (
+                          countryCode && (
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+                                alt={pigeon.country}
+                                className="w-5 h-4 rounded-sm"
+                              />
+                              <p className="text-white">{countryCode}</p>
+                            </div>
+                          )
+                        );
+                      })()}
                     </TableCell>
 
                     <TableCell>
@@ -197,7 +212,7 @@ const PigeonTable = ({
 
                     <TableCell>{pigeon.birthYear}</TableCell>
                     <TableCell>{pigeon.breederRating}</TableCell>
-                    <TableCell>{pigeon.racerRating}</TableCell>
+                    <TableCell>{pigeon.racherRating}</TableCell>
 
                     {/* <TableCell>
                       <div className="text-sm">
@@ -217,7 +232,7 @@ const PigeonTable = ({
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
 
-                    <TableCell>{pigeon.pattern}</TableCell>
+                    {/* <TableCell>{pigeon.pattern}</TableCell> */}
 
                     <TableCell className="text-[#3AB27F]">
                       {pigeon.verified ? "Racing" : "Breeding"}

@@ -36,9 +36,9 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   return (
     <div className="bg-foreground text-white rounded-b-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* Search */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <Label htmlFor="search" className="text-white text-sm font-medium mb-2 block">
               Search
             </Label>
@@ -55,15 +55,15 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
           </div>
 
           {/* Country Filter */}
-          <div>
+          <div className='w-full'>
             <Label htmlFor="country" className="text-white text-sm font-medium mb-2 block">
               Country
             </Label>
             <Select value={filters.country} onValueChange={(value) => handleFilterChange('country', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
                 <SelectValue placeholder="All Countries" />
               </SelectTrigger>
-              <SelectContent className=" border-slate-500">
+              <SelectContent className=" border-slate-500 ">
                 <SelectItem value="all">All Countries</SelectItem>
                 <SelectItem value="Bangladesh">Bangladesh</SelectItem>
                 <SelectItem value="Belgium">Belgium</SelectItem>
@@ -79,10 +79,10 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Gender
             </Label>
             <Select value={filters.gender} onValueChange={(value) => handleFilterChange('gender', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
                 <SelectValue placeholder="All Genders" />
               </SelectTrigger>
-              <SelectContent className=" border-slate-500">
+              <SelectContent className=" border-slate-500 w-full">
                 <SelectItem value="all">All Genders</SelectItem>
                 <SelectItem value="Hen">Hen</SelectItem>
                 <SelectItem value="Cock">Cock</SelectItem>
@@ -96,10 +96,10 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Color
             </Label>
             <Select value={filters.color} onValueChange={(value) => handleFilterChange('color', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
                 <SelectValue placeholder="All Colors" />
               </SelectTrigger>
-              <SelectContent className=" border-slate-500">
+              <SelectContent className=" border-slate-500 w-full">
                 <SelectItem value="all">All Colors</SelectItem>
                 <SelectItem value="Blue">Blue</SelectItem>
                 <SelectItem value="White">White</SelectItem>
@@ -116,10 +116,10 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Year
             </Label>
             <Select value={filters.year} onValueChange={(value) => handleFilterChange('birthYear', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
                 <SelectValue placeholder="All Years" />
               </SelectTrigger>
-              <SelectContent className=" border-slate-500">
+              <SelectContent className=" border-slate-500 w-full">
                 <SelectItem value="all">All Years</SelectItem>
                 {yearOptions.map(year => (
                   <SelectItem key={year} value={year.toString()}>{year}</SelectItem>

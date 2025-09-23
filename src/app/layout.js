@@ -4,15 +4,15 @@ import Providers from "@/components/share/provider";
 import { Toaster } from "sonner";
 import LayoutWrapper from "@/components/LayoutWrapper";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
 
 const poppins = Poppins({
   weight: "400",
@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${poppins.variable} ${geistMono.variable} antialiased `}
+        className={`${poppins.variable}  antialiased `}
       >
         <Providers>
          {/* <LayoutWrapper> */}

@@ -14,7 +14,7 @@ export default function Footer() {
         </div>
         <Separator />
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mt-6">
             {/* Left Section - Company Info */}
 
             <div className=" max-w-md">

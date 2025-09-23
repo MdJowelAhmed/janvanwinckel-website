@@ -68,10 +68,10 @@ const NotificationPagination = ({ currentPage, totalPages, onPageChange }) => {
             <Button
               key={pageNum}
               onClick={() => onPageChange(pageNum)}
-              className={`px-2 py-1 text-sm font-medium border rounded-lg ${
+              className={`px-2 py-1 text-sm font-medium  rounded-lg ${
                 currentPage === pageNum
-                  ? "rounded-full px-3"
-                  : "text-gray-500 rounded-full bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                  ? "rounded-full px-3 text-white"
+                  : "text-black rounded-full bg-white px-3 hover:bg-gray-100 hover:text-gray-700"
               }`}
             >
               {pageNum}
