@@ -23,6 +23,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { getImageUrl } from "../share/imageUrl";
+import { toast } from "react-hot-toast"; // Make sure you have this import
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
@@ -39,9 +40,8 @@ export default function ProfileDashboardComponents() {
   const [phoneError, setPhoneError] = useState("");
 
   // Extract user data from the response
-  const userData = profileResponse;
+  const userData = profileResponse?.data || profileResponse; // Handle both cases
   console.log("profile", userData);
-  console.log(userData?.name);
 
   const { data: packageResponse } = useRunningPackageQuery();
   const packageData = packageResponse?.data;
@@ -54,8 +54,11 @@ export default function ProfileDashboardComponents() {
         email: userData.email || "",
         contact: userData.contact || "",
       });
-      // Use profile field from API response instead of image
-      setImagePreview(userData.profile || getImageUrl(userData.profile));
+      
+      // Set initial image preview from user profile
+      if (userData.profile) {
+        setImagePreview(getImageUrl(userData.profile));
+      }
     }
   }, [userData]);
 
@@ -89,7 +92,9 @@ export default function ProfileDashboardComponents() {
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+      const file = e.target.files[0];
+      console.log("Selected file:", file); // Debug log
+      setImageFile(file);
     }
   };
 
@@ -105,21 +110,30 @@ export default function ProfileDashboardComponents() {
     }
 
     try {
+      const formDataToSend = new FormData();
+      
+      // Append the JSON data
       const updateData = {
         name: formData.name,
         userName: formData.userName,
         email: formData.email,
         contact: formData.contact,
       };
+      
+      formDataToSend.append("name", formData.name);
+      // formDataToSend.append("userName", formData.userName);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("contact", formData.contact);
 
-      const formDataToSend = new FormData();
-      formDataToSend.append("data", JSON.stringify(updateData));
-
+      // Append image if selected
       if (imageFile) {
         formDataToSend.append("image", imageFile);
+        console.log("Appending image to FormData:", imageFile); // Debug log
       }
 
-      const response = await updateProfile({ data: formDataToSend }).unwrap();
+      console.log("Sending FormData:", formDataToSend); // Debug log
+      
+      const response = await updateProfile({data:formDataToSend}).unwrap();
 
       if (response.success) {
         toast.success("Profile updated successfully!");
@@ -135,8 +149,9 @@ export default function ProfileDashboardComponents() {
         toast.error(response.message || "Failed to update profile!");
       }
     } catch (error) {
+      console.error("Update profile error:", error); // Debug log
       toast.error(
-        error.data?.message || "An error occurred while updating the profile"
+        error.data?.message || error.message || "An error occurred while updating the profile"
       );
     }
   };
@@ -149,9 +164,9 @@ export default function ProfileDashboardComponents() {
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="relative group">
             <div className="w-28 h-28 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
-              {imagePreview ? (
+              {userData?.profile ? (
                 <Image
-                  src={getImageUrl(userData?.profile)}
+                  src={getImageUrl(userData.profile)}
                   alt="Profile"
                   width={112}
                   height={112}
@@ -174,7 +189,6 @@ export default function ProfileDashboardComponents() {
         </div>
 
         <div className="bg-white">
-          {" "}
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
@@ -191,8 +205,8 @@ export default function ProfileDashboardComponents() {
                 </DialogTitle>
               </DialogHeader>
 
-              <form onSubmit={handleSubmit} className="space-y-4 ">
-                <div className="flex flex-col items-center ">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="flex flex-col items-center">
                   <label
                     htmlFor="image-upload"
                     className="relative cursor-pointer group text-white"
@@ -200,7 +214,7 @@ export default function ProfileDashboardComponents() {
                     <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100">
                       {imagePreview ? (
                         <Image
-                          src={getImageUrl(userData?.profile)}
+                          src={imagePreview}
                           alt="Profile Preview"
                           width={128}
                           height={128}
@@ -246,7 +260,7 @@ export default function ProfileDashboardComponents() {
                     />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-white mb-1">
                       Username
                     </label>
@@ -259,7 +273,7 @@ export default function ProfileDashboardComponents() {
                       className="py-3"
                       placeholder="Enter your username"
                     />
-                  </div>
+                  </div> */}
 
                   <div>
                     <Label className="block text-sm font-medium text-white mb-1">
@@ -271,7 +285,7 @@ export default function ProfileDashboardComponents() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="py-3 cursor-not-allowed bg-"
+                      className="py-3 cursor-not-allowed bg-gray-100"
                       disabled
                     />
                   </div>
@@ -297,7 +311,7 @@ export default function ProfileDashboardComponents() {
 
                 <Button
                   type="submit"
-                  className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors duration-200"
+                  className="w-full py-4 bg-accent hover:bg-accent/90 text-white font-medium transition-colors duration-200"
                   disabled={updating || (formData.contact && phoneError)}
                 >
                   {updating ? "Updating..." : "Update Profile"}
@@ -308,8 +322,8 @@ export default function ProfileDashboardComponents() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {/* <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
@@ -321,7 +335,7 @@ export default function ProfileDashboardComponents() {
               {userData?.totalPigeons || 0}
             </p>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
