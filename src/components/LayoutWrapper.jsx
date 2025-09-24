@@ -12,7 +12,7 @@ const LayoutWrapper = ({ children }) => {
     "/login",
     "/about",
     "/forgot-password",
-    "/verify-otp",
+    "/otp-verify",
     "/reset-password",
     "/user-create",
     // "/subscription",

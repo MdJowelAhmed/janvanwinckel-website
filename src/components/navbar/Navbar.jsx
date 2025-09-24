@@ -551,13 +551,15 @@ export default function Navbar() {
              <div className="flex items-center gap-5">
                <Link href="/login">
                 <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
-                  <FaUser size={16} />
+                 
+                 
                   Sign in
                 </Button>
               </Link>
                <Link href="/register">
                 <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
-                  <FaUser size={16} />
+                
+                
                   Sign up
                 </Button>
               </Link>
