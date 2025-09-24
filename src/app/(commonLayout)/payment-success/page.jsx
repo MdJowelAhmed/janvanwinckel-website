@@ -1,6 +1,7 @@
-import React from 'react';
-import { CheckCircle, ArrowLeft, Download, Mail } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { CheckCircle, ArrowLeft, Download, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const PaymentSuccessPage = () => {
   return (
@@ -11,9 +12,12 @@ const PaymentSuccessPage = () => {
           <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Payment Successful!
+          </h1>
           <p className="text-gray-600">
-            Thank you for your purchase. Your payment has been processed successfully.
+            Thank you for your purchase. Your payment has been processed
+            successfully.
           </p>
         </div>
 
@@ -61,11 +65,13 @@ const PaymentSuccessPage = () => {
 
         {/* Navigation */}
         <div className="flex gap-3">
-          <Button className="flex-1 bg-accent text-white hover:bg-accent/90 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Button>
-          
+          <Link href="/">
+            <Button className="flex-1 bg-accent text-white hover:bg-accent/90 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </Button>
+          </Link>
+
           {/* <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
             Continue Shopping
           </button> */}
