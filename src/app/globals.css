@@ -168,3 +168,57 @@ h3 {
   box-shadow: -8px 8px 16px rgba(0, 0, 0, 0.25); /* left-bottom */
 }
 
+
+/* ফোন ইনপুট wrapper */
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* flag dropdown ছোট করার জন্য */
+.PhoneInputCountry {
+  font-size: 14px;
+  height: 20px; /* flag ছোট */
+}
+
+/* input field এর height / padding control */
+.PhoneInputInput {
+  @apply w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm;
+}
+/* PhoneInput flag ঠিক করার জন্য */
+.PhoneInputCountryIcon {
+  width: 20px !important;
+  height: 15px !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  display: inline-block;
+}
+.PhoneInputCountryIcon {
+  width: 20px !important;
+  height: 15px !important;
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  display: inline-block !important;
+}
+
+/* Dropdown wrapper */
+.PhoneInputCountrySelect {
+  background-color: #1e293b !important; /* dark gray/blue background */
+  color: #f8fafc !important;           /* text white */
+  border: 1px solid #334155 !important;
+  border-radius: 6px !important;
+  padding: 4px;
+}
+
+/* Dropdown list */
+.PhoneInputCountrySelect option {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+
+
+

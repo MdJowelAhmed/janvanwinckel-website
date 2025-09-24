@@ -33,7 +33,6 @@ export default function ProfileDashboardComponents() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    userName: "",
     email: "",
     contact: "",
   });
@@ -50,11 +49,10 @@ export default function ProfileDashboardComponents() {
     if (userData) {
       setFormData({
         name: userData.name || "",
-        userName: userData.userName || "",
         email: userData.email || "",
         contact: userData.contact || "",
       });
-      
+
       // Set initial image preview from user profile
       if (userData.profile) {
         setImagePreview(getImageUrl(userData.profile));
@@ -75,20 +73,20 @@ export default function ProfileDashboardComponents() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePhoneChange = (value) => {
-    setFormData({ ...formData, contact: value || "" });
+  // const handlePhoneChange = (value) => {
+  //   setFormData({ ...formData, contact: value || "" });
 
-    // Validate phone number
-    if (value) {
-      if (!isValidPhoneNumber(value)) {
-        setPhoneError("Invalid phone number for selected country");
-      } else {
-        setPhoneError("");
-      }
-    } else {
-      setPhoneError("");
-    }
-  };
+  //   // Validate phone number
+  //   if (value) {
+  //     if (!isValidPhoneNumber(value)) {
+  //       setPhoneError("Invalid phone number for selected country");
+  //     } else {
+  //       setPhoneError("");
+  //     }
+  //   } else {
+  //     setPhoneError("");
+  //   }
+  // };
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -102,24 +100,16 @@ export default function ProfileDashboardComponents() {
     e.preventDefault();
 
     // Check if phone is valid before submitting
-    if (formData.contact && !isValidPhoneNumber(formData.contact)) {
-      setPhoneError(
-        "Please enter a valid phone number for the selected country"
-      );
-      return;
-    }
+    // if (formData.contact && !isValidPhoneNumber(formData.contact)) {
+    //   setPhoneError(
+    //     "Please enter a valid phone number for the selected country"
+    //   );
+    //   return;
+    // }
 
     try {
       const formDataToSend = new FormData();
-      
-      // Append the JSON data
-      const updateData = {
-        name: formData.name,
-        userName: formData.userName,
-        email: formData.email,
-        contact: formData.contact,
-      };
-      
+
       formDataToSend.append("name", formData.name);
       // formDataToSend.append("userName", formData.userName);
       formDataToSend.append("email", formData.email);
@@ -132,9 +122,9 @@ export default function ProfileDashboardComponents() {
       }
 
       console.log("Sending FormData:", formDataToSend); // Debug log
-      
-      const response = await updateProfile({data:formDataToSend}).unwrap();
 
+      const response = await updateProfile({ data: formDataToSend }).unwrap();
+      console.log(response);
       if (response.success) {
         toast.success("Profile updated successfully!");
         if (response.token) {
@@ -151,7 +141,9 @@ export default function ProfileDashboardComponents() {
     } catch (error) {
       console.error("Update profile error:", error); // Debug log
       toast.error(
-        error.data?.message || error.message || "An error occurred while updating the profile"
+        error.data?.message ||
+          error.message ||
+          "An error occurred while updating the profile"
       );
     }
   };
@@ -285,7 +277,7 @@ export default function ProfileDashboardComponents() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="py-3 cursor-not-allowed bg-gray-100"
+                      className="py-3 cursor-not-allowed text-white"
                       disabled
                     />
                   </div>
@@ -295,17 +287,13 @@ export default function ProfileDashboardComponents() {
                       Contact Number
                     </label>
                     <Input
-                      international
-                      defaultCountry="BD"
+                      type="text" 
+                      name="contact"
                       value={formData.contact}
-                      onChange={handlePhoneChange}
-                      className={`w-full border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
-                        phoneError ? "border-red-500" : "border-gray-300"
-                      }`}
+                      onChange={handleChange}
+                      className="w-full border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      placeholder="Enter your contact number"
                     />
-                    {phoneError && (
-                      <p className="text-sm text-red-500 mt-1">{phoneError}</p>
-                    )}
                   </div>
                 </div>
 
@@ -323,20 +311,6 @@ export default function ProfileDashboardComponents() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {/* <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="text-accent">
-                <Bird size={24} />
-              </div>
-              <h3 className="font-medium text-white">Total Pigeons</h3>
-            </div>
-            <p className="text-4xl font-bold mt-4 text-gray-800">
-              {userData?.totalPigeons || 0}
-            </p>
-          </CardContent>
-        </Card> */}
-
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
