@@ -90,7 +90,7 @@ export default function Navbar() {
 
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
-  console.log("navbar",userData);
+  console.log("navbar", userData);
   const {
     data: notificationData,
     isLoading,
@@ -131,7 +131,7 @@ export default function Navbar() {
 
       // Initialize socket connection with improved configuration
       socketRef.current = io("http://10.10.7.41:5001/api/v1", {
-      // socketRef.current = io("https://api.yogawithjen.life", {
+        // socketRef.current = io("https://api.yogawithjen.life", {
         transports: ["websocket", "polling"], // Fallback to polling if websocket fails
         upgrade: true,
         rememberUpgrade: true,
@@ -478,32 +478,40 @@ export default function Navbar() {
               alt="Logo"
               width={100}
               height={100}
-              className="w-16 h-10 object-cover"
+              className="w-16 h-16 object-cover"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex space-x-6">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <Link
-                  href={item.path}
-                  className={`relative pb-1 text-black transition-all duration-300 ease-in-out ${
-                    pathname === item.path
-                      ? "border-b-2 border-primary text-black"
-                      : "hover:border-b-2 hover:border-primary text-black"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+
+          <ul className="hidden md:flex space-x-8">
+            {navItems.map((item) => {
+             
+              if (item.name === "Loft Overview" && !userData?._id) {
+                return null;
+              }
+
+              return (
+                <li key={item.name}>
+                  <Link
+                    href={item.path}
+                    className={`relative pb-1 text-black transition-all duration-300 ease-in-out ${
+                      pathname === item.path
+                        ? "border-b-2 border-primary text-black"
+                        : "hover:border-b-2 hover:border-primary text-black"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           {/* User Controls */}
           <div className="flex items-center space-x-2 lg:space-x-4">
             {/* Mobile Menu Button */}
-          
+
             {/* Debug Connection Status (for development) */}
             {/* {process.env.NODE_ENV === 'development' && userData?._id && (
               <div className="flex items-center space-x-2">
@@ -540,13 +548,20 @@ export default function Navbar() {
 
             {/* Login Button - Show when no user is logged in */}
             {!userData?._id ? (
-              <Link href="/login">
-                <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
+             <div className="flex items-center gap-5">
+               <Link href="/login">
+                <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
                   <FaUser size={16} />
-                  Login
-                </button>
+                  Sing in
+                </Button>
               </Link>
-              
+               <Link href="/register">
+                <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
+                  <FaUser size={16} />
+                  Sing up
+                </Button>
+              </Link>
+             </div>
             ) : (
               /* Profile Dropdown - Only show if user is logged in */
               <div className="relative" ref={profileRef}>
@@ -636,7 +651,7 @@ export default function Navbar() {
                           </span>
                         </Link>
                       ))}
-{/* 
+                      {/* 
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
                           className="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-50 transition-colors duration-150 group"
@@ -710,7 +725,7 @@ export default function Navbar() {
                 )}
               </div>
             )}
-              <button
+            <button
               className="md:hidden text-black  rounded-md hover:bg-gray-100 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle mobile menu"

@@ -11,13 +11,13 @@ const LayoutWrapper = ({ children }) => {
     
     "/login",
     "/about",
-    "/auth/forgot-password",
-    "/auth/verify-otp",
-    "/auth/reset-password",
+    "/forgot-password",
+    "/verify-otp",
+    "/reset-password",
     "/user-create",
-    "/subscription",
-    // "/contact",
-    // "/shop"
+    // "/subscription",
+    "/",
+    "/register"
   ];
 
   // If the current page is a public route, don't wrap it with PrivateRoute

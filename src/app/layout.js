@@ -32,14 +32,14 @@ export default function RootLayout({ children }) {
         className={`${poppins.variable}  antialiased `}
       >
         <Providers>
-         {/* <LayoutWrapper> */}
+         <LayoutWrapper>
          <div>
             <div className="">
               <Toaster richColors position="top-center" />
               <main>{children}</main>
             </div>
           </div>
-         {/* </LayoutWrapper> */}
+         </LayoutWrapper>
         </Providers>
       </body>
     </html>
