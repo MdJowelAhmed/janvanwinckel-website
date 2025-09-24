@@ -91,7 +91,7 @@ const authSlice = api.injectEndpoints({
       query: ({data}) => {
         return {
           method: "PATCH",
-          url: "/users/profile",
+          url: "/user",
           body: data,
         };
       },

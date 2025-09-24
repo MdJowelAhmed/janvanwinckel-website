@@ -90,7 +90,7 @@ export default function Navbar() {
 
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
-  console.log(userData);
+  console.log("navbar",userData);
   const {
     data: notificationData,
     isLoading,
@@ -433,12 +433,12 @@ export default function Navbar() {
       href: "/profile-dashboard",
       color: "text-blue-600",
     },
-    {
-      icon: FaRss,
-      label: "My Feed",
-      href: "/my-feed",
-      color: "text-green-600",
-    },
+    // {
+    //   icon: FaRss,
+    //   label: "My Feed",
+    //   href: "/my-feed",
+    //   color: "text-green-600",
+    // },
   ];
 
   const settingsItems = [
@@ -621,7 +621,7 @@ export default function Navbar() {
                     </div>
 
                     <div className="py-2">
-                      {/* {profileMenuItems.map((item, index) => (
+                      {profileMenuItems.map((item, index) => (
                         <Link
                           key={index}
                           href={item.href}
@@ -635,7 +635,7 @@ export default function Navbar() {
                             {item.label}
                           </span>
                         </Link>
-                      ))} */}
+                      ))}
 {/* 
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button

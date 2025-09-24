@@ -1,180 +1,48 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
+import Spinner from "@/app/(commonLayout)/Spinner";
+import {
+  useMyProfileQuery,
+  useUpdateProfileMutation,
+} from "@/redux/featured/auth/authApi";
+import { useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
+import { Bird, Upload, User, User2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { MdEmail } from "react-icons/md";
+import { Card, CardContent } from "../ui/card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Clock,
-  Flame,
-  Calendar,
-  DollarSign,
-  Crown,
-  CheckCircle,
-  Upload,
-  User,
-} from "lucide-react";
+} from "../ui/dialog";
 import Image from "next/image";
-import { useMyProfileQuery, useUpdateProfileMutation } from "@/redux/featured/auth/authApi";
-import ProfileIcon from "./ProfileIcon";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { getImageUrl } from "../share/imageUrl";
-import { toast } from "sonner";
-import { useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
-import Spinner from "../../app/(commonLayout)/Spinner";
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
-import { isValidPhoneNumber } from 'react-phone-number-input';
-
-// Subscription Card Component
-const SubscriptionCard = ({ packageData, userData }) => {
-  const calculateDaysRemaining = () => {
-    if (!packageData?.currentPeriodEnd) return 0;
-
-    const expireDate = new Date(packageData.currentPeriodEnd);
-    const today = new Date();
-    const diffTime = expireDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 0;
-  };
-
-  const formatExpirationDate = () => {
-    if (!packageData?.currentPeriodEnd) return "N/A";
-
-    const expireDate = new Date(packageData.currentPeriodEnd);
-    return expireDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatStartDate = () => {
-    if (!packageData?.currentPeriodStart) return "N/A";
-
-    const startDate = new Date(packageData.currentPeriodStart);
-    return startDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const isActive = packageData?.status === "active";
-  const packageTitle = packageData?.package?.title || "No Package";
-  const packageDuration = packageData?.package?.duration || "";
-  const packagePrice = packageData?.price || 0;
-
-  return (
-    <Card className="mb-6 overflow-hidden border border-gray-200 shadow-sm">
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div
-              className={`${isActive ? "text-yellow-500" : "text-gray-400"}`}
-            >
-              {packageTitle === "Gold" ? (
-                <Crown size={28} />
-              ) : (
-                <DollarSign size={28} />
-              )}
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg">
-                {userData?.isFreeTrial ? "Free Trial Period" : packageTitle}
-              </h3>
-              {packageDuration && (
-                <p className="text-sm text-gray-600">{packageDuration} plan</p>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle
-              size={20}
-              className={`${isActive ? "text-green-500" : "text-gray-400"}`}
-            />
-            <span
-              className={`text-sm font-medium ${
-                isActive ? "text-green-600" : "text-gray-500"
-              }`}
-            >
-              {isActive ? "Active" : "Inactive"}
-            </span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-lg border border-red-200">
-            <p className="text-5xl font-bold text-red-500 mb-2">
-              {calculateDaysRemaining()}
-            </p>
-            <p className="text-lg font-medium text-gray-700 mb-4">
-              Days Remaining
-            </p>
-            <div className="flex items-center gap-2 text-gray-600">
-              <Calendar size={18} />
-              <p className="text-sm">Expires: {formatExpirationDate()}</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <span className="text-sm font-medium text-gray-600">
-                Package Price
-              </span>
-              <span className="text-lg font-bold text-gray-800">
-                ${packagePrice}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <span className="text-sm font-medium text-gray-600">
-                Started On
-              </span>
-              <span className="text-sm text-gray-700">{formatStartDate()}</span>
-            </div>
-
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <span className="text-sm font-medium text-gray-600">
-                Customer ID
-              </span>
-              <span className="text-sm text-gray-700 font-mono">
-                {packageData?.customerId?.slice(-8) || "N/A"}
-              </span>
-            </div>
-
-            <Button
-              className="w-full mt-4 py-5 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors duration-200"
-              onClick={() => (window.location.href = "/subscription-package")}
-            >
-              Extend Subscription
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const { data: userData, isLoading, refetch } = useMyProfileQuery();
+  const { data: profileResponse, isLoading, refetch } = useMyProfileQuery();
   const [updateProfile, { isLoading: updating }] = useUpdateProfileMutation();
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    userName: "",
     email: "",
-    phone: "",
-    address: "",
+    contact: "",
   });
   const [phoneError, setPhoneError] = useState("");
-  console.log(userData);
+
+  // Extract user data from the response
+  const userData = profileResponse;
+  console.log("profile", userData);
+  console.log(userData?.name);
+
   const { data: packageResponse } = useRunningPackageQuery();
   const packageData = packageResponse?.data;
 
@@ -182,11 +50,12 @@ export default function ProfileDashboardComponents() {
     if (userData) {
       setFormData({
         name: userData.name || "",
+        userName: userData.userName || "",
         email: userData.email || "",
-        phone: userData.phone || "",
-        address: userData.address || "",
+        contact: userData.contact || "",
       });
-      setImagePreview(getImageUrl(userData.image));
+      // Use profile field from API response instead of image
+      setImagePreview(userData.profile || getImageUrl(userData.profile));
     }
   }, [userData]);
 
@@ -204,8 +73,8 @@ export default function ProfileDashboardComponents() {
   };
 
   const handlePhoneChange = (value) => {
-    setFormData({ ...formData, phone: value || "" });
-    
+    setFormData({ ...formData, contact: value || "" });
+
     // Validate phone number
     if (value) {
       if (!isValidPhoneNumber(value)) {
@@ -226,27 +95,30 @@ export default function ProfileDashboardComponents() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Check if phone is valid before submitting
-    if (formData.phone && !isValidPhoneNumber(formData.phone)) {
-      setPhoneError("Please enter a valid phone number for the selected country");
+    if (formData.contact && !isValidPhoneNumber(formData.contact)) {
+      setPhoneError(
+        "Please enter a valid phone number for the selected country"
+      );
       return;
     }
-    
+
     try {
-      const userData = {
+      const updateData = {
         name: formData.name,
+        userName: formData.userName,
         email: formData.email,
-        address: formData.address,
-        phone: formData.phone,
+        contact: formData.contact,
       };
 
       const formDataToSend = new FormData();
-      formDataToSend.append("data", JSON.stringify(userData));
+      formDataToSend.append("data", JSON.stringify(updateData));
 
       if (imageFile) {
         formDataToSend.append("image", imageFile);
       }
+
       const response = await updateProfile({ data: formDataToSend }).unwrap();
 
       if (response.success) {
@@ -260,11 +132,11 @@ export default function ProfileDashboardComponents() {
         // Reset image file state
         setImageFile(null);
       } else {
-        toast.error(response.toast || "Failed to update profile!");
+        toast.error(response.message || "Failed to update profile!");
       }
     } catch (error) {
       toast.error(
-        error.data?.toast || "An error occurred while updating the profile"
+        error.data?.message || "An error occurred while updating the profile"
       );
     }
   };
@@ -276,168 +148,177 @@ export default function ProfileDashboardComponents() {
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-6 relative">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="relative group">
-            <ProfileIcon 
-              image={userData?.image}
-              size={112} /* 28*4 */
-              showBorder={true}
-              borderColor="border-white"
-              className="shadow-md"
-            />
-            {/* {!imagePreview && (
-              <div className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <User className="text-white" size={24} />
-              </div>
-            )} */}
+            <div className="w-28 h-28 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100">
+              {imagePreview ? (
+                <Image
+                  src={getImageUrl(userData?.profile)}
+                  alt="Profile"
+                  width={112}
+                  height={112}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <User size={40} />
+                </div>
+              )}
+            </div>
           </div>
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold text-gray-800">
-              {userData?.name}
+              {userData?.name || userData?.userName}
             </h2>
             <p className="text-gray-600">{userData?.email}</p>
-            <p className="text-gray-500 mt-1">{userData?.phone}</p>
+            <p className="text-gray-500 mt-1">{userData?.contact}</p>
           </div>
         </div>
 
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="destructive"
-              className="bg-red-600 hover:bg-red-700 shadow-sm"
-            >
-              Edit Profile
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-lg rounded-lg">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-gray-800">
+        <div className="bg-white">
+          {" "}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className="bg-accent-foreground hover:bg-accent-foreground/90 shadow-sm"
+              >
                 Edit Profile
-              </DialogTitle>
-            </DialogHeader>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-lg rounded-lg text-white">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-gray-800">
+                  Edit Profile
+                </DialogTitle>
+              </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex flex-col items-center">
-                <label
-                  htmlFor="image-upload"
-                  className="relative cursor-pointer group"
-                >
-                  <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100">
-                    {imagePreview ? (
-                      <Image
-                        src={imagePreview}
-                        alt="Profile Preview"
-                        width={100}
-                        height={100}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center text-gray-400">
-                        <Upload size={24} className="mb-2" />
-                        <span className="text-sm">Upload Image</span>
-                      </div>
+              <form onSubmit={handleSubmit} className="space-y-4 ">
+                <div className="flex flex-col items-center ">
+                  <label
+                    htmlFor="image-upload"
+                    className="relative cursor-pointer group text-white"
+                  >
+                    <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-100">
+                      {imagePreview ? (
+                        <Image
+                          src={getImageUrl(userData?.profile)}
+                          alt="Profile Preview"
+                          width={128}
+                          height={128}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center text-gray-400">
+                          <Upload size={24} className="mb-2" />
+                          <span className="text-sm">Upload Image</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Upload className="text-white" size={20} />
+                    </div>
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <p className="text-xs text-white mt-2">
+                    Click to upload profile picture
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Full Name
+                    </label>
+                    <Input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="py-3"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Username
+                    </label>
+                    <Input
+                      type="text"
+                      name="userName"
+                      value={formData.userName}
+                      onChange={handleChange}
+                      required
+                      className="py-3"
+                      placeholder="Enter your username"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="block text-sm font-medium text-white mb-1">
+                      Email
+                    </Label>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="py-3 cursor-not-allowed bg-"
+                      disabled
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-1">
+                      Contact Number
+                    </label>
+                    <Input
+                      international
+                      defaultCountry="BD"
+                      value={formData.contact}
+                      onChange={handlePhoneChange}
+                      className={`w-full border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
+                        phoneError ? "border-red-500" : "border-gray-300"
+                      }`}
+                    />
+                    {phoneError && (
+                      <p className="text-sm text-red-500 mt-1">{phoneError}</p>
                     )}
                   </div>
-                  {/* <div className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Upload className="text-white" size={20} />
-                  </div> */}
-                </label>
-                <input
-                  id="image-upload"
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-                <p className="text-xs text-gray-500 mt-2">
-                  Click to upload profile picture
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name
-                  </label>
-                  <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="py-3"
-                  />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="py-3  cursor-not-allowed"
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone
-                  </label>
-                  <PhoneInput
-                    international
-                    defaultCountry="US"
-                    value={formData.phone}
-                    onChange={handlePhoneChange}
-                    className={`w-full border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 ${
-                      phoneError ? "border-red-500" : "border-gray-300"
-                    }`}
-                  />
-                  {phoneError && (
-                    <p className="text-sm text-red-500 mt-1">{phoneError}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <Input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    required
-                    className="py-3"
-                  />
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors duration-200"
-                disabled={updating || (formData.phone && phoneError)}
-              >
-                {updating ? "Updating..." : "Update Profile"}
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+                <Button
+                  type="submit"
+                  className="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-medium transition-colors duration-200"
+                  disabled={updating || (formData.contact && phoneError)}
+                >
+                  {updating ? "Updating..." : "Update Profile"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="text-red-500">
-                <Flame size={24} />
+              <div className="text-accent">
+                <Bird size={24} />
               </div>
-              <h3 className="font-medium text-gray-700">Streak</h3>
+              <h3 className="font-medium text-white">Total Pigeons</h3>
             </div>
             <p className="text-4xl font-bold mt-4 text-gray-800">
-              {userData?.loginCount || 0} Days
+              {userData?.totalPigeons || 0}
             </p>
           </CardContent>
         </Card>
@@ -445,14 +326,13 @@ export default function ProfileDashboardComponents() {
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="text-red-500">
-                <Clock size={24} />
+              <div className="text-accent">
+                <User2 size={24} />
               </div>
-              <h3 className="font-medium text-gray-700">Yoga Sessions</h3>
+              <h3 className="font-medium text-white"> User Name </h3>
             </div>
-            <p className="text-4xl font-bold mt-4 text-gray-800">
-              {userData?.completedSessions?.length || 0} Session
-              {userData?.completedSessions?.length !== 1 ? "s" : ""}
+            <p className="text-lg font-bold mt-4 text-gray-800">
+              {userData?.name || userData?.userName}
             </p>
           </CardContent>
         </Card>
@@ -460,19 +340,19 @@ export default function ProfileDashboardComponents() {
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="text-red-500">
-                <Clock size={24} />
+              <div className="text-accent">
+                <MdEmail size={24} />
               </div>
-              <h3 className="font-medium text-gray-700">Total Mat Time</h3>
+              <h3 className="font-medium text-white">Email</h3>
             </div>
-            <p className="text-4xl font-bold mt-4 text-gray-800">
-              {userData?.matTime || 0} Min
+            <p className="text-lg font-bold mt-4 text-gray-800">
+              {userData?.email}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <SubscriptionCard packageData={packageData} userData={userData} />
+      {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
     </div>
   );
 }
