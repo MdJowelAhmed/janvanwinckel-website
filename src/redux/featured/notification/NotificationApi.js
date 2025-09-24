@@ -36,7 +36,7 @@ const notificationSlice = api.injectEndpoints({
     readAllNotification: builder.mutation({
       query: () => {
         return {
-          url: `/notifications`,
+          url: `/notification`,
           method: "PATCH",
         };
       },

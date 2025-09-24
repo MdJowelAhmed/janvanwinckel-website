@@ -796,7 +796,7 @@ export default function Navbar() {
                             {formatDate(notification.createdAt)}
                           </p>
                         </div>
-                        {!notification.read && (
+                        {/* {!notification.read && (
                           <Button
                             size="sm"
                             variant="outline"
@@ -805,7 +805,7 @@ export default function Navbar() {
                           >
                             Mark as Read
                           </Button>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   ))

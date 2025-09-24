@@ -13,7 +13,8 @@ const nextConfig = {
       "69.62.67.86",
       "api.yogawithjen.life",
       "web.yogawithjen.life",
-      "res.cloudinary.com"
+      "res.cloudinary.com",
+      "50.6.200.33"
     ],
     remotePatterns: [
       {

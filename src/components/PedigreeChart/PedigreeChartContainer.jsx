@@ -282,74 +282,187 @@ export default function PigeonPedigreeChart() {
   }, [nodes]);
 
   // PDF Export Function
-  const exportToPDF = useCallback(async () => {
-    try {
-      if (!chartRef.current) {
-        alert('Chart not ready for export. Please try again.');
-        return;
-      }
-
-      // Show loading state
-      const exportButton = document.querySelector('[data-export-pdf]');
-      if (exportButton) {
-        exportButton.textContent = 'Exporting...';
-        exportButton.disabled = true;
-      }
-
-      // Configure html2canvas for better quality
-      const canvas = await html2canvas(chartRef.current, {
-        scale: 2, // Higher resolution
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: chartRef.current.scrollWidth,
-        height: chartRef.current.scrollHeight
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Calculate PDF dimensions
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      
-      // Create PDF in landscape mode for better fit
-      const pdf = new jsPDF({
-        orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
-        unit: 'px',
-        format: [imgWidth, imgHeight]
-      });
-
-      // Add the image to PDF
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      
-      // Generate filename with current date
-      const currentDate = new Date().toISOString().split('T')[0];
-      const filename = `pigeon-pedigree-chart-${currentDate}.pdf`;
-      
-      // Save PDF
-      pdf.save(filename);
-      
-      console.log('PDF export completed successfully');
-    } catch (error) {
-      console.error('Error exporting to PDF:', error);
-      alert('Error exporting to PDF. Please try again.');
-    } finally {
-      // Reset button state
-      const exportButton = document.querySelector('[data-export-pdf]');
-      if (exportButton) {
-        exportButton.textContent = 'Export as PDF';
-        exportButton.disabled = false;
-      }
+ const exportToPDF = useCallback(async () => {
+  try {
+    if (!chartRef.current) {
+      alert('Chart not ready for export. Please try again.');
+      return;
     }
-  }, []);
+
+    // Show loading state
+    const exportButton = document.querySelector('[data-export-pdf]');
+    if (exportButton) {
+      exportButton.textContent = 'Exporting...';
+      exportButton.disabled = true;
+    }
+
+    // Create a comprehensive function to convert lab colors to RGB
+    const convertLabToRgb = (labString) => {
+      // Extract values from lab() function
+      const labMatch = labString.match(/lab\(\s*([^)]+)\s*\)/);
+      if (!labMatch) return labString;
+      
+      const values = labMatch[1].split(/\s+/).map(v => parseFloat(v.replace('%', '')));
+      const [l, a, b] = values;
+      
+      // Simple lab to RGB conversion (approximation)
+      // For a more accurate conversion, you might want to use a color library
+      const y = (l + 16) / 116;
+      const x = a / 500 + y;
+      const z = y - b / 200;
+      
+      const r = Math.max(0, Math.min(255, Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))));
+      const g = Math.max(0, Math.min(255, Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))));
+      const blue = Math.max(0, Math.min(255, Math.round(255 * (0.0557 * x - 0.2040 * y + 1.0570 * z))));
+      
+      return `rgb(${r}, ${g}, ${blue})`;
+    };
+
+    // More comprehensive approach to handle lab colors
+    const temporarilyReplaceLabColors = (element) => {
+      const originalStyles = [];
+      
+      // Function to recursively process all elements
+      const processElement = (el) => {
+        if (el.nodeType === Node.ELEMENT_NODE) {
+          const style = el.getAttribute('style');
+          const computedStyle = window.getComputedStyle(el);
+          
+          // Check both inline styles and computed styles for lab colors
+          let needsReplacement = false;
+          let newStyle = style || '';
+          
+          // Check inline style attribute
+          if (style && style.includes('lab(')) {
+            needsReplacement = true;
+            newStyle = style.replace(/lab\([^)]+\)/g, (match) => {
+              return convertLabToRgb(match);
+            });
+          }
+          
+          // Check computed styles for common color properties
+          const colorProperties = ['color', 'background-color', 'border-color', 'fill', 'stroke'];
+          colorProperties.forEach(prop => {
+            const value = computedStyle.getPropertyValue(prop);
+            if (value && value.includes('lab(')) {
+              needsReplacement = true;
+              const convertedColor = convertLabToRgb(value);
+              newStyle += `; ${prop}: ${convertedColor} !important`;
+            }
+          });
+          
+          if (needsReplacement) {
+            originalStyles.push({
+              element: el,
+              originalStyle: style,
+              hasStyle: el.hasAttribute('style')
+            });
+            el.setAttribute('style', newStyle);
+          }
+          
+          // Process child elements
+          Array.from(el.children).forEach(processElement);
+        }
+      };
+      
+      processElement(element);
+      return originalStyles;
+    };
+
+    // Apply lab color replacements
+    const styleBackups = temporarilyReplaceLabColors(chartRef.current);
+
+    // Wait a moment for DOM updates
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Configure html2canvas with better error handling
+    const canvas = await html2canvas(chartRef.current, {
+      scale: 2, // Higher resolution
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      width: chartRef.current.scrollWidth,
+      height: chartRef.current.scrollHeight,
+      logging: false, // Disable logging to reduce console noise
+      ignoreElements: (element) => {
+        // Skip elements that might cause issues
+        return element.classList && element.classList.contains('html2canvas-ignore');
+      }
+    });
+
+    // Restore original styles
+    styleBackups.forEach(backup => {
+      if (backup.hasStyle && backup.originalStyle) {
+        backup.element.setAttribute('style', backup.originalStyle);
+      } else if (!backup.hasStyle) {
+        backup.element.removeAttribute('style');
+      }
+    });
+
+    const imgData = canvas.toDataURL('image/png', 1.0); // Full quality
+
+    // Calculate PDF dimensions
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    
+    // Calculate scale to fit on standard paper size
+    const maxWidth = imgWidth > imgHeight ? 1120 : 790; // A4 landscape/portrait at 150 DPI
+    const maxHeight = imgWidth > imgHeight ? 790 : 1120;
+    
+    const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight, 1);
+    const finalWidth = imgWidth * scale;
+    const finalHeight = imgHeight * scale;
+
+    // Create PDF with appropriate orientation
+    const pdf = new jsPDF({
+      orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [finalWidth + 40, finalHeight + 40] // Add padding
+    });
+
+    // Center the image on the page
+    const xOffset = 20;
+    const yOffset = 20;
+
+    // Add the image to PDF
+    pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+
+    // Generate filename with current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    const filename = `pigeon-pedigree-chart-${currentDate}.pdf`;
+
+    // Save PDF
+    pdf.save(filename);
+
+    console.log('PDF export completed successfully');
+  } catch (error) {
+    console.error('Error exporting to PDF:', error);
+    
+    // More specific error messages
+    if (error.message && error.message.includes('lab')) {
+      alert('Error: Unsupported color format detected. Please try refreshing the page and exporting again.');
+    } else if (error.message && error.message.includes('canvas')) {
+      alert('Error: Unable to capture chart image. Please ensure the chart is fully loaded and try again.');
+    } else {
+      alert('Error exporting to PDF. Please try again or refresh the page.');
+    }
+  } finally {
+    // Reset button state
+    const exportButton = document.querySelector('[data-export-pdf]');
+    if (exportButton) {
+      exportButton.textContent = 'Export as PDF';
+      exportButton.disabled = false;
+    }
+  }
+}, []);
 
   const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
   
   if (isLoading) return <Spinner />;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mt-12">
+    <div className="container  mx-auto">
+      <div className="flex flex-col md:flex-row items-center justify-between mt-12">
         <div className="max-w-2xl">
           <h2 className="text-black font-bold text-2xl">
             Pigeon pedigree chart

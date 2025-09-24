@@ -126,7 +126,7 @@ const PigeonTable = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 ">
       <idv>
         <CardContent className="p-0">
           <div className="overflow-x-auto rounded-lg mb-4">

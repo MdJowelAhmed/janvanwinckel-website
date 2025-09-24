@@ -31,8 +31,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useDeletePigeonMutation } from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
+import { getCode } from "country-list";
 
-const PigeonDatabaseTable = ({
+const PigeonTable = ({
   data,
   isLoading,
   currentPage,
@@ -125,7 +126,7 @@ const PigeonDatabaseTable = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 ">
       <idv>
         <CardContent className="p-0">
           <div className="overflow-x-auto rounded-lg mb-4">
@@ -144,7 +145,7 @@ const PigeonDatabaseTable = ({
                   <TableHead className="text-white">Quality Breeder</TableHead>
                   <TableHead className="text-white">Quality Racer</TableHead>
                   <TableHead className="text-white">Racing Rating</TableHead>
-                  <TableHead className="text-white">Pattern</TableHead>
+                  {/* <TableHead className="text-white">Pattern</TableHead> */}
                   <TableHead className="text-white">Status</TableHead>
                   <TableHead className="text-white">Gender</TableHead>
                   {/* <TableHead className="text-white">Rating</TableHead> */}
@@ -182,9 +183,23 @@ const PigeonDatabaseTable = ({
                       {pigeon.name}
                     </TableCell>
                     <TableCell>
-                      <div className="text-[#3AB27F]">
-                        {pigeon.country.slice(0, 3)}
-                      </div>
+                      {(() => {
+                        const countryCode = pigeon.country
+                          ? getCode(pigeon.country)
+                          : null;
+                        return (
+                          countryCode && (
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+                                alt={pigeon.country}
+                                className="w-5 h-4 rounded-sm"
+                              />
+                              <p className="text-white">{countryCode}</p>
+                            </div>
+                          )
+                        );
+                      })()}
                     </TableCell>
 
                     <TableCell>
@@ -197,7 +212,7 @@ const PigeonDatabaseTable = ({
 
                     <TableCell>{pigeon.birthYear}</TableCell>
                     <TableCell>{pigeon.breederRating}</TableCell>
-                    <TableCell>{pigeon.racerRating}</TableCell>
+                    <TableCell>{pigeon.racherRating}</TableCell>
 
                     {/* <TableCell>
                       <div className="text-sm">
@@ -217,7 +232,7 @@ const PigeonDatabaseTable = ({
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
 
-                    <TableCell>{pigeon.pattern}</TableCell>
+                    {/* <TableCell>{pigeon.pattern}</TableCell> */}
 
                     <TableCell className="text-[#3AB27F]">
                       {pigeon.verified ? "Racing" : "Breeding"}
@@ -235,7 +250,11 @@ const PigeonDatabaseTable = ({
 
                     <TableCell>{pigeon.color}</TableCell>
 
-                    <TableCell>{pigeon.location}</TableCell>
+                    <TableCell>
+                      {pigeon.location && pigeon.location.length > 20
+                        ? pigeon.location.slice(0, 20) + "..."
+                        : pigeon.location}
+                    </TableCell>
 
                     <TableCell>
                       <DropdownMenu>
@@ -249,13 +268,13 @@ const PigeonDatabaseTable = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          {/* <DropdownMenuItem
+                          <DropdownMenuItem
                             onClick={() => onEdit(pigeon._id)}
                             className="cursor-pointer"
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Pigeon
-                          </DropdownMenuItem> */}
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleView(pigeon._id)}
                             className="cursor-pointer"
@@ -263,7 +282,7 @@ const PigeonDatabaseTable = ({
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
-                          {/* <DropdownMenuItem
+                          <DropdownMenuItem
                             onClick={() => handlePedigree(pigeon._id)}
                             className="cursor-pointer"
                           >
@@ -276,7 +295,7 @@ const PigeonDatabaseTable = ({
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Pigeon
-                          </DropdownMenuItem> */}
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -364,5 +383,4 @@ const TableSkeleton = () => (
   </Card>
 );
 
-export default PigeonDatabaseTable;
-
+export default PigeonTable;

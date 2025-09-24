@@ -27,6 +27,7 @@ import {
 import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
 import Image from "next/image";
 import { getImageUrl } from "../share/imageUrl";
+import { getNames } from "country-list";
 
 const AddPigeonContainer = ({ pigeonId = null }) => {
   const router = useRouter();
@@ -34,6 +35,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const searchParams = useSearchParams();
   const editId = pigeonId || searchParams.get("edit") || params?.id;
   const isEditMode = !!editId;
+   const countries = getNames();
 
   const [createPigeon, { isLoading: isCreating }] = useCreatePigeonMutation();
   const [updatePigeon, { isLoading: isUpdating }] = useUpdatePigeonMutation();
@@ -116,9 +118,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
   const getColorDisplayValue = () => {
     if (selectedColor && selectedPattern) {
-      return `${selectedColor.replace('_', ' ')} & ${selectedPattern}`;
+      return `${selectedColor.replace("_", " ")} & ${selectedPattern}`;
     } else if (selectedColor) {
-      return selectedColor.replace('_', ' ');
+      return selectedColor.replace("_", " ");
     }
     return "Select Color & Pattern";
   };
@@ -163,7 +165,10 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   // Sync color pattern with form
   useEffect(() => {
     if (selectedColor && selectedPattern) {
-      const colorValue = `${selectedColor.replace('_', ' ')} & ${selectedPattern}`;
+      const colorValue = `${selectedColor.replace(
+        "_",
+        " "
+      )} & ${selectedPattern}`;
       setValue("color", colorValue);
     }
   }, [selectedColor, selectedPattern, setValue]);
@@ -197,9 +202,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       // Handle color pattern for edit mode
       if (pigeon.color) {
         const colorString = pigeon.color;
-        const parts = colorString.split(' & ');
+        const parts = colorString.split(" & ");
         if (parts.length === 2) {
-          setSelectedColor(parts[0].replace(' ', '_'));
+          setSelectedColor(parts[0].replace(" ", "_"));
           setSelectedPattern(parts[1]);
         }
       }
@@ -411,16 +416,20 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     Choose a Country
                   </label>
                   <select
-                    {...register("country")}
+                    {...register("country", { required: true })}
+                    defaultValue="" 
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
-                    <option value="Bangladesh">Bangladesh</option>
-                    <option value="Belgium">Belgium</option>
-                    <option value="Germany">Germany</option>
-                    <option value="Netherlands">Netherlands</option>
+                    <option value="" disabled>
+                      -- Select a country --
+                    </option>
+                    {countries.map((country, index) => (
+                      <option key={index} value={country}>
+                        {country}
+                      </option>
+                    ))}
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Birth Year
@@ -504,19 +513,22 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Color & Pattern
                     </label>
-                    
+
                     {/* Main Button */}
                     <button
                       type="button"
                       onClick={() => setColorDropdownOpen(!colorDropdownOpen)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 flex items-center justify-between bg-white text-left"
                       style={{
-                        color: selectedColor && selectedPattern ? "#000" : "#999",
+                        color:
+                          selectedColor && selectedPattern ? "#000" : "#999",
                       }}
                     >
                       <span>{getColorDisplayValue()}</span>
                       <ChevronDown
-                        className={`w-4 h-4 transition-transform ${colorDropdownOpen ? 'rotate-180' : ''}`}
+                        className={`w-4 h-4 transition-transform ${
+                          colorDropdownOpen ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
 
@@ -537,7 +549,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                                   onClick={() => handleColorSelect(color)}
                                   className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                 >
-                                  {color.replace('_', ' ')}
+                                  {color.replace("_", " ")}
                                 </button>
                               ))}
                             </div>
@@ -547,7 +559,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                           <div className="p-2">
                             <div className="flex items-center justify-between px-2 py-1 border-b">
                               <span className="text-xs text-gray-500">
-                                Select Pattern for {selectedColor.replace('_', ' ')}:
+                                Select Pattern for{" "}
+                                {selectedColor.replace("_", " ")}:
                               </span>
                               <button
                                 type="button"
@@ -558,20 +571,22 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                               </button>
                             </div>
                             <div className="max-h-48 overflow-y-auto">
-                              {colorPatternMap[selectedColor]?.map((pattern) => (
-                                <button
-                                  key={pattern}
-                                  type="button"
-                                  onClick={() => handlePatternSelect(pattern)}
-                                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                                >
-                                  {pattern}
-                                </button>
-                              ))}
+                              {colorPatternMap[selectedColor]?.map(
+                                (pattern) => (
+                                  <button
+                                    key={pattern}
+                                    type="button"
+                                    onClick={() => handlePatternSelect(pattern)}
+                                    className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                  >
+                                    {pattern}
+                                  </button>
+                                )
+                              )}
                             </div>
                           </div>
                         )}
-                        
+
                         {/* Reset Option */}
                         {(selectedColor || selectedPattern) && (
                           <div className="border-t p-2">
@@ -588,10 +603,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     )}
 
                     {/* Hidden input for react-hook-form */}
-                    <input
-                      type="hidden"
-                      {...register("color")}
-                    />
+                    <input type="hidden" {...register("color")} />
                   </div>
 
                   <div>
