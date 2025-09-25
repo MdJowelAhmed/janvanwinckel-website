@@ -45,7 +45,7 @@ export default function PigeonHub() {
 
   const debouncedSearchTerm = useDebounce(searchTerm, debounceDelay);
 
-  // API query parameters - conditional query করা
+ 
   const shouldSkipQuery = !debouncedSearchTerm || debouncedSearchTerm.length < 2;
   
   const { data, isLoading, isFetching } = useGetPigeonSearchQuery(
@@ -80,12 +80,10 @@ export default function PigeonHub() {
     setSearchTerm(value);
     setSelectedPigeon(null);
     
-    // Clear suggestions for empty input
     if (!value.trim()) {
       setShowSuggestions(false);
     }
 
-    // Next tick এ cursor position restore করা
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
@@ -102,7 +100,6 @@ export default function PigeonHub() {
 
   // Input focus handler
   const handleInputFocus = useCallback(() => {
-    // Focus এর সময় cursor position maintain করা
     if (inputRef.current && searchTerm) {
       const position = searchTerm.length;
       inputRef.current.setSelectionRange(position, position);
@@ -111,7 +108,6 @@ export default function PigeonHub() {
 
   // Blur handler for suggestions
   const handleInputBlur = useCallback(() => {
-    // Slight delay যাতে suggestion click কাজ করে
     setTimeout(() => {
       setShowSuggestions(false);
     }, 150);

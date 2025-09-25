@@ -90,7 +90,7 @@ export default function Navbar() {
 
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
-  console.log("navbar", userData);
+  // console.log("navbar", userData);
   const {
     data: notificationData,
     isLoading,
@@ -107,7 +107,7 @@ export default function Navbar() {
       refetchOnReconnect: true,
     }
   );
-  console.log(notificationData);
+  // console.log(notificationData);
 
   const [readOneNotification] = useReadOneNotificationMutation();
   const [readAllNotification] = useReadAllNotificationMutation();
@@ -116,7 +116,7 @@ export default function Navbar() {
 
   // Calculate unread count from API response
   const unreadCount = notificationData?.data?.unreadCount || 0;
-  console.log(unreadCount);
+  // console.log(unreadCount);
 
   // Improved Socket.IO setup with better error handling and reconnection
   useEffect(() => {

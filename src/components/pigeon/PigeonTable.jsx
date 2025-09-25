@@ -235,7 +235,7 @@ const PigeonTable = ({
                     {/* <TableCell>{pigeon.pattern}</TableCell> */}
 
                     <TableCell className="text-[#3AB27F]">
-                      {pigeon.verified ? "Racing" : "Breeding"}
+                      {pigeon.status}
                     </TableCell>
 
                     <TableCell className="text-[#3AB27F]">

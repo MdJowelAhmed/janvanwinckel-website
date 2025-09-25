@@ -23,6 +23,7 @@ import {
   useUpdatePigeonMutation,
   useGetPigeonPackagesQuery,
   useGetSinglePigeonQuery,
+  useGetPigeonSearchQuery,
 } from "@/redux/featured/pigeon/pigeonApi";
 import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
 import Image from "next/image";
@@ -35,7 +36,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const searchParams = useSearchParams();
   const editId = pigeonId || searchParams.get("edit") || params?.id;
   const isEditMode = !!editId;
-   const countries = getNames();
+  const countries = getNames();
+  const [fatherSearchTerm, setFatherSearchTerm] = useState("");
+  const [motherSearchTerm, setMotherSearchTerm] = useState("");
+  const [selectedFatherId, setSelectedFatherId] = useState("");
+  const [selectedMotherId, setSelectedMotherId] = useState("");
+  console.log("selectedFatherId", selectedFatherId);
+  console.log("selectedMotherId", selectedMotherId);
 
   const [createPigeon, { isLoading: isCreating }] = useCreatePigeonMutation();
   const [updatePigeon, { isLoading: isUpdating }] = useUpdatePigeonMutation();
@@ -45,6 +52,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       skip: !editId,
     });
   const { data: breeder } = useGetBreederQuery();
+  const { data: fatherData } = useGetPigeonSearchQuery(fatherSearchTerm);
+  const { data: motherData } = useGetPigeonSearchQuery(motherSearchTerm);
+
+  const fatherList = fatherData?.data || [];
+  const motherList = motherData?.data || [];
+  console.log("fatherList", fatherList);
+  console.log("motherList", motherList);
   const breederList = breeder?.data?.breeder;
 
   const [photos, setPhotos] = useState([]);
@@ -149,8 +163,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       racingRating: 0,
       racherRating: "",
       breederRating: 0,
-      fatherRingId: "",
-      motherRingId: "",
+      fatherRingId: selectedFatherId,
+      motherRingId: selectedMotherId,
       verified: false,
       iconic: false,
       iconicScore: 0,
@@ -283,8 +297,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         status: data.status,
         location: data.location,
         notes: data.notes,
-        fatherRingId: data.fatherRingId || "",
-        motherRingId: data.motherRingId || "",
+        fatherRingId: data.selectedFatherId || "",
+        motherRingId: data.selectedMotherId || "",
         verified: Boolean(data.verified),
         iconic: Boolean(data.iconic),
         iconicScore: parseInt(data.iconicScore) || 0,
@@ -417,7 +431,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   </label>
                   <select
                     {...register("country", { required: true })}
-                    defaultValue="" 
+                    defaultValue=""
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="" disabled>
@@ -734,6 +748,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
             <div className="bg-white rounded-lg p-6 shadow-sm ">
               <h2 className="text-lg font-semibold mb-4">Parent Selection</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Father Ring ID */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Father Ring ID
@@ -741,15 +756,38 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   <input
                     type="text"
                     {...register("fatherRingId")}
+                    value={
+                      fatherList.find((f) => f._id === selectedFatherId)
+                        ?.ringNumber || fatherSearchTerm
+                    }
+                    onChange={(e) => {
+                      setFatherSearchTerm(e.target.value);
+                      setSelectedFatherId(""); // reset selection if user types
+                    }}
                     placeholder="Father Ring Number"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter as part of the ring or part of the name to search for
-                    the corresponding Pigeon
-                  </p>
+
+                  {/* Dropdown list */}
+                  {fatherList?.length > 0 && !selectedFatherId && (
+                    <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white z-10 absolute max-w-[410px]">
+                      {fatherList.map((pigeon) => (
+                        <li
+                          key={pigeon._id}
+                          className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                          onClick={() => {
+                            setSelectedFatherId(pigeon.ringNumber);
+                            setFatherSearchTerm(pigeon.ringNumber); // show ringNumber in input
+                          }}
+                        >
+                          {pigeon.ringNumber} - {pigeon.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
+                {/* Mother Ring ID */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Mother Ring ID
@@ -757,13 +795,35 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   <input
                     type="text"
                     {...register("motherRingId")}
+                    value={
+                      motherList.find((m) => m._id === selectedMotherId)
+                        ?.ringNumber || motherSearchTerm
+                    }
+                    onChange={(e) => {
+                      setMotherSearchTerm(e.target.value);
+                      setSelectedMotherId(""); // reset selection if user types
+                    }}
                     placeholder="Mother Ring Number"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enter a short string or part of the name to search for the
-                    corresponding Pigeon
-                  </p>
+
+                  {/* Dropdown list */}
+                  {motherList?.length > 0 && !selectedMotherId && (
+                    <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white z-10 absolute max-w-[410px]">
+                      {motherList.map((pigeon) => (
+                        <li
+                          key={pigeon._id}
+                          className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                          onClick={() => {
+                            setSelectedMotherId(pigeon.ringNumber);
+                            setMotherSearchTerm(pigeon.ringNumber);
+                          }}
+                        >
+                          {pigeon.ringNumber} - {pigeon.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </div>

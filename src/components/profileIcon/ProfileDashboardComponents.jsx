@@ -6,7 +6,7 @@ import {
   useUpdateProfileMutation,
 } from "@/redux/featured/auth/authApi";
 import { useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
-import { Bird, Upload, User, User2 } from "lucide-react";
+import { Bird, Phone, Upload, User, User2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { MdEmail } from "react-icons/md";
@@ -310,7 +310,7 @@ export default function ProfileDashboardComponents() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
@@ -320,7 +320,7 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-white"> User Name </h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {userData?.name || userData?.userName}
+              {userData?.name || userData?.userName || "N/A"}
             </p>
           </CardContent>
         </Card>
@@ -334,7 +334,20 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-white">Email</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {userData?.email}
+              {userData?.email || "N/A"}
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-accent">
+                <Phone size={24} />
+              </div>
+              <h3 className="font-medium text-white">Contact</h3>
+            </div>
+            <p className="text-lg font-bold mt-4 text-gray-800">
+              {userData?.contact || "N/A"}
             </p>
           </CardContent>
         </Card>

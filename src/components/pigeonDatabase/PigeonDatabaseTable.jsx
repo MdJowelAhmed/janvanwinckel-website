@@ -211,7 +211,7 @@ const PigeonTable = ({
                     </TableCell>
 
                     <TableCell>{pigeon.birthYear}</TableCell>
-                    <TableCell>{pigeon.breederRating}</TableCell>
+                    <TableCell className="text-[#3AB27F] text-center">{pigeon.breederRating}</TableCell>
                     <TableCell>{pigeon.racherRating}</TableCell>
 
                     {/* <TableCell>
@@ -228,14 +228,14 @@ const PigeonTable = ({
                       </div>
                     </TableCell> */}
 
-                    <TableCell className="text-[#3AB27F]">
+                    <TableCell className="text-[#3AB27F] text-center">
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
 
                     {/* <TableCell>{pigeon.pattern}</TableCell> */}
 
                     <TableCell className="text-[#3AB27F]">
-                      {pigeon.verified ? "Racing" : "Breeding"}
+                      {pigeon.status}
                     </TableCell>
 
                     <TableCell className="text-[#3AB27F]">
@@ -268,13 +268,13 @@ const PigeonTable = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem
+                          {/* <DropdownMenuItem
                             onClick={() => onEdit(pigeon._id)}
                             className="cursor-pointer"
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Edit Pigeon
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                           <DropdownMenuItem
                             onClick={() => handleView(pigeon._id)}
                             className="cursor-pointer"
@@ -289,13 +289,13 @@ const PigeonTable = ({
                             <GitBranch className="h-4 w-4 mr-2" />
                             View Pedigree
                           </DropdownMenuItem>
-                          <DropdownMenuItem
+                          {/* <DropdownMenuItem
                             onClick={() => handleDelete(pigeon._id)}
                             className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Pigeon
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
