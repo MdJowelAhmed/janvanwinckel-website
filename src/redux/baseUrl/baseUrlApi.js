@@ -1,2 +1,2 @@
-export const baseUrlApi = "https://pigeon-1.onrender.com/api/v1"
+export const baseUrlApi = "http://10.10.7.41:5001/api/v1"
 // export const baseUrlApi = "https://api.yogawithjen.life"

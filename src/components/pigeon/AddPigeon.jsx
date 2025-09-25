@@ -82,6 +82,46 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     Mealy: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
   };
 
+  const [pigeonPhoto, setPigeonPhoto] = useState(null);
+  const [eyePhoto, setEyePhoto] = useState(null);
+  const [ownershipPhoto, setOwnershipPhoto] = useState(null);
+  const [pedigreePhoto, setPedigreePhoto] = useState(null);
+  const [dnaPhoto, setDNAPhoto] = useState(null);
+
+  // Generic photo upload handler
+  const handleSpecificPhotoUpload = (event, photoType, setPhotoState) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
+    }
+
+    // Validate file size (e.g., 5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size should be less than 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPhotoState({
+        id: Date.now(),
+        file,
+        url: e.target.result,
+        type: photoType,
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Remove photo handler
+  const removeSpecificPhoto = (setPhotoState) => {
+    setPhotoState(null);
+  };
+
   // Add a new race result entry
   const addRaceResult = () => {
     const newResult = {
@@ -102,10 +142,44 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
   // Update a specific field in a race result
   const updateRaceResult = (id, field, value) => {
-    setRaceResults((prev) =>
-      prev.map((result) =>
-        result.id === id ? { ...result, [field]: value } : result
-      )
+    setRaceResults((prevResults) =>
+      prevResults.map((result) => {
+        if (result.id === id) {
+          let updatedValue = value;
+
+          // Validation rules
+          if (field === "date") {
+            const today = new Date().toISOString().split("T")[0];
+            if (new Date(value) > new Date(today)) {
+              toast.error("Date must be in the past.");
+              return result; // ignore invalid value
+            }
+          }
+
+          if (field === "total") {
+            if (value <= 0) {
+              toast.error("Total birds must be a positive number.");
+              return result;
+            }
+          }
+
+          // if (field === "place") {
+          //   const placeNum = parseInt(value, 10);
+          //   if (isNaN(placeNum) || placeNum <= 0) {
+          //     alert("Position must be a valid positive number.");
+          //     return result;
+          //   }
+          //   if (placeNum > result.total) {
+          //     alert("Position must be lower than total birds.");
+          //     return result;
+          //   }
+          //   updatedValue = placeNum;
+          // }
+
+          return { ...result, [field]: updatedValue };
+        }
+        return result;
+      })
     );
   };
 
@@ -223,14 +297,68 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         }
       }
 
-      if (pigeon.photos && pigeon.photos.length > 0) {
-        setPhotos(
-          pigeon.photos.map((photo, index) => ({
-            id: index,
-            url: photo,
-            file: null,
-          }))
-        );
+      if (isEditMode) {
+        // For update: track remaining photos and new photos
+        const remainingPhotos = {};
+        const newPhotos = {};
+
+        // Check each photo type
+        if (pigeonPhoto) {
+          if (pigeonPhoto.file) {
+            newPhotos.pigeonPhoto = pigeonPhoto.file;
+          } else {
+            remainingPhotos.pigeonPhoto = pigeonPhoto.url;
+          }
+        }
+
+        if (eyePhoto) {
+          if (eyePhoto.file) {
+            newPhotos.eyePhoto = eyePhoto.file;
+          } else {
+            remainingPhotos.eyePhoto = eyePhoto.url;
+          }
+        }
+
+        if (ownershipPhoto) {
+          if (ownershipPhoto.file) {
+            newPhotos.ownershipPhoto = ownershipPhoto.file;
+          } else {
+            remainingPhotos.ownershipPhoto = ownershipPhoto.url;
+          }
+        }
+
+        if (pedigreePhoto) {
+          if (pedigreePhoto.file) {
+            newPhotos.pedigreePhoto = pedigreePhoto.file;
+          } else {
+            remainingPhotos.pedigreePhoto = pedigreePhoto.url;
+          }
+        }
+
+        if (dnaPhoto) {
+          if (dnaPhoto.file) {
+            newPhotos.dnaPhoto = dnaPhoto.file;
+          } else {
+            remainingPhotos.dnaPhoto = dnaPhoto.url;
+          }
+        }
+
+        dataObject.remainingPhotos = remainingPhotos;
+
+        // Append new photos
+        Object.entries(newPhotos).forEach(([key, file]) => {
+          formDataToSend.append(key, file);
+        });
+      } else {
+        // For create: append all photos
+        if (pigeonPhoto?.file)
+          formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
+        if (eyePhoto?.file) formDataToSend.append("eyePhoto", eyePhoto.file);
+        if (ownershipPhoto?.file)
+          formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
+        if (pedigreePhoto?.file)
+          formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
+        if (dnaPhoto?.file) formDataToSend.append("DNAPhoto", dnaPhoto.file);
       }
 
       // Load race results if they exist
@@ -278,91 +406,160 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   };
 
   const onSubmit = async (data) => {
-    try {
-      const formDataToSend = new FormData();
+  try {
+    const formDataToSend = new FormData();
 
-      // Create the data object matching backend format
-      const dataObject = {
-        ringNumber: data.ringNumber,
-        name: data.name,
-        country: data.country,
-        birthYear: parseInt(data.birthYear),
-        shortInfo: data.shortInfo,
-        breeder: data.breeder, // This should be breeder ID
-        color: data.color,
-        racingRating: parseInt(data.racingRating) || 0,
-        racherRating: data.racherRating || "Good", // Fixed spelling
-        breederRating: parseInt(data.breederRating) || 0,
-        gender: data.gender,
-        status: data.status,
-        location: data.location,
-        notes: data.notes,
-        fatherRingId: data.selectedFatherId || "",
-        motherRingId: data.selectedMotherId || "",
-        verified: Boolean(data.verified),
-        iconic: Boolean(data.iconic),
-        iconicScore: parseInt(data.iconicScore) || 0,
-        // only for update -> keep remaining old images
-        remaining: isEditMode
-          ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
-          : [],
-      };
+    // Create the data object matching backend format
+    const dataObject = {
+      ringNumber: data.ringNumber,
+      name: data.name,
+      country: data.country,
+      birthYear: parseInt(data.birthYear),
+      shortInfo: data.shortInfo,
+      breeder: data.breeder, // This should be breeder ID
+      color: data.color,
+      racingRating: parseInt(data.racingRating) || 0,
+      racherRating: data.racherRating || "Good", // Fixed spelling
+      breederRating: parseInt(data.breederRating) || 0,
+      gender: data.gender,
+      status: data.status,
+      location: data.location,
+      notes: data.notes,
+      fatherRingId: selectedFatherId || "",
+      motherRingId: selectedMotherId || "",
+      verified: Boolean(data.verified),
+      iconic: Boolean(data.iconic),
+      iconicScore: parseInt(data.iconicScore) || 0,
+      // only for update -> keep remaining old images
+      remaining: isEditMode
+        ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
+        : [],
+    };
 
-      // Only add results if race results are enabled and there are results
-      if (showPigeonResult && raceResults.length > 0) {
-        const formattedResults = raceResults.map((result) => ({
-          name: result.name,
-          date: result.date,
-          distance: result.distance,
-          total: parseInt(result.total) || 0,
-          place: result.place,
-        }));
-        dataObject.results = formattedResults;
-      }
-
-      // Append data as JSON string
-      formDataToSend.append("data", JSON.stringify(dataObject));
-
-      // Handle images for update vs create
-      if (isEditMode) {
-        const newImages = photos.filter((photo) => photo.file);
-
-        // Append only new images
-        newImages.forEach((photo) => {
-          formDataToSend.append("image", photo.file);
-        });
-      } else {
-        // For create: append all images
-        photos.forEach((photo) => {
-          if (photo.file) {
-            formDataToSend.append("image", photo.file);
-          }
-        });
-      }
-
-      // Debug log
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log("FormData entry:", key, value);
-      }
-
-      // API call
-      if (isEditMode) {
-        await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
-        toast.success("Pigeon updated successfully!");
-      } else {
-        await createPigeon(formDataToSend).unwrap();
-        toast.success("Pigeon added successfully!");
-      }
-
-      router.push("/loft-overview");
-    } catch (errorMessages) {
-      console.error("Submit error:", errorMessages);
-      toast.error(
-        errorMessages.data.message ||
-          `Failed to ${isEditMode ? "update" : "add"} pigeon`
-      );
+    // Only add results if race results are enabled and there are results
+    if (showPigeonResult && raceResults.length > 0) {
+      const formattedResults = raceResults.map((result) => ({
+        name: result.name,
+        date: result.date,
+        distance: result.distance,
+        total: parseInt(result.total) || 0,
+        place: result.place,
+      }));
+      dataObject.results = formattedResults;
     }
-  };
+
+    // Handle specific photos properly
+    if (isEditMode) {
+      // For update: track remaining photos and new photos
+      const remainingPhotos = {};
+
+      // Check each photo type and handle remaining vs new
+      if (pigeonPhoto) {
+        if (pigeonPhoto.file) {
+          // New photo - will be uploaded
+          formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
+        } else {
+          // Existing photo - keep it
+          remainingPhotos.pigeonPhoto = pigeonPhoto.url;
+        }
+      }
+
+      if (eyePhoto) {
+        if (eyePhoto.file) {
+          formDataToSend.append("eyePhoto", eyePhoto.file);
+        } else {
+          remainingPhotos.eyePhoto = eyePhoto.url;
+        }
+      }
+
+      if (ownershipPhoto) {
+        if (ownershipPhoto.file) {
+          formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
+        } else {
+          remainingPhotos.ownershipPhoto = ownershipPhoto.url;
+        }
+      }
+
+      if (pedigreePhoto) {
+        if (pedigreePhoto.file) {
+          formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
+        } else {
+          remainingPhotos.pedigreePhoto = pedigreePhoto.url;
+        }
+      }
+
+      if (dnaPhoto) {
+        if (dnaPhoto.file) {
+          formDataToSend.append("DNAPhoto", dnaPhoto.file); // Note: backend expects "DNAPhoto"
+        } else {
+          remainingPhotos.DNAPhoto = dnaPhoto.url; // Note: backend field name
+        }
+      }
+
+      // Add remaining photos to data object
+      dataObject.remainingPhotos = remainingPhotos;
+    } else {
+      // For create: append all specific photos
+      if (pigeonPhoto?.file) {
+        formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
+      }
+      if (eyePhoto?.file) {
+        formDataToSend.append("eyePhoto", eyePhoto.file);
+      }
+      if (ownershipPhoto?.file) {
+        formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
+      }
+      if (pedigreePhoto?.file) {
+        formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
+      }
+      if (dnaPhoto?.file) {
+        formDataToSend.append("DNAPhoto", dnaPhoto.file); // Note: backend expects "DNAPhoto"
+      }
+    }
+
+    // Handle general photos (if you still want to support them)
+    if (isEditMode) {
+      const newImages = photos.filter((photo) => photo.file);
+      // Append only new images
+      newImages.forEach((photo) => {
+        formDataToSend.append("image", photo.file);
+      });
+    } else {
+      // For create: append all images
+      photos.forEach((photo) => {
+        if (photo.file) {
+          formDataToSend.append("image", photo.file);
+        }
+      });
+    }
+
+    // Append data as JSON string
+    formDataToSend.append("data", JSON.stringify(dataObject));
+
+    // Debug log
+    console.log("Data object:", dataObject);
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log("FormData entry:", key, value);
+    }
+
+    // API call
+    if (isEditMode) {
+      await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
+      toast.success("Pigeon updated successfully!");
+    } else {
+      await createPigeon(formDataToSend).unwrap();
+      toast.success("Pigeon added successfully!");
+    }
+
+    router.push("/loft-overview");
+  } catch (errorMessages) {
+    console.error("Submit error:", errorMessages);
+    toast.error(
+      errorMessages?.data?.message ||
+        `Failed to ${isEditMode ? "update" : "add"} pigeon`
+    );
+  }
+};
 
   return (
     <div className="my-8 md:my-12 lg:my-16 xl:my-20 px-4 md:px-8 lg:px-12">
@@ -832,30 +1029,31 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
           {/* Right Column - Photo Upload */}
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4">
-                Pigeon Photo <span className="text-red-500">*</span>
-              </h2>
+              <h2 className="text-lg font-semibold mb-4">Pigeon Photos</h2>
 
-              <div className="grid grid-cols-3 gap-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="relative">
-                    {photos[index] ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Pigeon Photo */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Pigeon Photo
+                  </label>
+                  <div className="relative">
+                    {pigeonPhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
                         <Image
                           src={
-                            photos[index].file
-                              ? photos[index].url // Freshly uploaded
-                              : getImageUrl(photos[index].url) // Existing from backend
+                            pigeonPhoto.file
+                              ? pigeonPhoto.url
+                              : getImageUrl(pigeonPhoto.url)
                           }
-                          alt={`Pigeon photo ${index + 1}`}
+                          alt="Pigeon photo"
                           width={200}
                           height={200}
                           className="w-full h-full object-cover"
                         />
-
                         <button
                           type="button"
-                          onClick={() => removePhoto(photos[index].id)}
+                          onClick={() => removeSpecificPhoto(setPigeonPhoto)}
                           className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="w-3 h-3" />
@@ -866,29 +1064,228 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={handlePhotoUpload}
+                          onChange={(e) =>
+                            handleSpecificPhotoUpload(
+                              e,
+                              "pigeonPhoto",
+                              setPigeonPhoto
+                            )
+                          }
                           className="hidden"
-                          multiple
                         />
                         <Plus className="w-6 h-6 text-gray-400 mb-1" />
                         <span className="text-xs text-gray-500 text-center px-2">
-                          {index === 0
-                            ? "Upload Pigeon Photo"
-                            : index === 1
-                            ? "Upload Eye Photo"
-                            : index === 2
-                            ? "Upload Ownership Card"
-                            : "Original"}
+                          Upload Pigeon Photo
                         </span>
                       </label>
                     )}
                   </div>
-                ))}
+                </div>
+
+                {/* Eye Photo */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Eye Photo
+                  </label>
+                  <div className="relative">
+                    {eyePhoto ? (
+                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
+                        <Image
+                          src={
+                            eyePhoto.file
+                              ? eyePhoto.url
+                              : getImageUrl(eyePhoto.url)
+                          }
+                          alt="Eye photo"
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeSpecificPhoto(setEyePhoto)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleSpecificPhotoUpload(
+                              e,
+                              "eyePhoto",
+                              setEyePhoto
+                            )
+                          }
+                          className="hidden"
+                        />
+                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
+                        <span className="text-xs text-gray-500 text-center px-2">
+                          Upload Eye Photo
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {/* Ownership Photo */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Ownership Card
+                  </label>
+                  <div className="relative">
+                    {ownershipPhoto ? (
+                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
+                        <Image
+                          src={
+                            ownershipPhoto.file
+                              ? ownershipPhoto.url
+                              : getImageUrl(ownershipPhoto.url)
+                          }
+                          alt="Ownership card"
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeSpecificPhoto(setOwnershipPhoto)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleSpecificPhotoUpload(
+                              e,
+                              "ownershipPhoto",
+                              setOwnershipPhoto
+                            )
+                          }
+                          className="hidden"
+                        />
+                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
+                        <span className="text-xs text-gray-500 text-center px-2">
+                          Upload Ownership Card
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {/* Pedigree Photo */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Pedigree Photo
+                  </label>
+                  <div className="relative">
+                    {pedigreePhoto ? (
+                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
+                        <Image
+                          src={
+                            pedigreePhoto.file
+                              ? pedigreePhoto.url
+                              : getImageUrl(pedigreePhoto.url)
+                          }
+                          alt="Pedigree photo"
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeSpecificPhoto(setPedigreePhoto)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleSpecificPhotoUpload(
+                              e,
+                              "pedigreePhoto",
+                              setPedigreePhoto
+                            )
+                          }
+                          className="hidden"
+                        />
+                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
+                        <span className="text-xs text-gray-500 text-center px-2">
+                          Upload Pedigree Photo
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {/* DNA Photo */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    DNA Photo
+                  </label>
+                  <div className="relative">
+                    {dnaPhoto ? (
+                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
+                        <Image
+                          src={
+                            dnaPhoto.file
+                              ? dnaPhoto.url
+                              : getImageUrl(dnaPhoto.url)
+                          }
+                          alt="DNA photo"
+                          width={200}
+                          height={200}
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeSpecificPhoto(setDNAPhoto)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            handleSpecificPhotoUpload(
+                              e,
+                              "dnaPhoto",
+                              setDNAPhoto
+                            )
+                          }
+                          className="hidden"
+                        />
+                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
+                        <span className="text-xs text-gray-500 text-center px-2">
+                          Upload DNA Photo
+                        </span>
+                      </label>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <p className="text-xs text-gray-500 mt-3">
-                Upload up to 6 photos. First photo will be the main display
-                photo.
+                Upload specific photos for each category. Each photo type can
+                have one image.
               </p>
             </div>
 

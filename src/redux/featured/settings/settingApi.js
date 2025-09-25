@@ -5,7 +5,7 @@ const settingApi = api.injectEndpoints({
     getSetting: builder.query({
       query: (id) => ({
         method: "GET",
-        url: `/settings/${id}`,
+        url: `/rule/terms-and-conditions`,
        
       }),
     }),

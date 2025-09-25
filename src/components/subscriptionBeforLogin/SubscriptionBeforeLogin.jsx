@@ -2,9 +2,11 @@
 import React from 'react';
 import { Check, X } from 'lucide-react';
 import { useGetWebPackagesQuery } from '@/redux/featured/Package/packageApi';
+import { useMyProfileQuery } from '@/redux/featured/auth/authApi';
 
 const SubscriptionBeforeLogin = () => {
-
+const {data:userData}=useMyProfileQuery();
+console.log(userData)
   const {data, isLoading} = useGetWebPackagesQuery();
   const packages = data?.data;
   

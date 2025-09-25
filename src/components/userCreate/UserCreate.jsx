@@ -102,7 +102,7 @@ const onSubmit = async (data) => {
           </div> */}
 
           <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-6 text-center text-white">
-           Sing Up
+           Sign up
           </h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -301,7 +301,7 @@ const onSubmit = async (data) => {
               className="bg-accent-foreground hover:bg-accent-foreground/90 text-white w-full h-10 md:h-12 rounded-md my-4 md:my-6"
               disabled={isLoading}
             >
-              {isLoading ? "Creating..." : "Sing Up"}
+              {isLoading ? "Creating..." : "Sign up"}
             </Button>
           </form>
 

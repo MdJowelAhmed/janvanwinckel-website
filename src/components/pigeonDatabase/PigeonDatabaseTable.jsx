@@ -262,9 +262,9 @@ const PigeonTable = ({
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-gray-100"
+                            className="h-8 w-8 p-0 hover:bg-accent"
                           >
-                            <MoreHorizontal className="h-4 w-4 text-gray-600" />
+                            <MoreHorizontal className="h-4 w-4 text-white font-bold " />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
