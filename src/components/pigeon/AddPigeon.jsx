@@ -261,6 +261,15 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     }
   }, [selectedColor, selectedPattern, setValue]);
 
+
+  useEffect(() => {
+  setValue("fatherRingId", selectedFatherId);
+}, [selectedFatherId, setValue]);
+
+useEffect(() => {
+  setValue("motherRingId", selectedMotherId);
+}, [selectedMotherId, setValue]);
+
   // Load pigeon data for edit mode
   useEffect(() => {
     if (isEditMode && singlePigeon?.data) {
@@ -280,8 +289,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         notes: pigeon.notes || "",
         racherRating: pigeon.racherRating || "Good",
         breederRating: pigeon.breederRating || 0,
-        fatherRingId: pigeon.fatherRingId || "",
-        motherRingId: pigeon.motherRingId || "",
+        fatherRingId: pigeon.fatherRingId?.ringNumber || "",
+        motherRingId: pigeon.motherRingId?.ringNumber || "",
         verified: pigeon.verified || false,
         iconic: pigeon.iconic || false,
         iconicScore: pigeon.iconicScore || 0,
@@ -343,7 +352,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
           }
         }
 
-        dataObject.remainingPhotos = remainingPhotos;
+        // dataObject.remainingPhotos = remainingPhotos;
 
         // Append new photos
         Object.entries(newPhotos).forEach(([key, file]) => {
@@ -1034,9 +1043,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Pigeon Photo */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     Pigeon Photo
-                  </label>
+                  </label> */}
                   <div className="relative">
                     {pigeonPhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
@@ -1084,9 +1093,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                 {/* Eye Photo */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     Eye Photo
-                  </label>
+                  </label> */}
                   <div className="relative">
                     {eyePhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
@@ -1134,9 +1143,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                 {/* Ownership Photo */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     Ownership Card
-                  </label>
+                  </label> */}
                   <div className="relative">
                     {ownershipPhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
@@ -1184,9 +1193,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                 {/* Pedigree Photo */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     Pedigree Photo
-                  </label>
+                  </label> */}
                   <div className="relative">
                     {pedigreePhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
@@ -1234,9 +1243,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                 {/* DNA Photo */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  {/* <label className="block text-sm font-medium text-gray-700">
                     DNA Photo
-                  </label>
+                  </label> */}
                   <div className="relative">
                     {dnaPhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
@@ -1283,10 +1292,10 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500 mt-3">
+              {/* <p className="text-xs text-gray-500 mt-3">
                 Upload specific photos for each category. Each photo type can
                 have one image.
-              </p>
+              </p> */}
             </div>
 
             <div className="flex items-center justify-between my-4">
