@@ -86,7 +86,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [eyePhoto, setEyePhoto] = useState(null);
   const [ownershipPhoto, setOwnershipPhoto] = useState(null);
   const [pedigreePhoto, setPedigreePhoto] = useState(null);
-  const [dnaPhoto, setDNAPhoto] = useState(null);
+  const [DNAPhoto, setDNAPhoto] = useState(null);
 
   // Generic photo upload handler
   const handleSpecificPhotoUpload = (event, photoType, setPhotoState) => {
@@ -344,11 +344,11 @@ useEffect(() => {
           }
         }
 
-        if (dnaPhoto) {
-          if (dnaPhoto.file) {
-            newPhotos.dnaPhoto = dnaPhoto.file;
+        if (DNAPhoto) {
+          if (DNAPhoto.file) {
+            newPhotos.DNAPhoto = DNAPhoto.file;
           } else {
-            remainingPhotos.dnaPhoto = dnaPhoto.url;
+            remainingPhotos.DNAPhoto = DNAPhoto.url;
           }
         }
 
@@ -367,7 +367,7 @@ useEffect(() => {
           formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
         if (pedigreePhoto?.file)
           formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
-        if (dnaPhoto?.file) formDataToSend.append("DNAPhoto", dnaPhoto.file);
+        if (DNAPhoto?.file) formDataToSend.append("DNAPhoto", DNAPhoto.file);
       }
 
       // Load race results if they exist
@@ -1247,7 +1247,7 @@ useEffect(() => {
                     DNA Photo
                   </label> */}
                   <div className="relative">
-                    {dnaPhoto ? (
+                    {DNAPhoto ? (
                       <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
                         <Image
                           src={

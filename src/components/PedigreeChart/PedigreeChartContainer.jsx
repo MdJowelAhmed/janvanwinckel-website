@@ -205,8 +205,10 @@ const nodeTypes = {
 
 export default function PigeonPedigreeChart() {
   const { id } = useParams();
+
   const { data: pedigreeData, isLoading } =
     useGetPigeonPedigreeChartDataQuery(id);
+    // console.log("pedigreeData", pedigreeData);
   const chartRef = useRef(null);
 
   const { nodes: dynamicNodes, edges: dynamicEdges } = useMemo(() => {
