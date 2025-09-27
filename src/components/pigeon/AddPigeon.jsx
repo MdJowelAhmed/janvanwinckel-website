@@ -29,6 +29,7 @@ import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
 import Image from "next/image";
 import { getImageUrl } from "../share/imageUrl";
 import { getNames } from "country-list";
+import PigeonPhotosSlider from "./addPigeon/PigeonPhotoSlider";
 
 const AddPigeonContainer = ({ pigeonId = null }) => {
   const router = useRouter();
@@ -261,14 +262,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     }
   }, [selectedColor, selectedPattern, setValue]);
 
+  useEffect(() => {
+    setValue("fatherRingId", selectedFatherId);
+  }, [selectedFatherId, setValue]);
 
   useEffect(() => {
-  setValue("fatherRingId", selectedFatherId);
-}, [selectedFatherId, setValue]);
-
-useEffect(() => {
-  setValue("motherRingId", selectedMotherId);
-}, [selectedMotherId, setValue]);
+    setValue("motherRingId", selectedMotherId);
+  }, [selectedMotherId, setValue]);
 
   // Load pigeon data for edit mode
   useEffect(() => {
@@ -304,6 +304,23 @@ useEffect(() => {
           setSelectedColor(parts[0].replace(" ", "_"));
           setSelectedPattern(parts[1]);
         }
+      }
+      
+      // Load photos for edit mode
+      if (pigeon.pigeonPhoto) {
+        setPigeonPhoto({ url: pigeon.pigeonPhoto });
+      }
+      if (pigeon.eyePhoto) {
+        setEyePhoto({ url: pigeon.eyePhoto });
+      }
+      if (pigeon.ownershipPhoto) {
+        setOwnershipPhoto({ url: pigeon.ownershipPhoto });
+      }
+      if (pigeon.pedigreePhoto) {
+        setPedigreePhoto({ url: pigeon.pedigreePhoto });
+      }
+      if (pigeon.DNAPhoto) {
+        setDNAPhoto({ url: pigeon.DNAPhoto });
       }
 
       if (isEditMode) {
@@ -415,165 +432,165 @@ useEffect(() => {
   };
 
   const onSubmit = async (data) => {
-  try {
-    const formDataToSend = new FormData();
+    try {
+      const formDataToSend = new FormData();
 
-    // Create the data object matching backend format
-    const dataObject = {
-      ringNumber: data.ringNumber,
-      name: data.name,
-      country: data.country,
-      birthYear: parseInt(data.birthYear),
-      shortInfo: data.shortInfo,
-      breeder: data.breeder, // This should be breeder ID
-      color: data.color,
-      racingRating: parseInt(data.racingRating) || 0,
-      racherRating: data.racherRating || "Good", // Fixed spelling
-      breederRating: parseInt(data.breederRating) || 0,
-      gender: data.gender,
-      status: data.status,
-      location: data.location,
-      notes: data.notes,
-      fatherRingId: selectedFatherId || "",
-      motherRingId: selectedMotherId || "",
-      verified: Boolean(data.verified),
-      iconic: Boolean(data.iconic),
-      iconicScore: parseInt(data.iconicScore) || 0,
-      // only for update -> keep remaining old images
-      remaining: isEditMode
-        ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
-        : [],
-    };
+      // Create the data object matching backend format
+      const dataObject = {
+        ringNumber: data.ringNumber,
+        name: data.name,
+        country: data.country,
+        birthYear: parseInt(data.birthYear),
+        shortInfo: data.shortInfo,
+        breeder: data.breeder, // This should be breeder ID
+        color: data.color,
+        racingRating: parseInt(data.racingRating) || 0,
+        racherRating: data.racherRating || "Good", // Fixed spelling
+        breederRating: parseInt(data.breederRating) || 0,
+        gender: data.gender,
+        status: data.status || "Breeding",
+        location: data.location,
+        notes: data.notes,
+        fatherRingId: selectedFatherId || "",
+        motherRingId: selectedMotherId || "",
+        verified: Boolean(data.verified),
+        iconic: Boolean(data.iconic),
+        iconicScore: parseInt(data.iconicScore) || 0,
+        // only for update -> keep remaining old images
+        remaining: isEditMode
+          ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
+          : [],
+      };
 
-    // Only add results if race results are enabled and there are results
-    if (showPigeonResult && raceResults.length > 0) {
-      const formattedResults = raceResults.map((result) => ({
-        name: result.name,
-        date: result.date,
-        distance: result.distance,
-        total: parseInt(result.total) || 0,
-        place: result.place,
-      }));
-      dataObject.results = formattedResults;
-    }
+      // Only add results if race results are enabled and there are results
+      if (showPigeonResult && raceResults.length > 0) {
+        const formattedResults = raceResults.map((result) => ({
+          name: result.name,
+          date: result.date,
+          distance: result.distance,
+          total: parseInt(result.total) || 0,
+          place: result.place,
+        }));
+        dataObject.results = formattedResults;
+      }
 
-    // Handle specific photos properly
-    if (isEditMode) {
-      // For update: track remaining photos and new photos
-      const remainingPhotos = {};
+      // Handle specific photos properly
+      if (isEditMode) {
+        // For update: track remaining photos and new photos
+        const remainingPhotos = {};
 
-      // Check each photo type and handle remaining vs new
-      if (pigeonPhoto) {
-        if (pigeonPhoto.file) {
-          // New photo - will be uploaded
+        // Check each photo type and handle remaining vs new
+        if (pigeonPhoto) {
+          if (pigeonPhoto.file) {
+            // New photo - will be uploaded
+            formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
+          } else {
+            // Existing photo - keep it
+            remainingPhotos.pigeonPhoto = pigeonPhoto.url;
+          }
+        }
+
+        if (eyePhoto) {
+          if (eyePhoto.file) {
+            formDataToSend.append("eyePhoto", eyePhoto.file);
+          } else {
+            remainingPhotos.eyePhoto = eyePhoto.url;
+          }
+        }
+
+        if (ownershipPhoto) {
+          if (ownershipPhoto.file) {
+            formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
+          } else {
+            remainingPhotos.ownershipPhoto = ownershipPhoto.url;
+          }
+        }
+
+        if (pedigreePhoto) {
+          if (pedigreePhoto.file) {
+            formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
+          } else {
+            remainingPhotos.pedigreePhoto = pedigreePhoto.url;
+          }
+        }
+
+        if (DNAPhoto) {
+          if (DNAPhoto.file) {
+            formDataToSend.append("DNAPhoto", DNAPhoto.file); // Note: backend expects "DNAPhoto"
+          } else {
+            remainingPhotos.DNAPhoto = DNAPhoto.url; // Note: backend field name
+          }
+        }
+
+        // Add remaining photos to data object
+        dataObject.remainingPhotos = remainingPhotos;
+      } else {
+        // For create: append all specific photos
+        if (pigeonPhoto?.file) {
           formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
-        } else {
-          // Existing photo - keep it
-          remainingPhotos.pigeonPhoto = pigeonPhoto.url;
         }
-      }
-
-      if (eyePhoto) {
-        if (eyePhoto.file) {
+        if (eyePhoto?.file) {
           formDataToSend.append("eyePhoto", eyePhoto.file);
-        } else {
-          remainingPhotos.eyePhoto = eyePhoto.url;
         }
-      }
-
-      if (ownershipPhoto) {
-        if (ownershipPhoto.file) {
+        if (ownershipPhoto?.file) {
           formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
-        } else {
-          remainingPhotos.ownershipPhoto = ownershipPhoto.url;
         }
-      }
-
-      if (pedigreePhoto) {
-        if (pedigreePhoto.file) {
+        if (pedigreePhoto?.file) {
           formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
-        } else {
-          remainingPhotos.pedigreePhoto = pedigreePhoto.url;
+        }
+        if (DNAPhoto?.file) {
+          formDataToSend.append("DNAPhoto", DNAPhoto.file);
         }
       }
 
-      if (dnaPhoto) {
-        if (dnaPhoto.file) {
-          formDataToSend.append("DNAPhoto", dnaPhoto.file); // Note: backend expects "DNAPhoto"
-        } else {
-          remainingPhotos.DNAPhoto = dnaPhoto.url; // Note: backend field name
-        }
-      }
-
-      // Add remaining photos to data object
-      dataObject.remainingPhotos = remainingPhotos;
-    } else {
-      // For create: append all specific photos
-      if (pigeonPhoto?.file) {
-        formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
-      }
-      if (eyePhoto?.file) {
-        formDataToSend.append("eyePhoto", eyePhoto.file);
-      }
-      if (ownershipPhoto?.file) {
-        formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
-      }
-      if (pedigreePhoto?.file) {
-        formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
-      }
-      if (dnaPhoto?.file) {
-        formDataToSend.append("DNAPhoto", dnaPhoto.file); // Note: backend expects "DNAPhoto"
-      }
-    }
-
-    // Handle general photos (if you still want to support them)
-    if (isEditMode) {
-      const newImages = photos.filter((photo) => photo.file);
-      // Append only new images
-      newImages.forEach((photo) => {
-        formDataToSend.append("image", photo.file);
-      });
-    } else {
-      // For create: append all images
-      photos.forEach((photo) => {
-        if (photo.file) {
+      // Handle general photos (if you still want to support them)
+      if (isEditMode) {
+        const newImages = photos.filter((photo) => photo.file);
+        // Append only new images
+        newImages.forEach((photo) => {
           formDataToSend.append("image", photo.file);
-        }
-      });
+        });
+      } else {
+        // For create: append all images
+        photos.forEach((photo) => {
+          if (photo.file) {
+            formDataToSend.append("image", photo.file);
+          }
+        });
+      }
+
+      // Append data as JSON string
+      formDataToSend.append("data", JSON.stringify(dataObject));
+
+      // Debug log
+      console.log("Data object:", dataObject);
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log("FormData entry:", key, value);
+      }
+
+      // API call
+      if (isEditMode) {
+        await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
+        toast.success("Pigeon updated successfully!");
+      } else {
+        await createPigeon(formDataToSend).unwrap();
+        toast.success("Pigeon added successfully!");
+      }
+
+      router.push("/loft-overview");
+    } catch (errorMessages) {
+      console.error("Submit error:", errorMessages);
+      toast.error(
+        errorMessages?.data?.message ||
+          `Failed to ${isEditMode ? "update" : "add"} pigeon`
+      );
     }
-
-    // Append data as JSON string
-    formDataToSend.append("data", JSON.stringify(dataObject));
-
-    // Debug log
-    console.log("Data object:", dataObject);
-    for (let [key, value] of formDataToSend.entries()) {
-      console.log("FormData entry:", key, value);
-    }
-
-    // API call
-    if (isEditMode) {
-      await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
-      toast.success("Pigeon updated successfully!");
-    } else {
-      await createPigeon(formDataToSend).unwrap();
-      toast.success("Pigeon added successfully!");
-    }
-
-    router.push("/loft-overview");
-  } catch (errorMessages) {
-    console.error("Submit error:", errorMessages);
-    toast.error(
-      errorMessages?.data?.message ||
-        `Failed to ${isEditMode ? "update" : "add"} pigeon`
-    );
-  }
-};
+  };
 
   return (
     <div className="my-8 md:my-12 lg:my-16 xl:my-20 px-4 md:px-8 lg:px-12">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center gap-4 gap-x-10 mb-8">
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-accent  text-center">
             {isEditMode ? "Edit" : "Add"}{" "}
@@ -594,7 +611,7 @@ useEffect(() => {
             {/* Basic Information */}
             <div className="bg-white rounded-lg p-6 shadow-sm space-y-6">
               <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Ring Number *
@@ -605,7 +622,7 @@ useEffect(() => {
                       required: "Ring number is required",
                     })}
                     placeholder="Ring Number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                   {errors.ringNumber && (
                     <p className="text-red-500 text-xs mt-1">
@@ -622,7 +639,7 @@ useEffect(() => {
                     type="text"
                     {...register("name", { required: "Name is required" })}
                     placeholder="Name"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                   {errors.name && (
                     <p className="text-red-500 text-xs mt-1">
@@ -638,7 +655,7 @@ useEffect(() => {
                   <select
                     {...register("country", { required: true })}
                     defaultValue=""
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="" disabled>
                       -- Select a country --
@@ -652,12 +669,17 @@ useEffect(() => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Birth Year
+                    Date of Birth
                   </label>
                   <select
-                    {...register("birthYear", { valueAsNumber: true })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    {...register("birthYear")}
+                    defaultValue=""
+                    placeholder="Date of Birth"
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
+                    <option value="" disabled>
+                      Date of Birth
+                    </option>
                     {Array.from(
                       { length: 10 },
                       (_, i) => new Date().getFullYear() - i
@@ -668,66 +690,71 @@ useEffect(() => {
                     ))}
                   </select>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Breeder
-                  </label>
-                  <select
-                    {...register("breeder")}
-                    className="w-full px-3 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  >
-                    <option value="">Select Breeder</option>
-                    {breederList &&
-                      breederList.map((breeder) => (
-                        <option
-                          key={breeder._id || breeder.id}
-                          value={breeder._id || breeder.id}
-                        >
-                          {breeder.breederName}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    {...register("location", {
-                      required: "Location is required",
-                    })}
-                    placeholder="Write your location"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  {errors.location && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.location.message}
-                    </p>
-                  )}
-                </div>
               </div>
 
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Short Information of the pigeon
-                </label>
-                <textarea
-                  {...register("shortInfo")}
-                  placeholder="Brief description of the pigeon"
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
-                />
+              <div className="grid grid-cols-2 gap-4 gap-x-10">
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Short Information of the pigeon
+                  </label>
+                  <textarea
+                    {...register("shortInfo")}
+                    placeholder="Short information of the pigeon"
+                    rows={5}
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                  />
+                </div>
+                <div className="flex flex-col gap-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Breeder
+                    </label>
+                    <select
+                      {...register("breeder")}
+                      className="w-full px-3 py-[14px] border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    >
+                      <option value="">Select Breeder</option>
+                      {breederList &&
+                        breederList.map((breeder) => (
+                          <option
+                            key={breeder._id || breeder.id}
+                            value={breeder._id || breeder.id}
+                          >
+                            {breeder.breederName}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Breeder Rating
+                    </label>
+                    <select
+                      {...register("breederRating")}
+                      defaultValue=""
+                      placeholder="Select Breeder Rating"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    >
+                      <option value="" disabled selected>
+                        Select Breeder Rating
+                      </option>
+
+                      {Array.from({ length: 101 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
 
               {/* Physical Characteristics */}
               <div className="">
-                <h2 className="text-lg font-semibold mb-4">
+                {/* <h2 className="text-lg font-semibold mb-4">
                   Physical Characteristics
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                </h2> */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                   {/* Dynamic Color & Pattern Selector */}
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -738,7 +765,7 @@ useEffect(() => {
                     <button
                       type="button"
                       onClick={() => setColorDropdownOpen(!colorDropdownOpen)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 flex items-center justify-between bg-white text-left"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 flex items-center justify-between bg-white text-left"
                       style={{
                         color:
                           selectedColor && selectedPattern ? "#000" : "#999",
@@ -767,7 +794,7 @@ useEffect(() => {
                                   key={color}
                                   type="button"
                                   onClick={() => handleColorSelect(color)}
-                                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                  className="w-full text-left px-3 py-[14px] hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                 >
                                   {color.replace("_", " ")}
                                 </button>
@@ -797,7 +824,7 @@ useEffect(() => {
                                     key={pattern}
                                     type="button"
                                     onClick={() => handlePatternSelect(pattern)}
-                                    className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                    className="w-full text-left px-3 py-[14px] hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                   >
                                     {pattern}
                                   </button>
@@ -813,7 +840,7 @@ useEffect(() => {
                             <button
                               type="button"
                               onClick={resetColorSelection}
-                              className="w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 focus:bg-red-50 focus:outline-none text-sm"
+                              className="w-full text-left px-3 py-[14px] text-red-600 hover:bg-red-50 focus:bg-red-50 focus:outline-none text-sm"
                             >
                               Clear Selection
                             </button>
@@ -832,7 +859,7 @@ useEffect(() => {
                     </label>
                     <select
                       {...register("gender")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Gender</option>
                       <option value="Hen">Hen</option>
@@ -844,34 +871,51 @@ useEffect(() => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Status
                     </label>
+
                     <select
                       {...register("status")}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
-                      <option value="Racing">Racing</option>
+                      <option value="">Select Status</option>
                       <option value="Breeding">Breeding</option>
+                      <option value="Racing">Racing</option>
                       <option value="Sold">Sold</option>
                       <option value="Lost">Lost</option>
-                      <option value="Deceased">Deceased</option>
                       <option value="Retired">Retired</option>
                     </select>
+                  </div>
+
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      {...register("location", {
+                        required: "Location is required",
+                      })}
+                      placeholder="Write your location"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    {errors.location && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.location.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Ratings */}
               <div className="">
-                <h2 className="text-lg font-semibold mb-4">Ratings</h2>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Racer Rating
                     </label>
                     <select
-                      {...register("racherRating", {
-                        required: "Racher Rating is required",
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      {...register("racherRating")}
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Rating</option>
                       <option value="Outstanding">Outstanding</option>
@@ -893,45 +937,21 @@ useEffect(() => {
                     </label>
                     <select
                       {...register("racingRating", { valueAsNumber: true })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      defaultValue=""
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
-                      {Array.from({ length: 101 }, (_, i) => (
-                        <option key={i} value={i}>
-                          {i}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      {/* Placeholder option */}
+                      <option value="" disabled>
+                        Select Racing Rating
+                      </option>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Breeder Rating
-                    </label>
-                    <select
-                      {...register("breederRating", { valueAsNumber: true })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    >
-                      {Array.from({ length: 101 }, (_, i) => (
-                        <option key={i} value={i}>
-                          {i}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Iconic Score
-                    </label>
-                    <select
-                      {...register("iconicScore", { valueAsNumber: true })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    >
-                      {Array.from({ length: 101 }, (_, i) => (
-                        <option key={i} value={i}>
-                          {i}
-                        </option>
-                      ))}
+                      {Array.from({ length: 100 }, (_, i) => i + 1).map(
+                        (rating) => (
+                          <option key={rating} value={rating}>
+                            {rating}
+                          </option>
+                        )
+                      )}
                     </select>
                   </div>
                 </div>
@@ -945,7 +965,7 @@ useEffect(() => {
                   {...register("notes")}
                   placeholder="Additional notes about the pigeon"
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                  className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                 />
               </div>
             </div>
@@ -953,12 +973,12 @@ useEffect(() => {
             {/* Parent Selection */}
             <div className="bg-white rounded-lg p-6 shadow-sm ">
               <h2 className="text-lg font-semibold mb-4">Parent Selection</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                 {/* Father Ring ID */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                     Father Ring ID
-                  </label>
+                  </label> */}
                   <input
                     type="text"
                     {...register("fatherRingId")}
@@ -971,7 +991,7 @@ useEffect(() => {
                       setSelectedFatherId(""); // reset selection if user types
                     }}
                     placeholder="Father Ring Number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
 
                   {/* Dropdown list */}
@@ -980,7 +1000,7 @@ useEffect(() => {
                       {fatherList.map((pigeon) => (
                         <li
                           key={pigeon._id}
-                          className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                          className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
                           onClick={() => {
                             setSelectedFatherId(pigeon.ringNumber);
                             setFatherSearchTerm(pigeon.ringNumber); // show ringNumber in input
@@ -995,9 +1015,9 @@ useEffect(() => {
 
                 {/* Mother Ring ID */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {/* <label className="block text-sm font-medium text-gray-700 mb-2">
                     Mother Ring ID
-                  </label>
+                  </label> */}
                   <input
                     type="text"
                     {...register("motherRingId")}
@@ -1010,7 +1030,7 @@ useEffect(() => {
                       setSelectedMotherId(""); // reset selection if user types
                     }}
                     placeholder="Mother Ring Number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
 
                   {/* Dropdown list */}
@@ -1019,7 +1039,7 @@ useEffect(() => {
                       {motherList.map((pigeon) => (
                         <li
                           key={pigeon._id}
-                          className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                          className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
                           onClick={() => {
                             setSelectedMotherId(pigeon.ringNumber);
                             setMotherSearchTerm(pigeon.ringNumber);
@@ -1037,266 +1057,21 @@ useEffect(() => {
 
           {/* Right Column - Photo Upload */}
           <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4">Pigeon Photos</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Pigeon Photo */}
-                <div className="space-y-2">
-                  {/* <label className="block text-sm font-medium text-gray-700">
-                    Pigeon Photo
-                  </label> */}
-                  <div className="relative">
-                    {pigeonPhoto ? (
-                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                        <Image
-                          src={
-                            pigeonPhoto.file
-                              ? pigeonPhoto.url
-                              : getImageUrl(pigeonPhoto.url)
-                          }
-                          alt="Pigeon photo"
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpecificPhoto(setPigeonPhoto)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleSpecificPhotoUpload(
-                              e,
-                              "pigeonPhoto",
-                              setPigeonPhoto
-                            )
-                          }
-                          className="hidden"
-                        />
-                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
-                        <span className="text-xs text-gray-500 text-center px-2">
-                          Upload Pigeon Photo
-                        </span>
-                      </label>
-                    )}
-                  </div>
-                </div>
-
-                {/* Eye Photo */}
-                <div className="space-y-2">
-                  {/* <label className="block text-sm font-medium text-gray-700">
-                    Eye Photo
-                  </label> */}
-                  <div className="relative">
-                    {eyePhoto ? (
-                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                        <Image
-                          src={
-                            eyePhoto.file
-                              ? eyePhoto.url
-                              : getImageUrl(eyePhoto.url)
-                          }
-                          alt="Eye photo"
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpecificPhoto(setEyePhoto)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleSpecificPhotoUpload(
-                              e,
-                              "eyePhoto",
-                              setEyePhoto
-                            )
-                          }
-                          className="hidden"
-                        />
-                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
-                        <span className="text-xs text-gray-500 text-center px-2">
-                          Upload Eye Photo
-                        </span>
-                      </label>
-                    )}
-                  </div>
-                </div>
-
-                {/* Ownership Photo */}
-                <div className="space-y-2">
-                  {/* <label className="block text-sm font-medium text-gray-700">
-                    Ownership Card
-                  </label> */}
-                  <div className="relative">
-                    {ownershipPhoto ? (
-                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                        <Image
-                          src={
-                            ownershipPhoto.file
-                              ? ownershipPhoto.url
-                              : getImageUrl(ownershipPhoto.url)
-                          }
-                          alt="Ownership card"
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpecificPhoto(setOwnershipPhoto)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleSpecificPhotoUpload(
-                              e,
-                              "ownershipPhoto",
-                              setOwnershipPhoto
-                            )
-                          }
-                          className="hidden"
-                        />
-                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
-                        <span className="text-xs text-gray-500 text-center px-2">
-                          Upload Ownership Card
-                        </span>
-                      </label>
-                    )}
-                  </div>
-                </div>
-
-                {/* Pedigree Photo */}
-                <div className="space-y-2">
-                  {/* <label className="block text-sm font-medium text-gray-700">
-                    Pedigree Photo
-                  </label> */}
-                  <div className="relative">
-                    {pedigreePhoto ? (
-                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                        <Image
-                          src={
-                            pedigreePhoto.file
-                              ? pedigreePhoto.url
-                              : getImageUrl(pedigreePhoto.url)
-                          }
-                          alt="Pedigree photo"
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpecificPhoto(setPedigreePhoto)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleSpecificPhotoUpload(
-                              e,
-                              "pedigreePhoto",
-                              setPedigreePhoto
-                            )
-                          }
-                          className="hidden"
-                        />
-                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
-                        <span className="text-xs text-gray-500 text-center px-2">
-                          Upload Pedigree Photo
-                        </span>
-                      </label>
-                    )}
-                  </div>
-                </div>
-
-                {/* DNA Photo */}
-                <div className="space-y-2">
-                  {/* <label className="block text-sm font-medium text-gray-700">
-                    DNA Photo
-                  </label> */}
-                  <div className="relative">
-                    {DNAPhoto ? (
-                      <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                        <Image
-                          src={
-                            dnaPhoto.file
-                              ? dnaPhoto.url
-                              : getImageUrl(dnaPhoto.url)
-                          }
-                          alt="DNA photo"
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeSpecificPhoto(setDNAPhoto)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            handleSpecificPhotoUpload(
-                              e,
-                              "dnaPhoto",
-                              setDNAPhoto
-                            )
-                          }
-                          className="hidden"
-                        />
-                        <Plus className="w-6 h-6 text-gray-400 mb-1" />
-                        <span className="text-xs text-gray-500 text-center px-2">
-                          Upload DNA Photo
-                        </span>
-                      </label>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* <p className="text-xs text-gray-500 mt-3">
-                Upload specific photos for each category. Each photo type can
-                have one image.
-              </p> */}
-            </div>
+            <PigeonPhotosSlider
+              pigeonPhoto={pigeonPhoto}
+              setPigeonPhoto={setPigeonPhoto}
+              eyePhoto={eyePhoto}
+              setEyePhoto={setEyePhoto}
+              ownershipPhoto={ownershipPhoto}
+              setOwnershipPhoto={setOwnershipPhoto}
+              pedigreePhoto={pedigreePhoto}
+              setPedigreePhoto={setPedigreePhoto}
+              DNAPhoto={DNAPhoto}
+              setDNAPhoto={setDNAPhoto}
+              handleSpecificPhotoUpload={handleSpecificPhotoUpload}
+              removeSpecificPhoto={removeSpecificPhoto}
+              getImageUrl={getImageUrl}
+            />
 
             <div className="flex items-center justify-between my-4">
               <div className="flex items-center space-x-4">
@@ -1341,7 +1116,7 @@ useEffect(() => {
                       Race Result #{index + 1}
                     </h4>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                       {/* Race Name */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1354,7 +1129,7 @@ useEffect(() => {
                             updateRaceResult(result.id, "name", e.target.value)
                           }
                           placeholder="Enter race name"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                         />
                       </div>
 
@@ -1369,7 +1144,7 @@ useEffect(() => {
                           onChange={(e) =>
                             updateRaceResult(result.id, "date", e.target.value)
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                         />
                       </div>
 
@@ -1389,7 +1164,7 @@ useEffect(() => {
                             )
                           }
                           placeholder="e.g., 500m, 600m"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                         />
                       </div>
 
@@ -1405,7 +1180,7 @@ useEffect(() => {
                             updateRaceResult(result.id, "total", e.target.value)
                           }
                           placeholder="Total participating birds"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                         />
                       </div>
 
@@ -1421,7 +1196,7 @@ useEffect(() => {
                             updateRaceResult(result.id, "place", e.target.value)
                           }
                           placeholder="e.g., 1st, 2nd, Winner"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                         />
                       </div>
                     </div>
