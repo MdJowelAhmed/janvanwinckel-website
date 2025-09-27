@@ -710,7 +710,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       Breeder
                     </label>
                     <select
-                      {...register("breeder")}
+                      {...register("breeder", { required: true })}
                       className="w-full px-3 py-[14px] border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Breeder</option>
