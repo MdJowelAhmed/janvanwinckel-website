@@ -35,6 +35,7 @@ import jsPDF from 'jspdf';
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
   console.log(data.gender);
+  console.log(data.verified);
   const getGenderIcon = (gender) => {
     return gender === "Cock" ? "♂" : "♀";
   };
@@ -94,9 +95,11 @@ const PigeonNode = ({ data }) => {
       <div className="flex items-center justify-between ">
         {countryCode && (
           <div className="flex items-center gap-1">
-            <img
+            <Image
               src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
               alt={data.country}
+              width={24}
+              height={18}
               className="w-6 h-5 rounded-sm"
             />
             <p className="text-black">{countryCode}</p>
@@ -129,7 +132,7 @@ const PigeonNode = ({ data }) => {
           alt="Letter P"
           width={30}
           height={30}
-          className="w-7 h-7"
+          className="w-6 h-6"
         />
 
         {/* <WinnerPedigree /> */}
@@ -138,26 +141,30 @@ const PigeonNode = ({ data }) => {
       <div className="">
         <div className="flex items-center justify-start gap-2 space-y-2">
           {data.name && (
-            <h3 className="font-bold text-black text-xl truncate">
+            <h3 className="font-bold text-black text-xl truncate pb-1">
               {data.name}
             </h3>
           )}
         </div>
-        <div className="flex items-center justify-start gap-2">
+        <div className="flex items-center justify-start gap-2 pb-1">
           {" "}
           {data.owner && (
-            <div className="flex items-center gap-2 text-xl  italic text-black">
+            <div className="flex items-center gap-2 text-xl  italic text-black ">
               <User className="w-3 h-3" />
               <span className="truncate">{data.owner}</span>
             </div>
           )}
-          <Image
-            src="/assests/Letter-B.png"
-            alt="Letter P"
-            width={24}
-            height={24}
-            className="w-6 h-6"
-          />
+         {data?.verified && (
+          <div className="flex items-center gap-2 text-xl  italic text-black ">
+            <Image
+              src="/assests/Letter-B.png"
+              alt="Letter P"
+              width={24}
+              height={24}
+              className="w-6 h-6"
+            />
+          </div>
+         )}
         </div>
 
         {data.description && (

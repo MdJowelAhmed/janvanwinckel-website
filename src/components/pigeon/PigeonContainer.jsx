@@ -226,7 +226,7 @@ const PigeonContainer = () => {
         <div className="flex flex-wrap gap-2">
           <Button
             onClick={handleAddPigeon}
-            className="bg-accent-foreground hover:bg-accent-foreground text-white"
+            className="bg-accent-foreground hover:bg-accent-foreground text-white py-6"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add New Pigeon
@@ -235,7 +235,7 @@ const PigeonContainer = () => {
           <Button
             variant="outline"
             onClick={handleExportPDF}
-            className="bg-primary text-white hover:text-white"
+            className="bg-primary text-white hover:text-white py-6"
           >
             <Upload className="w-4 h-4 mr-2" />
             Export as PDF
@@ -243,7 +243,7 @@ const PigeonContainer = () => {
           <Button
             variant="outline"
             onClick={handleExportExcel}
-            className="bg-primary text-white hover:text-white"
+            className="bg-primary text-white hover:text-white py-6"
           >
             <Upload className="w-4 h-4 mr-2" />
             Export as Excel

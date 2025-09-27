@@ -168,7 +168,7 @@ const PigeonTable = ({
                       <Avatar className="w-10 h-10">
                         <AvatarImage
                           src={
-                            getImageUrl(pigeon.photos[0]) ||
+                            getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto) ||
                             "/placeholder-pigeon.jpg"
                           }
                           alt={pigeon.name}
@@ -195,7 +195,7 @@ const PigeonTable = ({
                                 alt={pigeon.country}
                                 className="w-5 h-4 rounded-sm"
                               />
-                              <p className="text-white">{countryCode}</p>
+                              <p className="text-[#B0B6A4]">{countryCode}</p>
                             </div>
                           )
                         );
@@ -210,8 +210,8 @@ const PigeonTable = ({
                       {pigeon.ringNumber}
                     </TableCell>
 
-                    <TableCell>{pigeon.birthYear}</TableCell>
-                    <TableCell className="text-[#3AB27F] text-center">{pigeon.breederRating}</TableCell>
+                    <TableCell className="text-[#B0B6A4]">{pigeon.birthYear}</TableCell>
+                    <TableCell className=" text-center">{pigeon.breederRating}</TableCell>
                     <TableCell>{pigeon.racherRating}</TableCell>
 
                     {/* <TableCell>
@@ -228,7 +228,7 @@ const PigeonTable = ({
                       </div>
                     </TableCell> */}
 
-                    <TableCell className="text-[#3AB27F] text-center">
+                    <TableCell className=" text-center">
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
 
@@ -238,7 +238,7 @@ const PigeonTable = ({
                       {pigeon.status}
                     </TableCell>
 
-                    <TableCell className="text-[#3AB27F]">
+                    <TableCell className="text-[#B0B6A4]">
                       {pigeon.gender}
                     </TableCell>
 

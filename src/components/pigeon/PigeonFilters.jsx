@@ -36,7 +36,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   return (
     <div className="bg-foreground text-white rounded-b-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-8">
           {/* Search */}
           <div className="lg:col-span-2">
             <Label htmlFor="search" className="text-white text-sm font-medium mb-2 block">
@@ -49,7 +49,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                 placeholder="Ring number, name..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="pl-10  border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+                className="pl-10 py-6  border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
           </div>
@@ -60,10 +60,10 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Country
             </Label>
             <Select value={filters.country} onValueChange={(value) => handleFilterChange('country', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
                 <SelectValue placeholder="All Countries" />
               </SelectTrigger>
-              <SelectContent className=" border-slate-500 ">
+              <SelectContent className="py-6 border-slate-500 ">
                 <SelectItem value="all">All Countries</SelectItem>
                 <SelectItem value="Bangladesh">Bangladesh</SelectItem>
                 <SelectItem value="Belgium">Belgium</SelectItem>
@@ -79,7 +79,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Gender
             </Label>
             <Select value={filters.gender} onValueChange={(value) => handleFilterChange('gender', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
                 <SelectValue placeholder="All Genders" />
               </SelectTrigger>
               <SelectContent className=" border-slate-500 w-full">
@@ -96,7 +96,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Color
             </Label>
             <Select value={filters.color} onValueChange={(value) => handleFilterChange('color', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
                 <SelectValue placeholder="All Colors" />
               </SelectTrigger>
               <SelectContent className=" border-slate-500 w-full">
@@ -116,7 +116,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               Year
             </Label>
             <Select value={filters.year} onValueChange={(value) => handleFilterChange('birthYear', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full">
+              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
                 <SelectValue placeholder="All Years" />
               </SelectTrigger>
               <SelectContent className=" border-slate-500 w-full">

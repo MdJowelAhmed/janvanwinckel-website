@@ -77,9 +77,9 @@ const PigeonOverviewContainer = () => {
             <div className="overflow-hidden p-2">
               <div className="aspect-square flex items-center justify-center">
                 <div className="w-full h-full mx-auto rounded-full">
-                  {pigeon?.photos?.[0] ? (
+                  {pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto ? (
                     <Image
-                      src={getImageUrl(pigeon.photos[0])}
+                      src={getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto)}
                       alt={pigeon?.name || "Pigeon"}
                       height={100}
                       width={100}

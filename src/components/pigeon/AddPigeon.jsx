@@ -592,7 +592,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       {/* Header */}
       <div className="flex items-center gap-4 gap-x-10 mb-8">
         <div className="text-center max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold text-accent  text-center">
+          <h1 className="text-4xl font-bold text-accent mb-4  text-center">
             {isEditMode ? "Edit" : "Add"}{" "}
             <span className="text-accent-foreground">Pigeon</span>
           </h1>
@@ -858,7 +858,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       Gender
                     </label>
                     <select
-                      {...register("gender")}
+                      {...register("gender", { required: "Gender is required" })}
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Gender</option>
@@ -993,6 +993,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     placeholder="Father Ring Number"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
+                  <p className="text-xs text-destructive mt-1">Enter a part of the ring or part of the name to search for the corresponding Pigeon</p>
 
                   {/* Dropdown list */}
                   {fatherList?.length > 0 && !selectedFatherId && (
@@ -1032,6 +1033,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     placeholder="Mother Ring Number"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
+                   <p className="text-xs text-destructive mt-1">Enter a part of the ring or part of the name to search for the corresponding Pigeon</p>
 
                   {/* Dropdown list */}
                   {motherList?.length > 0 && !selectedMotherId && (

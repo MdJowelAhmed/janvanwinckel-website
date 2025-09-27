@@ -173,9 +173,11 @@ const PigeonPhotosSlider = ({
                 <div className="relative">
                   {item.photo ? (
                     <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                      <img
+                      <Image
                         src={item.photo.file ? item.photo.url : getImageUrl(item.photo.url)}
                         alt={item.alt}
+                        width={128}
+                        height={128}
                         className="w-full h-full object-cover pointer-events-none"
                         draggable={false}
                       />

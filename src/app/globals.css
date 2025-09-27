@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins);
+  --font-mono: var(--font-poppins);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -161,7 +161,7 @@
 h1,
 h2,
 h3 {
-  font-family: var(--font-geist-mono);
+  font-family: var(--font-poppins);
 }
 
 .custom-shadow {
@@ -169,24 +169,24 @@ h3 {
 }
 
 
-/* ফোন ইনপুট wrapper */
+
 .PhoneInput {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-/* flag dropdown ছোট করার জন্য */
+
 .PhoneInputCountry {
   font-size: 14px;
-  height: 20px; /* flag ছোট */
+  height: 20px; 
 }
 
 /* input field এর height / padding control */
 .PhoneInputInput {
   @apply w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm;
 }
-/* PhoneInput flag ঠিক করার জন্য */
+
 .PhoneInputCountryIcon {
   width: 20px !important;
   height: 15px !important;

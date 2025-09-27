@@ -36,20 +36,95 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
   return (
     <div className="bg-foreground text-white rounded-b-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-8">
           {/* Search */}
-          <div className="lg:col-span-5">
-            <Label htmlFor="search" className="text-white text-sm font-medium mb-2 block">
+          <div className="lg:col-span-1">
+            <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
             Search Pigeon 
             </Label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
               <Input
                 id="search"
-                placeholder="Ring number, name, Mother Name, Mother Ring no, Father Name, Father Ring no, Score Pigeon, Breeder..."
+                placeholder="Search Pigeon name"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="pl-10 py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
+             Ring Number
+            </Label>
+            <div className="relative">
+              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
+              <Input
+                id="search"
+                placeholder="Search Pigeon Ring Number"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
+             Mother Name
+            </Label>
+            <div className="relative">
+              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
+              <Input
+                id="search"
+                placeholder="Search Pigeon Mother Name"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
+            Father Name
+            </Label>
+            <div className="relative">
+              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
+              <Input
+                id="search"
+                placeholder="Search Pigeon Father Name"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
+            Score Pigeon
+            </Label>
+            <div className="relative">
+              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
+              <Input
+                id="search"
+                placeholder="Search Pigeon Score Pigeon"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
+            Breeder
+            </Label>
+            <div className="relative">
+              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
+              <Input
+                id="search"
+                placeholder="Search Pigeon Breeder"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
           </div>
