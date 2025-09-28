@@ -21,7 +21,7 @@ const CheckMarkSvg = ({ color = "#fff" }) => (
     viewBox="0 0 91 90"
     fill="none"
   >
-    <g clip-path="url(#clip0_41575_236)">
+    <g clipPath="url(#clip0_41575_236)">
       <path
         d="M41.7336 65.4765L16.5 40.8037L20.4252 36.7383L41.4532 57.3457L86.4532 8L90.6588 11.6449L41.7336 65.4765Z"
         fill="#37B7C3"
@@ -37,7 +37,7 @@ const CheckMarkSvg = ({ color = "#fff" }) => (
         />
       </clipPath>
     </defs>
-    <g clip-path="url(#clip0_41575_236)">
+    <g clipPath="url(#clip0_41575_236)">
       <path
         d="M41.7336 65.4765L16.5 40.8037L20.4252 36.7383L41.4532 57.3457L86.4532 8L90.6588 11.6449L41.7336 65.4765Z"
         fill="#37B7C3"

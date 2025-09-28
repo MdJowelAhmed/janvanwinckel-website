@@ -197,7 +197,7 @@ export default function Navbar() {
       });
 
       socketRef.current.on("connect_error", (error) => {
-        console.error("Socket connection error:", error.message);
+        // console.error("Socket connection error:", error.message);
         setIsSocketConnected(false);
 
         // Implement exponential backoff for reconnection
