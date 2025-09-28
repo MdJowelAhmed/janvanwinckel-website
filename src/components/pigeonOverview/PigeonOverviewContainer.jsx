@@ -16,6 +16,8 @@ import {
   Activity,
   Heart,
   Baby,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useGetSinglePigeonQuery } from "@/redux/featured/pigeon/pigeonApi";
 import { useParams } from "next/navigation";
@@ -32,6 +34,7 @@ import {
   DialogTitle,
   DialogClose,
 } from "@/components/ui/dialog";
+import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 
 const PigeonOverviewContainer = () => {
   const { id } = useParams();
@@ -40,18 +43,49 @@ const PigeonOverviewContainer = () => {
   const [showRaceResults, setShowRaceResults] = useState(true);
   const [showPigeonModal, setShowPigeonModal] = useState(false);
   const [selectedPigeon, setSelectedPigeon] = useState(null);
-  
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const {data:userData} = useMyProfileQuery();
+  console.log(userData)
+  const userRole = userData?.role;
+console.log(userRole)
   const { data, isLoading } = useGetSinglePigeonQuery(id);
-  const { data: siblingsData, isLoading: siblingsLoading } = useGetAllSiblingsQuery(id);
-  
+  const { data: siblingsData, isLoading: siblingsLoading } =
+    useGetAllSiblingsQuery(id);
+
   console.log("siblingsData", siblingsData);
   const siblings = siblingsData?.data?.siblings || [];
   console.log("siblings", siblings);
 
   const pigeon = data?.data;
-  // console.log(pigeon);
-  // console.log(pigeon?.photos?.[0]);
-  // console.log(pigeon?.results);
+
+  // Get all available images
+  const getAvailableImages = () => {
+    const images = [];
+    if (pigeon?.pigeonPhoto) images.push(pigeon.pigeonPhoto);
+    if (pigeon?.eyePhoto) images.push(pigeon.eyePhoto);
+    if (pigeon?.pedigree) images.push(pigeon.pedigree);
+    if (pigeon?.DNAPhoto) images.push(pigeon.DNAPhoto);
+    if (pigeon?.ownershipPhoto) images.push(pigeon.ownershipPhoto);
+    return images;
+  };
+
+  const availableImages = pigeon ? getAvailableImages() : [];
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev === 0 ? availableImages.length - 1 : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) =>
+      prev === availableImages.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const handleDotClick = (index) => {
+    setCurrentImageIndex(index);
+  };
 
   // Fix 1: Return spinner properly
   if (isLoading) {
@@ -72,25 +106,52 @@ const PigeonOverviewContainer = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Pigeon Image */}
+          {/* Pigeon Image with Carousel */}
           <div className="lg:col-span-1">
             <div className="overflow-hidden p-2">
-              <div className="aspect-square flex items-center justify-center">
-                <div className="w-full h-full mx-auto rounded-full">
-                  {pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto ? (
-                    <Image
-                      src={getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto)}
-                      alt={pigeon?.name || "Pigeon"}
-                      height={100}
-                      width={100}
-                      className="w-full h-full object-cover rounded-md"
-                    />
+              <div className="aspect-square flex items-center justify-center relative pb-6">
+                <div className="w-full h-full mx-auto rounded-md relative overflow-hidden">
+                  {availableImages.length > 0 ? (
+                    <>
+                      {/* Main Image */}
+                      <Image
+                        src={getImageUrl(availableImages[currentImageIndex])}
+                        alt={pigeon?.name || "Pigeon"}
+                        height={400}
+                        width={400}
+                        className="w-full h-full  object-cover rounded-md"
+                      />
+                    </>
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-xs text-gray-500">No Img</span>
+                    <div className="w-full h-full rounded-md bg-gray-200 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center mx-auto mb-2">
+                          <span className="text-xs text-gray-500">No Img</span>
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          No Image Available
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
+
+                {/* Navigation Dots (outside image container) */}
+                {availableImages.length > 1 && (
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {availableImages.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleDotClick(index)}
+                        className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                          index === currentImageIndex
+                            ? "bg-accent-foreground w-8 h-2 "
+                            : "bg-accent hover:bg-accent/90"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -270,7 +331,7 @@ const PigeonOverviewContainer = () => {
                   Your Story:{" "}
                 </strong>
                 <span>
-                  {pigeon?.story || 
+                  {pigeon?.story ||
                     "The Blue Thunder pigeon is a blue-gray bird with dark bars, known for its calm nature and strong racing performance. It's popular among experienced breeders and racing enthusiasts."}
                 </span>
               </p>
@@ -279,7 +340,9 @@ const PigeonOverviewContainer = () => {
         </Card>
 
         {/* Siblings Information */}
-        <Card>
+       {
+        userRole === "PAIDUSER" && (
+           <Card>
           <CardHeader>
             {/* Fix 3: Use proper button component */}
             <button
@@ -309,11 +372,21 @@ const PigeonOverviewContainer = () => {
                     <thead>
                       <tr className="border-b bg-foreground text-white">
                         <th className="text-left p-3 font-semibold">Name</th>
-                        <th className="text-left p-3 font-semibold">Siblings Type</th>
-                        <th className="text-left p-3 font-semibold">Ring Number</th>
-                        <th className="text-left p-3 font-semibold">Birth Year</th>
-                        <th className="text-left p-3 font-semibold">Breeder Rating</th>
-                        <th className="text-left p-3 font-semibold">Racer Rating</th>
+                        <th className="text-left p-3 font-semibold">
+                          Siblings Type
+                        </th>
+                        <th className="text-left p-3 font-semibold">
+                          Ring Number
+                        </th>
+                        <th className="text-left p-3 font-semibold">
+                          Birth Year
+                        </th>
+                        <th className="text-left p-3 font-semibold">
+                          Breeder Rating
+                        </th>
+                        <th className="text-left p-3 font-semibold">
+                          Racer Rating
+                        </th>
                         <th className="text-left p-3 font-semibold">Father</th>
                         <th className="text-left p-3 font-semibold">Mother</th>
                         <th className="text-left p-3 font-semibold">Gender</th>
@@ -322,17 +395,28 @@ const PigeonOverviewContainer = () => {
                     </thead>
                     <tbody>
                       {siblings.map((sibling, index) => (
-                        <tr key={sibling._id || index} className="border-b bg-background text-white">
+                        <tr
+                          key={sibling._id || index}
+                          className="border-b bg-background text-white"
+                        >
                           <td className="p-3 font-medium">
                             {sibling.name || "N/A"}
                           </td>
                           <td className="p-3">{sibling.type || "N/A"}</td>
                           <td className="p-3">{sibling.ringNumber || "N/A"}</td>
                           <td className="p-3">{sibling.birthYear || "N/A"}</td>
-                          <td className="p-3">{sibling.breederRating || "N/A"}</td>
-                          <td className="p-3">{sibling.racerRating || "N/A"}</td>
-                          <td className="p-3">{sibling.father?.ringNumber || "N/A"}</td>
-                          <td className="p-3">{sibling.mother?.ringNumber || "N/A"}</td>
+                          <td className="p-3">
+                            {sibling.breederRating || "N/A"}
+                          </td>
+                          <td className="p-3">
+                            {sibling.racerRating || "N/A"}
+                          </td>
+                          <td className="p-3">
+                            {sibling.father?.ringNumber || "N/A"}
+                          </td>
+                          <td className="p-3">
+                            {sibling.mother?.ringNumber || "N/A"}
+                          </td>
                           <td className="p-3">{sibling.gender || "N/A"}</td>
                           <td className="p-3">
                             <Button
@@ -351,11 +435,15 @@ const PigeonOverviewContainer = () => {
                   </table>
                 </div>
               ) : (
-                <p className="text-gray-500 italic text-center p-4">No siblings found</p>
+                <p className="text-gray-500 italic text-center p-4">
+                  No siblings found
+                </p>
               )}
             </CardContent>
           )}
         </Card>
+        )
+       }
 
         {/* Race Results */}
         <Card>
@@ -389,17 +477,28 @@ const PigeonOverviewContainer = () => {
                         <tr>
                           <th className="text-left p-3 font-semibold">Name</th>
                           <th className="text-left p-3 font-semibold">Date</th>
-                          <th className="text-left p-3 font-semibold">Distance</th>
-                          <th className="text-left p-3 font-semibold">Total Birds</th>
+                          <th className="text-left p-3 font-semibold">
+                            Distance
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Total Birds
+                          </th>
                           <th className="text-left p-3 font-semibold">Place</th>
                         </tr>
                       </thead>
                       <tbody>
                         {pigeon.results.map((race, index) => (
-                          <tr key={race._id || index} className="bg-background text-white">
-                            <td className="p-3 font-medium">{race.name || "N/A"}</td>
+                          <tr
+                            key={race._id || index}
+                            className="bg-background text-white"
+                          >
+                            <td className="p-3 font-medium">
+                              {race.name || "N/A"}
+                            </td>
                             <td className="p-3">
-                              {race.date ? moment(race.date).format("DD MMM YYYY") : "N/A"}
+                              {race.date
+                                ? moment(race.date).format("DD MMM YYYY")
+                                : "N/A"}
                             </td>
                             <td className="p-3">{race.distance || "N/A"}</td>
                             <td className="p-3">{race.total || "N/A"}</td>
@@ -415,13 +514,15 @@ const PigeonOverviewContainer = () => {
                       <strong>Additional Notes:</strong>
                     </p>
                     <p className="text-sm text-gray-700">
-                      {pigeon?.raceNotes || 
+                      {pigeon?.raceNotes ||
                         "The Blue Thunder pigeon is a blue-gray bird with dark bars, known for its calm nature and strong racing performance. It's popular among experienced breeders and racing enthusiasts."}
                     </p>
                   </div>
                 </>
               ) : (
-                <p className="text-gray-500 italic text-center p-4">No race results found</p>
+                <p className="text-gray-500 italic text-center p-4">
+                  No race results found
+                </p>
               )}
             </CardContent>
           )}
@@ -429,7 +530,7 @@ const PigeonOverviewContainer = () => {
       </div>
 
       {/* Pigeon Details Modal */}
-      <Dialog open={showPigeonModal} onOpenChange={setShowPigeonModal} >
+      <Dialog open={showPigeonModal} onOpenChange={setShowPigeonModal}>
         <DialogContent className="sm:max-w-md md:max-w-lg lg:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-accent flex items-center justify-between">
@@ -459,7 +560,9 @@ const PigeonOverviewContainer = () => {
                     </div>
                   )}
                 </div>
-                <h3 className="text-lg font-semibold text-accent">{selectedPigeon.name || "N/A"}</h3>
+                <h3 className="text-lg font-semibold text-accent">
+                  {selectedPigeon.name || "N/A"}
+                </h3>
                 <p className="text-sm text-accent">
                   Ring Number: {selectedPigeon.ringNumber || "N/A"}
                 </p>
@@ -470,23 +573,33 @@ const PigeonOverviewContainer = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-semibold">Birth Year</p>
-                    <p className="text-white">{selectedPigeon.birthYear || "N/A"}</p>
+                    <p className="text-white">
+                      {selectedPigeon.birthYear || "N/A"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Gender</p>
-                    <p className="text-white">{selectedPigeon.gender || "N/A"}</p>
+                    <p className="text-white">
+                      {selectedPigeon.gender || "N/A"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Color</p>
-                    <p className="text-white">{selectedPigeon.color || "N/A"}</p>
+                    <p className="text-white">
+                      {selectedPigeon.color || "N/A"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Country</p>
-                    <p className="text-white">{selectedPigeon.country || "N/A"}</p>
+                    <p className="text-white">
+                      {selectedPigeon.country || "N/A"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Status</p>
-                    <p className="text-white">{selectedPigeon.status || "N/A"}</p>
+                    <p className="text-white">
+                      {selectedPigeon.status || "N/A"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-semibold">Type</p>
@@ -501,15 +614,21 @@ const PigeonOverviewContainer = () => {
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <p className="text-sm font-semibold">Breeder Rating</p>
-                      <p className="text-white">{selectedPigeon.breederRating || "N/A"}</p>
+                      <p className="text-white">
+                        {selectedPigeon.breederRating || "N/A"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Racer Rating</p>
-                      <p className="text-white">{selectedPigeon.racerRating || "N/A"}</p>
+                      <p className="text-white">
+                        {selectedPigeon.racerRating || "N/A"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm font-semibold">Racing Rating</p>
-                      <p className="text-white">{selectedPigeon.racingRating || "N/A"}</p>
+                      <p className="text-white">
+                        {selectedPigeon.racingRating || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -518,7 +637,9 @@ const PigeonOverviewContainer = () => {
 
                 <div className="space-y-2">
                   <h4 className="font-semibold">Location</h4>
-                  <p className="text-white">{selectedPigeon.location || "N/A"}</p>
+                  <p className="text-white">
+                    {selectedPigeon.location || "N/A"}
+                  </p>
                 </div>
 
                 {selectedPigeon.notes && (
