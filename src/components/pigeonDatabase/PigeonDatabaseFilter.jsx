@@ -38,27 +38,26 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
       <CardContent className="p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-8">
           {/* Search */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-6">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
             Search Pigeon 
             </Label>
             <div className="relative">
-              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
+              <Search className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="search"
-                placeholder="Search Pigeon name"
+                placeholder="Search Pigeon name, Father name , Father rig number ,Mother name, Mother ring number, Score ...."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+                className="pl-10 py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
           </div>
-          <div className="lg:col-span-1">
+          {/* <div className="lg:col-span-1">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
              Ring Number
             </Label>
             <div className="relative">
-              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
               <Input
                 id="search"
                 placeholder="Search Pigeon Ring Number"
@@ -67,13 +66,12 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
                 className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
-          </div>
-          <div className="lg:col-span-1">
+          </div> */}
+          {/* <div className="lg:col-span-1">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
              Mother Name
             </Label>
             <div className="relative">
-              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
               <Input
                 id="search"
                 placeholder="Search Pigeon Mother Name"
@@ -82,13 +80,12 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
                 className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
-          </div>
-          <div className="lg:col-span-1">
+          </div> */}
+          {/* <div className="lg:col-span-1">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
             Father Name
             </Label>
             <div className="relative">
-              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
               <Input
                 id="search"
                 placeholder="Search Pigeon Father Name"
@@ -97,13 +94,12 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
                 className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
-          </div>
-          <div className="lg:col-span-1">
+          </div> */}
+          {/* <div className="lg:col-span-1">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
             Score Pigeon
             </Label>
             <div className="relative">
-              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
               <Input
                 id="search"
                 placeholder="Search Pigeon Score Pigeon"
@@ -112,13 +108,12 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
                 className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
-          </div>
-          <div className="lg:col-span-1">
+          </div> */}
+          {/* <div className="lg:col-span-1">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
             Breeder
             </Label>
             <div className="relative">
-              {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /> */}
               <Input
                 id="search"
                 placeholder="Search Pigeon Breeder"
@@ -127,7 +122,7 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
                 className=" py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Country Filter */}
           {/* <div>
