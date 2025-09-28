@@ -66,9 +66,9 @@ const PigeonDatabasePage = () => {
 //     router.push("/add-pigeon");
 //   };
 
-//   const handleEditPigeon = (pigeonId) => {
-//     router.push(`/add-pigeon?edit=${pigeonId}`);
-//   };
+  const handleEditPigeon = (pigeonId) => {
+    router.push(`/add-pigeon?edit=${pigeonId}`);
+  };
 
 //   const handleExportPDF = () => {
 //     if (!pigeonData?.data?.data?.length) {
@@ -292,7 +292,7 @@ const PigeonDatabasePage = () => {
         isLoading={isLoading}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
-        // onEdit={handleEditPigeon}
+        onEdit={handleEditPigeon}
         onStatusFilter={handleStatusFilter} // Pass the status filter handler
         selectedStatus={selectedStatus} // Pass selected status for highlighting
       />
