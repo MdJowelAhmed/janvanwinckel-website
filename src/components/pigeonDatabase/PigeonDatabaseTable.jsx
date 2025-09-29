@@ -53,9 +53,9 @@ const PigeonTable = ({
         <CardContent className="p-8">
           <div className="text-center">
             <p className="text-gray-500 text-lg">No pigeons found</p>
-            <p className="text-gray-400 text-sm mt-1">
+            {/* <p className="text-gray-400 text-sm mt-1">
               Try adjusting your filters
-            </p>
+            </p> */}
           </div>
         </CardContent>
       </Card>

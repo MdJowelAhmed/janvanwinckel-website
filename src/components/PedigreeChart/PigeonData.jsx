@@ -13,7 +13,7 @@ export const convertBackendToExistingFormat = (backendResponse) => {
   // Helper function to format results
   const formatResults = (results) => {
     if (!Array.isArray(results) || results.length === 0) {
-      return "No achievements recorded";
+      return "No Results";
     }
     // Take the first result and format it
     const firstResult = results[0];

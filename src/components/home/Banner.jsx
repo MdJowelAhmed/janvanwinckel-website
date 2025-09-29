@@ -33,6 +33,7 @@ const useDebounce = (value, delay) => {
 export default function PigeonHub() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  console.log('searchTerm', searchTerm);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPigeon, setSelectedPigeon] = useState(null);
   const inputRef = useRef(null);
@@ -44,14 +45,13 @@ export default function PigeonHub() {
   }, [searchTerm.length]);
 
   const debouncedSearchTerm = useDebounce(searchTerm, debounceDelay);
+  console.log('debouncedSearchTerm', debouncedSearchTerm);
 
- 
+  // Fixed: Directly pass the search term instead of array format
   const shouldSkipQuery = !debouncedSearchTerm || debouncedSearchTerm.length < 2;
   
   const { data, isLoading, isFetching } = useGetPigeonSearchQuery(
-    shouldSkipQuery 
-      ? undefined 
-      : [{ name: 'searchTerm', value: debouncedSearchTerm }],
+    shouldSkipQuery ? undefined : debouncedSearchTerm, // Changed: Direct string pass
     {
       skip: shouldSkipQuery,
       // Cache results to avoid refetching
@@ -60,8 +60,10 @@ export default function PigeonHub() {
       refetchOnFocus: false,
     }
   );
+  console.log('data', data);
 
   const pigeonData = useMemo(() => data?.data || [], [data?.data]);
+  console.log('pigeonData', pigeonData);
 
   // Suggestions logic
   useEffect(() => {
@@ -119,7 +121,6 @@ export default function PigeonHub() {
       isInitialLoad.current = false;
     }
   }, []);
-
 
   if (isInitialLoad.current && isLoading) {
     return <Spinner />;
@@ -189,9 +190,9 @@ export default function PigeonHub() {
         </div>
 
         {/* Selected Pigeon Display */}
-        {selectedPigeon && (
+        {/* {selectedPigeon && (
           <SelectedPigeonDisplay pigeon={selectedPigeon} />
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -208,7 +209,7 @@ const PigeonSuggestionItem = React.memo(({ pigeon, index, total, onSuggestionCli
     <div
       onClick={handleClick}
       onMouseDown={(e) => e.preventDefault()} // Prevent input blur
-      className={`px-6 py-4 cursor-pointer hover:bg-blue-50 transition-colors duration-200 flex items-center justify-between ${
+      className={`px-6 py-2 cursor-pointer hover:bg-blue-50 transition-colors duration-200 flex items-center justify-between ${
         index !== total - 1 ? 'border-b border-slate-100' : ''
       }`}
     >
@@ -228,34 +229,34 @@ const PigeonSuggestionItem = React.memo(({ pigeon, index, total, onSuggestionCli
 PigeonSuggestionItem.displayName = 'PigeonSuggestionItem';
 
 // Memoized selected pigeon display
-const SelectedPigeonDisplay = React.memo(({ pigeon }) => (
-  <div className="mt-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 max-w-md w-full border border-slate-200">
-    <div className="text-center">
-      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
-        <Bird className="w-10 h-10 text-white" />
-      </div>
-      <h3 className="text-2xl font-bold text-slate-800 mb-2">{pigeon.name}</h3>
-      <div className="text-sm text-slate-600 mb-4">
-        <div className="bg-slate-100 rounded-full px-3 py-1 inline-block mb-2">
-          Ring ID: {pigeon.ringNumber}
-        </div>
-      </div>
-      <div className="grid grid-cols-3 gap-4 text-center mt-6">
-        <div className="bg-slate-50 rounded-lg p-3">
-          <div className="text-2xl font-bold text-blue-600">12</div>
-          <div className="text-xs text-slate-500">Races</div>
-        </div>
-        <div className="bg-slate-50 rounded-lg p-3">
-          <div className="text-2xl font-bold text-green-600">8</div>
-          <div className="text-xs text-slate-500">Wins</div>
-        </div>
-        <div className="bg-slate-50 rounded-lg p-3">
-          <div className="text-2xl font-bold text-orange-600">3rd</div>
-          <div className="text-xs text-slate-500">Rank</div>
-        </div>
-      </div>
-    </div>
-  </div>
-));
+// const SelectedPigeonDisplay = React.memo(({ pigeon }) => (
+//   <div className="mt-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 max-w-md w-full border border-slate-200">
+//     <div className="text-center">
+//       <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
+//         <Bird className="w-10 h-10 text-white" />
+//       </div>
+//       <h3 className="text-2xl font-bold text-slate-800 mb-2">{pigeon.name}</h3>
+//       <div className="text-sm text-slate-600 mb-4">
+//         <div className="bg-slate-100 rounded-full px-3 py-1 inline-block mb-2">
+//           Ring ID: {pigeon.ringNumber}
+//         </div>
+//       </div>
+//       <div className="grid grid-cols-3 gap-4 text-center mt-6">
+//         <div className="bg-slate-50 rounded-lg p-3">
+//           <div className="text-2xl font-bold text-blue-600">12</div>
+//           <div className="text-xs text-slate-500">Races</div>
+//         </div>
+//         <div className="bg-slate-50 rounded-lg p-3">
+//           <div className="text-2xl font-bold text-green-600">8</div>
+//           <div className="text-xs text-slate-500">Wins</div>
+//         </div>
+//         <div className="bg-slate-50 rounded-lg p-3">
+//           <div className="text-2xl font-bold text-orange-600">3rd</div>
+//           <div className="text-xs text-slate-500">Rank</div>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// ));
 
-SelectedPigeonDisplay.displayName = 'SelectedPigeonDisplay';
+// SelectedPigeonDisplay.displayName = 'SelectedPigeonDisplay';

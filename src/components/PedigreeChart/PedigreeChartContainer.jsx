@@ -178,14 +178,14 @@ const PigeonNode = ({ data }) => {
           </div>
         )}
         {data.achievements && (
-          <div className="flex  gap-2">
-            <p className="text-xs text-black">Results : </p>
+          <div className="flex items-center gap-1">
+            <p className="text-xs text-black">Results: </p>
             <Image
               src="/assests/Gold-tropy.png"
               alt="Letter P"
-              width={30}
-              height={30}
-              className="w-7 h-7"
+              width={24}
+              height={24}
+              className="w-6 h-6"
             />
             <p className="text-xs text-black">{data.achievements}</p>
           </div>
@@ -507,7 +507,7 @@ export default function PigeonPedigreeChart() {
 
   return (
     <div className="container  mx-auto">
-      <div className="flex flex-col md:flex-row items-center justify-between mt-12">
+      <div className="flex flex-col md:flex-row items-center justify-between mt-12 px-4 md:px-8 lg:px-12">
         <div className="max-w-2xl">
           <h2 className="text-black font-bold text-2xl">
             Pigeon pedigree chart

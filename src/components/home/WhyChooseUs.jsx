@@ -67,10 +67,10 @@ const WhyChooseUs = () => {
                                        
                     {/* Content */}
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-cyan-500 mb-2">
+                      <h3 className="text-xl font-semibold text-accent mb-2">
                         {feature.title}
                       </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
+                      <p className="text-destructive text-sm leading-relaxed">
                         {feature.description}
                       </p>
                     </div>

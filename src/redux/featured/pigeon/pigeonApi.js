@@ -48,15 +48,10 @@ const pigeonApi = api.injectEndpoints({
     // Fix for your pigeonApi.js
     getPigeonSearch: builder.query({
       query: (searchTerm) => {
-        const params = new URLSearchParams();
-        if (searchTerm) {
-          params.append('searchTerm', searchTerm);
-        }
-
+        // Directly use the searchTerm as query parameter
         return {
-          url: "/pigeon/search",
+          url: `/pigeon/search?searchTerm=${encodeURIComponent(searchTerm)}`,
           method: "GET",
-          params,
         };
       },
       providesTags: ["Pigeon"],
