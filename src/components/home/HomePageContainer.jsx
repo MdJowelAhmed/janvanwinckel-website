@@ -1,3 +1,4 @@
+import ContactForm from "../contactUs/ContactUs";
 import SubscriptionBeforeLogin from "../subscriptionBeforLogin/SubscriptionBeforeLogin";
 import AboutUs from "./AboutUs";
 import Banner from "./Banner";
@@ -12,10 +13,11 @@ const HomePageContainer = () => {
       <Banner />
       <AboutUs />
       <HowItWork />
-      <WhyChooseUs />
+      {/* <WhyChooseUs /> */}
       <SubscriptionBeforeLogin />
-      <FaqSection />
-      <Newsletter />
+      <ContactForm />
+      {/* <FaqSection /> */}
+      {/* <Newsletter /> */}
 
       {/* <YogaQuotePage />
       <TodaysVideo />

@@ -9,10 +9,10 @@ export default function Footer() {
     <div className="flex flex-col border-t mt-12 md:mt-20 ">
       {/*  */}
       <footer className="bg-primary py-8 px-4 md:px-8 lg:px-12">
-        <div className="text-center  max-w-lg mx-auto font-semibold text-3xl text-white mb-6">
+        {/* <div className="text-center  max-w-lg mx-auto font-semibold text-3xl text-white mb-6">
           <h2>Learn how to grow 💪audience fast in Pigeon Hub</h2>
         </div>
-        <Separator />
+        <Separator /> */}
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mt-6">
             {/* Left Section - Company Info */}

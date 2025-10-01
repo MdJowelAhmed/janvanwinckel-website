@@ -53,16 +53,16 @@ export default function ContactForm() {
   };
 
   return (
-    <Card className="w-full max-w-5xl mx-auto border border-gray-200 shadow-sm rounded-lg my-10">
+    <div className="w-full max-w-5xl mx-auto   rounded-lg my-10">
       <CardContent className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold flex items-center">
-            <span className="mr-2 text-gray-700">♦</span> Get In Touch
+        <div className="mb-12 max-w-2xl mx-auto text-center">
+          <h2 className="text-4xl font-semibold flex justify-center items-center">
+             <span className="text-accent mr-2">Contact</span>  us
           </h2>
           <p className="text-gray-600 text-sm mt-1">
-            Unleash a range of possibilities enriches life, blending vigor with
-            balance. The result is a lifestyle that's not only dynamic but also
-            deeply rewarding.
+            We’re here to help. If you have any questions, feedback, or remarks,
+            feel free to reach out to us at: <span className="text-accent-foreground mx-2 font-bold">info@ThePigeonHub.com</span>  
+            Our team will get back to you as soon as possible
           </p>
         </div>
 
@@ -134,6 +134,6 @@ export default function ContactForm() {
           </Button>
         </form>
       </CardContent>
-    </Card>
+    </div>
   );
 }
