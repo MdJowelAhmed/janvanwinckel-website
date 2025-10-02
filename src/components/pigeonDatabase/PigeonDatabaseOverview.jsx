@@ -18,6 +18,7 @@ const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
     }
 
     const pigeons = data.data.data
+    console.log("pigeons" , pigeons)
     const stats = {
       all: data.data.pagination?.total || pigeons.length,
       racing: 0,

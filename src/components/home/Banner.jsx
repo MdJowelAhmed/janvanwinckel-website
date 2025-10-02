@@ -33,7 +33,7 @@ const useDebounce = (value, delay) => {
 export default function PigeonHub() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
-  console.log('searchTerm', searchTerm);
+  // console.log('searchTerm', searchTerm);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedPigeon, setSelectedPigeon] = useState(null);
   const inputRef = useRef(null);
@@ -45,7 +45,7 @@ export default function PigeonHub() {
   }, [searchTerm.length]);
 
   const debouncedSearchTerm = useDebounce(searchTerm, debounceDelay);
-  console.log('debouncedSearchTerm', debouncedSearchTerm);
+  // console.log('debouncedSearchTerm', debouncedSearchTerm);
 
   // Fixed: Directly pass the search term instead of array format
   const shouldSkipQuery = !debouncedSearchTerm || debouncedSearchTerm.length < 2;
@@ -60,10 +60,10 @@ export default function PigeonHub() {
       refetchOnFocus: false,
     }
   );
-  console.log('data', data);
+  // console.log('data', data);
 
   const pigeonData = useMemo(() => data?.data || [], [data?.data]);
-  console.log('pigeonData', pigeonData);
+  // console.log('pigeonData', pigeonData);
 
   // Suggestions logic
   useEffect(() => {
@@ -184,7 +184,7 @@ export default function PigeonHub() {
            pigeonData.length === 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-slate-200 p-6 text-center backdrop-blur-sm bg-white/95">
               <Bird className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">No pigeons found matching your search</p>
+              <p className="text-slate-500">No verified and Iconic pigeons found matching your search</p>
             </div>
           )}
         </div>

@@ -145,10 +145,10 @@ const PigeonTable = ({
                   <TableHead className="text-white">Quality Breeder</TableHead>
                   <TableHead className="text-white">Quality Racer</TableHead>
                   <TableHead className="text-white">Racing Rating</TableHead>
-                  {/* <TableHead className="text-white">Pattern</TableHead> */}
+                  <TableHead className="text-white">Verified</TableHead>
                   <TableHead className="text-white">Status</TableHead>
                   <TableHead className="text-white">Gender</TableHead>
-                  {/* <TableHead className="text-white">Rating</TableHead> */}
+                  <TableHead className="text-white">Iconic Score</TableHead>
                   <TableHead className="text-white">Color</TableHead>
                   <TableHead className="text-white">Location</TableHead>
                   <TableHead className="text-white w-20">Actions</TableHead>
@@ -232,7 +232,7 @@ const PigeonTable = ({
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
 
-                    {/* <TableCell>{pigeon.pattern}</TableCell> */}
+                    <TableCell>{pigeon.verified ? "Verified" : "False"}</TableCell>
 
                     <TableCell className="text-[#3AB27F]">
                       {pigeon.status}
@@ -242,11 +242,11 @@ const PigeonTable = ({
                       {pigeon.gender}
                     </TableCell>
 
-                    {/* <TableCell>
+                    <TableCell>
                       <div className="text-yellow-500">
-                        {getRatingStars(pigeon.breederRating || pigeon.racherRating || 0)}
+                        {pigeon.iconicScore}
                       </div>
-                    </TableCell> */}
+                    </TableCell>
 
                     <TableCell>{pigeon.color}</TableCell>
 

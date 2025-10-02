@@ -29,6 +29,30 @@ export default function LoginUser() {
 
 
 
+// const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     try {
+//       const res = await login({ email, password }).unwrap();
+//       console.log(res);
+//       const accessToken = res.data.accessToken;
+//       console.log(accessToken);
+
+//       // Save tokens to localStorage
+//       localStorage.setItem("token", accessToken);
+
+
+//       dispatch(loginSuccess(accessToken));
+
+//       // Redirect
+//       router.push("/");
+//     } catch (error) {
+//       console.error("Login failed:", error);
+//       // const errorMessage = error?.data?.message || error?.message || "Login failed";
+//       toast.error(error);
+//     }
+//   };
+
 const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,18 +65,24 @@ const handleSubmit = async (e) => {
       // Save tokens to localStorage
       localStorage.setItem("token", accessToken);
 
-
       dispatch(loginSuccess(accessToken));
 
-      // Redirect
-      router.push("/");
+      // Check user role and redirect accordingly
+      const userRole = res.data.user?.role; // Assuming role is in response
+      
+      if (userRole === "PAIDUSER") {
+        router.push("/");
+      } else if (userRole === "USER") {
+        router.push("/subscription");
+      } else {
+        router.push("/"); // Default redirect
+      }
+      
     } catch (error) {
       console.error("Login failed:", error);
-      // const errorMessage = error?.data?.message || error?.message || "Login failed";
-      toast.error(error);
+      toast.error(error?.data?.message || "Login failed");
     }
   };
-
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row justify-center">
       {/* Left side image */}
