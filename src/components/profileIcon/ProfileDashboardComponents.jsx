@@ -6,7 +6,7 @@ import {
   useUpdateProfileMutation,
 } from "@/redux/featured/auth/authApi";
 import { useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
-import { Bird, BirdIcon, Phone, Upload, User, User2 } from "lucide-react";
+import { Bird, BirdIcon, Calendar, Phone, Upload, User, User2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { MdEmail } from "react-icons/md";
@@ -24,6 +24,7 @@ import { Label } from "../ui/label";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { getImageUrl } from "../share/imageUrl";
 import { toast } from "react-hot-toast"; // Make sure you have this import
+import moment from "moment";
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
@@ -361,6 +362,36 @@ export default function ProfileDashboardComponents() {
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
               {userData?.totalPigeons || "N/A"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+       
+       <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-accent">
+                <Calendar size={40} />
+              </div>
+              <h3 className="font-medium text-accent">Subscription start Date</h3>
+            </div>
+            <p className="text-lg font-bold mt-4 text-gray-800">
+              {moment(userData?.subscription.startDate).format('LL')}
+            </p>
+          </CardContent>
+        </Card>
+       <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-accent">
+                <Calendar size={40} />
+              </div>
+              <h3 className="font-medium text-accent">Subscription End Date</h3>
+            </div>
+            <p className="text-lg font-bold mt-4 text-gray-800">
+              {moment(userData?.subscription.endDate).format('LL')}
             </p>
           </CardContent>
         </Card>
