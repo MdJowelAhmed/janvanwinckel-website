@@ -90,7 +90,7 @@ export default function Navbar() {
 
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
-  // console.log("navbar", userData);
+  console.log("navbar", userData);
   const {
     data: notificationData,
     isLoading,
@@ -484,10 +484,15 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
 
-          <ul className="hidden md:flex space-x-8">
+        <ul className="hidden md:flex space-x-8">
             {navItems.map((item) => {
              
               if (item.name === "Loft Overview" && !userData?._id) {
+                return null;
+              }
+
+              // Hide "Add Pigeon" if user is not PAIDUSER
+              if (item.name === "Add Pigeon" && userData?.role !== "PAIDUSER") {
                 return null;
               }
 
@@ -529,7 +534,7 @@ export default function Navbar() {
             )} */}
 
             {/* Notification Button - Only show if user is logged in */}
-            {userData?._id && (
+            {userData?._id && userData?.role === "PAIDUSER" && (
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationModalOpen(true)}

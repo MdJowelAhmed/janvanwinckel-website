@@ -67,7 +67,7 @@ const onSubmit = async (data) => {
     const errorMessage =
       error?.data?.message || error.message || "Registration failed!";
     setRegistrationStatus(errorMessage);
-    toast.error(errorMessage);
+    toast.error(error);
   }
 };
 

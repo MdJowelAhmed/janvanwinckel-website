@@ -64,7 +64,7 @@ const PaymentSuccessPage = () => {
         </div> */}
 
         {/* Navigation */}
-        <div className="flex gap-3">
+        <div className="flex gap-3  items-center justify-center">
           <Link href="/">
             <Button className="flex-1 bg-accent text-white hover:bg-accent/90 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
               <ArrowLeft className="w-4 h-4" />
