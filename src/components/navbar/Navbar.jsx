@@ -419,9 +419,10 @@ export default function Navbar() {
   // Navigation items
   const navItems = [
     { name: "Home", path: "/" },
+        { name: "Subscription", path: "/subscription" },
     { name: "Add Pigeon", path: "/add-pigeon" },
     { name: "Loft Overview", path: "/loft-overview" },
-    { name: "Subscription", path: "/subscription" },
+
     { name: "Pigeon Database", path: "/pigeon-database" },
   ];
 

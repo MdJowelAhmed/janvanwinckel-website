@@ -16,7 +16,7 @@ const LayoutWrapper = ({ children }) => {
     "/reset-password",
     "/user-create",
     "/subscription",
-    // "/",
+    "/",
     "/register"
   ];
 
