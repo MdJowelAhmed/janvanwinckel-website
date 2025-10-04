@@ -23,27 +23,6 @@ export default function LoginUser() {
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
-  // Import from utils if you created the utility file
-  // import { getUserRoleFromToken } from "@/utils/tokenUtils";
-  
-  // Or use inline function
-  // const getUserRoleFromToken = (token) => {
-  //   try {
-  //     const base64Url = token.split('.')[1];
-  //     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  //     const jsonPayload = decodeURIComponent(
-  //       atob(base64)
-  //         .split('')
-  //         .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-  //         .join('')
-  //     );
-  //     const decoded = JSON.parse(jsonPayload);
-  //     return decoded?.role || null;
-  //   } catch (error) {
-  //     console.error("Error decoding token:", error);
-  //     return null;
-  //   }
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

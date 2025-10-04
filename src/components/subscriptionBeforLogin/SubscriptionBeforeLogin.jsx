@@ -4,9 +4,11 @@ import { Check, X } from "lucide-react";
 import { useGetWebPackagesQuery } from "@/redux/featured/Package/packageApi";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 import Spinner from "@/app/(commonLayout)/Spinner";
+import { useRouter } from "next/navigation";
 
 const SubscriptionBeforeLogin = () => {
   const { data: userData } = useMyProfileQuery();
+  const router = useRouter();
   // console.log(userData);
   const { data, isLoading } = useGetWebPackagesQuery();
   const packages = data?.data;
@@ -25,6 +27,12 @@ const SubscriptionBeforeLogin = () => {
   ];
 
   const handlePurchaseClick = (paymentLink) => {
+    // Check if user is already subscribed
+    if (!userData) {
+      router.push("/login");
+      return;
+    }
+
     if (paymentLink) {
       window.open(paymentLink, "_blank");
     }
