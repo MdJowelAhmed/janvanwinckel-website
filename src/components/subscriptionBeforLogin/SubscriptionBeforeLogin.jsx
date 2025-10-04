@@ -70,14 +70,14 @@ const SubscriptionBeforeLogin = () => {
                 className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden"
               >
                 <div className=" relative z-10 text-center">
-                  <h3 className="text-2xl font-bold mb-2 ">
+                  <h3 className="text-2xl font-bold mb- ">
                     {packageItem.title}
                   </h3>
                   {/* <p className="text-teal-100 mb-6">
                     {packageItem.description}
                   </p> */}
-                  <div className="flex items-baseline justify-center ">
-                    <span className="text-5xl font-bold">
+                  <div className="flex items-baseline justify-center mb-2">
+                    <span className="text-3xl font-bold">
                       ${packageItem.price}
                     </span>
                     <span className="text-teal-200 ml-2">
@@ -91,8 +91,8 @@ const SubscriptionBeforeLogin = () => {
 
                 <div className="space-y-4 mb-8 relative z-10">
                   {packageItem.features?.map((feature, featureIndex) => {
-                    const isFree = packageItem.title?.toLowerCase() === "free";
-                    const isEnabled = isFree ? featureIndex < 3 : true;
+                    const isFree = packageItem.title === "Free Trial -1 Month";
+                    const isEnabled = isFree ? featureIndex < 4 : true;
 
                     return (
                       <div
