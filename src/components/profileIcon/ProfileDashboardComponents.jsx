@@ -367,7 +367,7 @@ export default function ProfileDashboardComponents() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
        
        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
@@ -378,7 +378,7 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-accent">Subscription start Date</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription?.startDate).format('LL')}
+              {moment(userData?.subscription?.startDate).format('LL') || "N/A"}
             </p>
           </CardContent>
         </Card>
@@ -391,11 +391,11 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-accent">Subscription End Date</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription?.endDate).format('LL')}
+              {moment(userData?.subscription?.endDate).format('LL') || "N/A"}
             </p>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
     </div>
