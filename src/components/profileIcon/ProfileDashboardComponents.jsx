@@ -378,7 +378,7 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-accent">Subscription start Date</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription.startDate).format('LL')}
+              {moment(userData?.subscription?.startDate).format('LL')}
             </p>
           </CardContent>
         </Card>
@@ -391,7 +391,7 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-accent">Subscription End Date</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription.endDate).format('LL')}
+              {moment(userData?.subscription?.endDate).format('LL')}
             </p>
           </CardContent>
         </Card>
