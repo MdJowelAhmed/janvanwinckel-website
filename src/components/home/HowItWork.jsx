@@ -12,7 +12,7 @@ const HowItWork = () => {
       <div className="max-w-2xl mx-auto flex flex-col items-center">
         <h1 className="text-5xl font-semibold mb-4">
           {" "}
-          <span className="text-[#37B7C3]">How</span> It Work
+          <span className="text-[#37B7C3]">How</span> It Works
         </h1>
         <p className="mb-12 text-[#909090] text-center">
           Create pedigrees in minutes, verify your bloodlines, and share them

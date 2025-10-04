@@ -69,14 +69,14 @@ const SubscriptionBeforeLogin = () => {
                 key={packageItem._id || index}
                 className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden"
               >
-                <div className="mb-8 relative z-10">
-                  <h3 className="text-2xl font-bold mb-2">
+                <div className=" relative z-10 text-center">
+                  <h3 className="text-2xl font-bold mb-2 ">
                     {packageItem.title}
                   </h3>
-                  <p className="text-teal-100 mb-6">
+                  {/* <p className="text-teal-100 mb-6">
                     {packageItem.description}
-                  </p>
-                  <div className="flex items-baseline mb-6">
+                  </p> */}
+                  <div className="flex items-baseline justify-center ">
                     <span className="text-5xl font-bold">
                       ${packageItem.price}
                     </span>
@@ -84,6 +84,9 @@ const SubscriptionBeforeLogin = () => {
                       / {packageItem.paymentType}
                     </span>
                   </div>
+                   <p className="text-teal-100 mb-6  ml-5">
+                    {packageItem?.description}
+                  </p>
                 </div>
 
                 <div className="space-y-4 mb-8 relative z-10">
