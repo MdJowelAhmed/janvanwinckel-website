@@ -60,9 +60,9 @@ const SubscriptionBeforeLogin = () => {
 
           {/* Dynamic Packages from API */}
           {isLoading ? (
-            <div className="flex items-center justify-center w-full">
+            
               <Spinner />
-            </div>
+          
           ) : packages && packages.length > 0 ? (
             packages.map((packageItem, index) => (
               <div
@@ -86,7 +86,7 @@ const SubscriptionBeforeLogin = () => {
                    
                     <div className="h-12 flex items-center justify-center">
                       <p className="text-teal-100">
-                        {packageItem?.description || "\u00A0"}
+                        {packageItem?.description || ""}
                       </p>
                     </div>
                   </div>
