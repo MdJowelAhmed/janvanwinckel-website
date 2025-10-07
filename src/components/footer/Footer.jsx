@@ -6,7 +6,7 @@ import { Separator } from "../ui/separator";
 
 export default function Footer() {
   return (
-    <div className="flex flex-col border-t mt-12 md:mt-20 ">
+    <div className="flex flex-col border-t  ">
       {/*  */}
       <footer className="bg-primary py-8 px-4 md:px-8 lg:px-12">
         {/* <div className="text-center  max-w-lg mx-auto font-semibold text-3xl text-white mb-6">
@@ -27,7 +27,7 @@ export default function Footer() {
                   className="mb-6"
                 />
               </div>
-              <p className="text-white text-sm leading-relaxed">
+              {/* <p className="text-white text-sm leading-relaxed">
                 Pigeon-wise Windows Limited is an Introducer Appointed
                 Representative (Financial Services Register No: 800000) of
                 Phoenix Financial Consultants Limited (Phoenix), Phoenix is a
@@ -35,11 +35,11 @@ export default function Footer() {
                 regulated by the Financial Conduct Authority (Financial Services
                 Register No: 539195), and offers finance from their panel of
                 lenders. All finance subject to status and credit checks.
-              </p>
+              </p> */}
             </div>
 
             {/* Right Section - Navigation Links */}
-            <div className="flex items-center h-full justify-center lg:mt-20  lg:flex-row gap-8 lg:gap-12">
+            <div className="flex items-center h-full justify-center lg:mt-10  lg:flex-row gap-8 lg:gap-12">
               <Link href="/" className="text-white hover:text-teal-200 text-sm">
                 Home
               </Link>
@@ -51,22 +51,22 @@ export default function Footer() {
               </Link> */}
 
               <Link
-                href="/terms"
+                href="#about-us"
                 className="text-white hover:text-teal-200 text-sm"
               >
-                Terms & Condition
+               About us
               </Link>
               <Link
-                href="/contact"
+                href="#contact-us"
                 className="text-white hover:text-teal-200 text-sm"
               >
-                Contact Info
+                Contact us
               </Link>
             </div>
           </div>
 
           {/* Social Media Icons */}
-          <div className="flex gap-8 items-center  mt-8">
+          {/* <div className="flex gap-8 items-center  mt-8">
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-teal-600 font-bold text-sm">f</span>
             </div>
@@ -79,7 +79,7 @@ export default function Footer() {
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
               <span className="text-teal-600 font-bold text-sm">P</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </footer>
     </div>

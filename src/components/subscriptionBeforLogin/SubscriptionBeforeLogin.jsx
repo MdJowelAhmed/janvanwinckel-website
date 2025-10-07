@@ -47,15 +47,15 @@ const SubscriptionBeforeLogin = () => {
             View Subscription{" "}
             <span className="text-accent-foreground">Prices</span>
           </h1>
-          <p className="text-destructive text-lg max-w-2xl mx-auto leading-relaxed">
+          {/* <p className="text-destructive text-lg max-w-2xl mx-auto leading-relaxed">
             Experience year-round comfort with our A-rated uPVC windows,
             designed to keep your home warm in winter, cool in summer, and
             stylish every day.
-          </p>
+          </p> */}
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8  mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 mx-auto">
           {/* Static Free Plan */}
 
           {/* Dynamic Packages from API */}
@@ -67,64 +67,64 @@ const SubscriptionBeforeLogin = () => {
             packages.map((packageItem, index) => (
               <div
                 key={packageItem._id || index}
-                className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden"
+                className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden flex flex-col"
               >
-                <div className=" relative z-10 text-center">
-                  <h3 className="text-2xl font-bold mb- ">
-                    {packageItem.title}
-                  </h3>
-                  {/* <p className="text-teal-100 mb-6">
-                    {packageItem.description}
-                  </p> */}
-                  <div className="flex items-baseline justify-center mb-2">
-                    <span className="text-3xl font-bold">
-                      ${packageItem.price}
-                    </span>
-                    <span className="text-teal-200 ml-2">
-                      / {packageItem.paymentType}
-                    </span>
+                {/* Content Section - এটা grow হবে */}
+                <div className="flex-grow">
+                  <div className="relative z-10 text-center">
+                    <h3 className="text-2xl font-bold mb-4">
+                      {packageItem.title}
+                    </h3>
+                    <div className="flex items-baseline justify-center mb-2">
+                      <span className="text-3xl font-bold">
+                        ${packageItem.price}
+                      </span>
+                      <span className="text-teal-200 ml-2">
+                        / {packageItem.paymentType}
+                      </span>
+                    </div>
+                    <p className="text-teal-100 mb-6">
+                      {packageItem?.description}
+                    </p>
                   </div>
-                   <p className="text-teal-100 mb-6  ml-5">
-                    {packageItem?.description}
-                  </p>
-                </div>
+                  <div className="space-y-4 mb-8 relative z-10">
+                    {packageItem.features?.map((feature, featureIndex) => {
+                      const isFree =
+                        packageItem.title === "Free Trial -1 Month";
+                      const isEnabled = isFree ? featureIndex < 4 : true;
 
-                <div className="space-y-4 mb-8 relative z-10">
-                  {packageItem.features?.map((feature, featureIndex) => {
-                    const isFree = packageItem.title === "Free Trial -1 Month";
-                    const isEnabled = isFree ? featureIndex < 4 : true;
-
-                    return (
-                      <div
-                        key={featureIndex}
-                        className="flex items-start gap-3"
-                      >
+                      return (
                         <div
-                          className={`${
-                            isEnabled ? "bg-white/20" : "bg-red-500/20"
-                          } rounded-full p-1 mt-0.5`}
+                          key={featureIndex}
+                          className="flex items-start gap-3"
                         >
-                          {isEnabled ? (
-                            <Check className="w-4 h-4" />
-                          ) : (
-                            <X className="w-4 h-4" />
-                          )}
+                          <div
+                            className={`${
+                              isEnabled ? "bg-white/20" : "bg-red-500/20"
+                            } rounded-full p-1 mt-0.5`}
+                          >
+                            {isEnabled ? (
+                              <Check className="w-4 h-4" />
+                            ) : (
+                              <X className="w-4 h-4" />
+                            )}
+                          </div>
+                          <span
+                            className={`text-sm ${
+                              isEnabled ? "text-white/90" : "text-white/50"
+                            }`}
+                          >
+                            {feature}
+                          </span>
                         </div>
-                        <span
-                          className={`text-sm ${
-                            isEnabled ? "text-white/90" : "text-white/50"
-                          }`}
-                        >
-                          {feature}
-                        </span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <button
                   onClick={() => handlePurchaseClick(packageItem.paymentLink)}
-                  className="w-full bg-white text-teal-600 py-3 px-6 rounded-sm font-semibold hover:bg-gray-50 transition-colors duration-300 shadow-md hover:shadow-lg relative z-10"
+                  className="w-full bg-white text-teal-600 py-3 px-6 rounded-sm font-semibold hover:bg-gray-50 transition-colors duration-300 shadow-md hover:shadow-lg relative z-10 mt-auto"
                 >
                   {packageItem.title?.toLowerCase() === "free"
                     ? "30 Days Trial"

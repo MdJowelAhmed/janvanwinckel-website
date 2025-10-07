@@ -53,19 +53,19 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto   rounded-lg my-10">
+    <div className="w-full max-w-5xl mx-auto   rounded-lg mt-10" id="contact-us">
       <CardContent className="p-6">
         <div className="mb-12 max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl font-semibold flex justify-center items-center">
-             <span className="text-accent mr-2">Contact</span>  us
+          <h2 className="text-4xl font-semibold flex justify-center items-center mb-6">
+             <span className="text-accent mr-2 ">Contact</span>  us
           </h2>
-          <p className="text-gray-600 text-sm mt-1">
+          <p className="text-destructive text-sm mt-1">
             We’re here to help. If you have any questions, feedback, or remarks,
             feel free to reach out to us at: <span className="text-accent-foreground mx-2 font-bold">info@ThePigeonHub.com</span>  
             Our team will get back to you as soon as possible
           </p>
         </div>
-
+{/* 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
@@ -132,7 +132,7 @@ export default function ContactForm() {
           >
             {isLoading ? "Sending..." : "Send Message"}
           </Button>
-        </form>
+        </form> */}
       </CardContent>
     </div>
   );
