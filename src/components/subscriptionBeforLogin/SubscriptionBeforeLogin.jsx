@@ -39,7 +39,7 @@ const SubscriptionBeforeLogin = () => {
   };
 
   return (
-    <div className="my-20 px-4 md:px-8 lg:px-12">
+    <div className="mb-16 mt-24 px-4 md:px-8 lg:px-12">
       <div className=" mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -69,13 +69,13 @@ const SubscriptionBeforeLogin = () => {
                 key={packageItem._id || index}
                 className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden flex flex-col"
               >
-                {/* Content Section - এটা grow হবে */}
+          
                 <div className="flex-grow">
                   <div className="relative z-10 text-center">
-                    <h3 className="text-2xl font-bold mb-4">
+                    <h3 className="text-2xl font-bold mb-1">
                       {packageItem.title}
                     </h3>
-                    <div className="flex items-baseline justify-center mb-2">
+                    <div className="flex items-baseline justify-center mb-0">
                       <span className="text-3xl font-bold">
                         ${packageItem.price}
                       </span>
@@ -83,9 +83,12 @@ const SubscriptionBeforeLogin = () => {
                         / {packageItem.paymentType}
                       </span>
                     </div>
-                    <p className="text-teal-100 mb-6">
-                      {packageItem?.description}
-                    </p>
+                   
+                    <div className="h-12 flex items-center justify-center">
+                      <p className="text-teal-100">
+                        {packageItem?.description || "\u00A0"}
+                      </p>
+                    </div>
                   </div>
                   <div className="space-y-4 mb-8 relative z-10">
                     {packageItem.features?.map((feature, featureIndex) => {
@@ -122,6 +125,7 @@ const SubscriptionBeforeLogin = () => {
                   </div>
                 </div>
 
+           
                 <button
                   onClick={() => handlePurchaseClick(packageItem.paymentLink)}
                   className="w-full bg-white text-teal-600 py-3 px-6 rounded-sm font-semibold hover:bg-gray-50 transition-colors duration-300 shadow-md hover:shadow-lg relative z-10 mt-auto"
