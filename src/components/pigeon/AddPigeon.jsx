@@ -91,6 +91,34 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [DNAPhoto, setDNAPhoto] = useState(null);
   const [fatherRingNumber, setFatherRingNumber] = useState("");
   const [motherRingNumber, setMotherRingNumber] = useState("");
+  
+  const currentYear = new Date().getFullYear();
+
+
+  const allYears = Array.from(
+    { length: currentYear - 1980 + 1 },
+    (_, i) => 1980 + i
+  );
+
+  const [search, setSearch] = useState("");
+  const [filteredYears, setFilteredYears] = useState(allYears);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    setShowDropdown(true);
+
+    const filtered = allYears.filter((year) =>
+      year.toString().includes(value)
+    );
+    setFilteredYears(filtered);
+  };
+
+  const handleSelect = (year) => {
+    setSearch(year.toString());
+    setShowDropdown(false);
+  };
 
   // Generic photo upload handler
   const handleSpecificPhotoUpload = (event, photoType, setPhotoState) => {
@@ -683,28 +711,41 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     ))}
                   </select>
                 </div>
-                <div>
+                <div className="relative w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Date of Birth
                   </label>
-                  <select
+
+                  <input
+                    type="text"
                     {...register("birthYear")}
-                    defaultValue=""
-                    placeholder="Date of Birth"
+                    value={search}
+                    onChange={handleSearch}
+                    placeholder="Enter or select your birth year"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  >
-                    <option value="" disabled>
-                      Date of Birth
-                    </option>
-                    {Array.from(
-                      { length: 10 },
-                      (_, i) => new Date().getFullYear() - i
-                    ).map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
+                    onFocus={() => setShowDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 100)} // dropdown close after click
+                  />
+
+                  {showDropdown && (
+                    <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
+                      {filteredYears.length > 0 ? (
+                        filteredYears.map((year) => (
+                          <li
+                            key={year}
+                            onClick={() => handleSelect(year)}
+                            className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                          >
+                            {year}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="px-3 py-2 text-gray-500">
+                          No results found
+                        </li>
+                      )}
+                    </ul>
+                  )}
                 </div>
               </div>
 
