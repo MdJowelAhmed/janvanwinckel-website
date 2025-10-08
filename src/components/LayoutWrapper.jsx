@@ -16,6 +16,7 @@ const LayoutWrapper = ({ children }) => {
     "/reset-password",
     "/user-create",
     "/subscription",
+    "/pigeon-database",
     "/",
     "/register"
   ];
