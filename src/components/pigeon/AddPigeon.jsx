@@ -649,7 +649,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-x-16">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-x-12">
           {/* Left Column - Form Fields */}
           <div className="lg:col-span-3 space-y-6">
             {/* Basic Information */}
@@ -713,7 +713,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                 </div>
                 <div className="relative w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date of Birth
+                     Birth Year
                   </label>
 
                   <input
@@ -912,7 +912,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Gender
+                      Gender *
                     </label>
                     <select
                       {...register("gender", {
