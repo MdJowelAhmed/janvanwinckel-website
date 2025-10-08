@@ -448,32 +448,32 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     }
   }, [isEditMode, singlePigeon, reset]);
 
-  const handlePhotoUpload = (event) => {
-    const files = Array.from(event.target.files);
-    if (photos.length + files.length > 6) {
-      toast.error("You can upload maximum 6 photos");
-      return;
-    }
+  // const handlePhotoUpload = (event) => {
+  //   const files = Array.from(event.target.files);
+  //   if (photos.length + files.length > 6) {
+  //     toast.error("You can upload maximum 6 photos");
+  //     return;
+  //   }
 
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotos((prev) => [
-          ...prev,
-          {
-            id: Date.now() + Math.random(),
-            file,
-            url: e.target.result,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+  //   files.forEach((file) => {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       setPhotos((prev) => [
+  //         ...prev,
+  //         {
+  //           id: Date.now() + Math.random(),
+  //           file,
+  //           url: e.target.result,
+  //         },
+  //       ]);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   });
+  // };
 
-  const removePhoto = (photoId) => {
-    setPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
-  };
+  // const removePhoto = (photoId) => {
+  //   setPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
+  // };
 
   const onSubmit = async (data) => {
     try {
@@ -649,9 +649,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-x-16">
           {/* Left Column - Form Fields */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             {/* Basic Information */}
             <div className="bg-white rounded-lg p-6 shadow-sm space-y-6">
               <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
@@ -1133,7 +1133,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
           </div>
 
           {/* Right Column - Photo Upload */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
+          <div className="bg-white rounded-lg lg:col-span-2 p-6 shadow-sm">
             <PigeonPhotosSlider
               pigeonPhoto={pigeonPhoto}
               setPigeonPhoto={setPigeonPhoto}
