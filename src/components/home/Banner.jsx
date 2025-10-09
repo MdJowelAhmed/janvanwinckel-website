@@ -44,7 +44,10 @@ export default function PigeonHub() {
     return searchTerm.length <= 1 ? 300 : 500;
   }, [searchTerm.length]);
 
-  const debouncedSearchTerm = useDebounce(searchTerm, debounceDelay);
+  // Trim করা search term for API call
+  const trimmedSearchTerm = useMemo(() => searchTerm.trim(), [searchTerm]);
+
+  const debouncedSearchTerm = useDebounce(trimmedSearchTerm, debounceDelay);
   // console.log('debouncedSearchTerm', debouncedSearchTerm);
 
   // Fixed: Directly pass the search term instead of array format
@@ -155,7 +158,7 @@ export default function PigeonHub() {
             />
             
             {/* Loading indicator inside input */}
-            {isFetching && searchTerm.length >= 2 && (
+            {isFetching && trimmedSearchTerm.length >= 2 && (
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
               </div>
@@ -178,7 +181,7 @@ export default function PigeonHub() {
           )}
 
       
-          {searchTerm.length >= 2 && 
+          {trimmedSearchTerm.length >= 2 && 
            !isFetching && 
            !isLoading && 
            pigeonData.length === 0 && (
