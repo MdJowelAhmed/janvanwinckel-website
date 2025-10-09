@@ -1,15 +1,21 @@
 'use client'
 import AddPigeonContainer from '@/components/pigeon/AddPigeon'
 import { useSearchParams } from 'next/navigation'
-import React from 'react'
+import React, { Suspense } from 'react'
 
-const AddPigeon = () => {
+const SearchParamsWrapper = () => {
   const searchParams = useSearchParams()
   const editId = searchParams.get('edit')
   
+  return <AddPigeonContainer pigeonId={editId} />
+}
+
+const AddPigeon = () => {
   return (
     <div>
-      <AddPigeonContainer pigeonId={editId} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <SearchParamsWrapper />
+      </Suspense>
     </div>
   )
 }
