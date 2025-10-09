@@ -3,11 +3,12 @@ import Spinner from "@/app/(commonLayout)/Spinner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
+import { toast } from "sonner";
 
 const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [shouldFetch, setShouldFetch] = useState(false);
+  const [toastShown, setToastShown] = useState(false); // Track toast state
 
   const { data: userData, isLoading: userLoading, error } = useMyProfileQuery(undefined, {
     skip: !shouldFetch,
@@ -17,23 +18,40 @@ const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      // User not logged in → redirect to login
-      localStorage.setItem("redirectPath", window.location.pathname);
-      router.push("/login");
-      return;
+      if (!toastShown) {
+        localStorage.setItem("redirectPath", window.location.pathname);
+        toast.info("Please login first to access this page.", {
+          position: "top-center",
+          duration: 2000,
+        });
+        setToastShown(true); // Set toast as shown
+      }
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+
+      return; // stop here
     }
 
-    // Token found → fetch user data
     setShouldFetch(true);
-  }, [router]);
+  }, [router, toastShown]);
 
   useEffect(() => {
     if (!shouldFetch || userLoading) return;
 
     if (error) {
-      console.error("Error fetching user data:", error);
+      if (!toastShown) {
+        console.error("Error fetching user data:", error);
+        toast.error("Your session has expired. Please login again.");
+        setToastShown(true); // Set toast as shown
+      }
+
       localStorage.removeItem("token");
-      router.push("/login");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
       return;
     }
 
@@ -41,29 +59,32 @@ const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
       const userRole = userData?.role;
       const currentPath = window.location.pathname;
 
-      // ✅ If user is logged in but not PAIDUSER
       if (userRole !== "PAIDUSER") {
-        // Allow some pages even if not paid
         const canAccess = loggedInDynamicRoutes.some((route) =>
           currentPath.startsWith(route)
         );
 
-        if (canAccess) {
-          setLoading(false);
-          return;
+        if (!canAccess) {
+          if (!toastShown) {
+            toast.warning("Please subscribe first to access this page.", {
+              position: "top-center",
+              duration: 2000,
+            });
+            setToastShown(true); // Set toast as shown
+          }
+
+          // ✅ Redirect to subscription page
+          setTimeout(() => {
+            router.push("/subscription");
+          }, 2000);
+
+          return; // stop rendering protected page
         }
-
-        // Otherwise redirect to subscription
-        router.push("/subscription");
-        return;
       }
-
-      // ✅ If user is PAIDUSER → allow access
-      setLoading(false);
     }
-  }, [shouldFetch, userData, userLoading, error, router, loggedInDynamicRoutes]);
+  }, [shouldFetch, userData, userLoading, error, router, loggedInDynamicRoutes, toastShown]);
 
-  if (loading || userLoading) {
+  if (userLoading) {
     return <Spinner />;
   }
 
