@@ -96,8 +96,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
 
   const allYears = Array.from(
-    { length: currentYear - 1980 + 1 },
-    (_, i) => 1980 + i
+    { length: currentYear - 1926 + 1 },
+    (_, i) => 1926 + i
   );
 
   const [search, setSearch] = useState("");
@@ -263,7 +263,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       color: "",
       pattern: "",
       gender: "",
-      status: "Active",
+      status: "",
       location: "Dhaka",
       notes: "",
       racingRating: 0,
@@ -941,6 +941,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       <option value="Sold">Sold</option>
                       <option value="Lost">Lost</option>
                       <option value="Retired">Retired</option>
+                      <option value="Deceased">Deceased</option>
                     </select>
                   </div>
 

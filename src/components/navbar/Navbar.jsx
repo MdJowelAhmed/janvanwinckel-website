@@ -491,11 +491,15 @@ export default function Navbar() {
               if (item.name === "Loft Overview" && !userData?._id) {
                 return null;
               }
-
-              // Hide "Add Pigeon" if user is not PAIDUSER
-              if (item.name === "Add Pigeon" && userData?.role !== "PAIDUSER") {
+              if (item.name === "Add Pigeon" && !userData?._id) {
                 return null;
               }
+            
+
+              // Hide "Add Pigeon" if user is not PAIDUSER
+              // if (item.name === "Add Pigeon" && userData?.role !== "PAIDUSER") {
+              //   return null;
+              // }
 
               return (
                 <li key={item.name}>
@@ -535,7 +539,8 @@ export default function Navbar() {
             )} */}
 
             {/* Notification Button - Only show if user is logged in */}
-            {userData?._id && userData?.role === "PAIDUSER" && (
+            {/* userData?.role === "PAIDUSER" && */}
+            {userData?._id &&  (
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationModalOpen(true)}

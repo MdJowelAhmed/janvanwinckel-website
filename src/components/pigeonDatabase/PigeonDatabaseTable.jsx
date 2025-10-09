@@ -141,7 +141,7 @@ const PigeonTable = ({
                   <TableHead className="text-white">Country</TableHead>
                   <TableHead className="text-white">Breeder</TableHead>
                   <TableHead className="text-white">Ring Number</TableHead>
-                  <TableHead className="text-white">Bird Year</TableHead>
+                  <TableHead className="text-white">Birth Year</TableHead>
                   <TableHead className="text-white">Quality Breeder</TableHead>
                   <TableHead className="text-white">Quality Racer</TableHead>
                   <TableHead className="text-white">Racing Rating</TableHead>
@@ -168,7 +168,7 @@ const PigeonTable = ({
                       <Avatar className="w-10 h-10">
                         <AvatarImage
                           src={
-                            getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto) ||
+                            getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigreePhoto || pigeon?.DNAPhoto || pigeon?.ownershipPhoto) ||
                             "/placeholder-pigeon.jpg"
                           }
                           alt={pigeon.name}
@@ -324,7 +324,7 @@ const PigeonTable = ({
               disabled={currentPage <= 1}
               className="h-8"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 text-white" />
             </Button>
 
             <div className="flex items-center gap-1">
@@ -356,7 +356,7 @@ const PigeonTable = ({
               disabled={currentPage >= pagination.totalPage}
               className="h-8"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 text-white" />
             </Button>
           </div>
         </div>

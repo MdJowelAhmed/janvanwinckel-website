@@ -1,14 +1,12 @@
 "use client";
 import { usePathname } from "next/navigation";
 import PrivateRoute from "./PrivateRoute";
-// import PrivateRoute from "@/app/PrivateRoute";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
 
-  // List of routes that are public
+  // Static public routes
   const publicRoutes = [
-    
     "/login",
     "/about",
     "/forgot-password",
@@ -18,13 +16,26 @@ const LayoutWrapper = ({ children }) => {
     "/subscription",
     "/pigeon-database",
     "/",
-    "/register"
+    "/register",
   ];
 
-  // If the current page is a public route, don't wrap it with PrivateRoute
-  const isPublicPage = publicRoutes.includes(pathname);
+  // Dynamic routes accessible without login
+  const publicDynamicRoutes = [];
 
-  return isPublicPage ? children : <PrivateRoute>{children}</PrivateRoute>;
+  // Dynamic routes accessible only for logged-in users (any role)
+  const loggedInDynamicRoutes = ["/pigeon-overview/", "/pedigree-chart/", "/profile-dashboard"];
+
+  const isPublicPage =
+    publicRoutes.includes(pathname) ||
+    publicDynamicRoutes.some((route) => pathname.startsWith(route));
+
+  return isPublicPage ? (
+    children
+  ) : (
+    <PrivateRoute loggedInDynamicRoutes={loggedInDynamicRoutes}>
+      {children}
+    </PrivateRoute>
+  );
 };
 
 export default LayoutWrapper;

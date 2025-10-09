@@ -1,42 +1,57 @@
-import React, { useState, useEffect } from 'react'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent } from '@/components/ui/card'
-import { Search } from 'lucide-react'
+"use client";
+import React, { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CardContent } from "@/components/ui/card";
+import { Search } from "lucide-react";
+import { getNames } from "country-list";
 
 const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   const [filters, setFilters] = useState({
-    country: 'all',
-    gender: 'all',
-    color: 'all',
-    year: 'all'
-  })
+    country: "all",
+    gender: "all",
+    year: "",
+  });
+  const [countries, setCountries] = useState([]);
+  const [yearSearch, setYearSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    setCountries(getNames().sort());
+  }, []);
 
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value }
-    setFilters(newFilters)
-    
-    // Convert to array format expected by API
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+
     const filterArray = Object.entries(newFilters)
-      .filter(([_, val]) => val !== '' && val !== 'all')
-      .map(([key, value]) => ({ name: key, value }))
-    
-    onFilterChange(filterArray)
-  }
+      .filter(([_, val]) => val !== "" && val !== "all")
+      .map(([key, value]) => ({ name: key, value }));
+
+    onFilterChange(filterArray);
+  };
 
   const handleSearchChange = (e) => {
-    onSearch(e.target.value)
-  }
+    onSearch(e.target.value);
+  };
 
-  // Generate year options (2020-2025)
-  const currentYear = new Date().getFullYear()
-  const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i)
+  // Generate year list (last 50 years)
+  const currentYear = new Date().getFullYear();
+  const allYears = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  const filteredYears = allYears.filter((year) =>
+    year.toString().includes(yearSearch)
+  );
+
+  const handleSelectYear = (year) => {
+    setYearSearch(year.toString());
+    setShowDropdown(false);
+    handleFilterChange("birthYear", year.toString());
+  };
 
   return (
     <div className="bg-foreground text-white rounded-b-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-8">
           {/* Search */}
           <div className="lg:col-span-2">
             <Label htmlFor="search" className="text-white text-sm font-medium mb-2 block">
@@ -49,28 +64,28 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                 placeholder="Ring number, name..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="pl-10 py-6  border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
+                className="pl-10 py-6 border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
               />
             </div>
           </div>
 
           {/* Country Filter */}
-          <div className='w-full'>
+          <div>
             <Label htmlFor="country" className="text-white text-sm font-medium mb-2 block">
               Country
             </Label>
-            <Select value={filters.country} onValueChange={(value) => handleFilterChange('country', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
-                <SelectValue placeholder="All Countries" />
-              </SelectTrigger>
-              <SelectContent className="py-6 border-slate-500 ">
-                <SelectItem value="all">All Countries</SelectItem>
-                <SelectItem value="Bangladesh">Bangladesh</SelectItem>
-                <SelectItem value="Belgium">Belgium</SelectItem>
-                <SelectItem value="Germany">Germany</SelectItem>
-                <SelectItem value="Netherlands">Netherlands</SelectItem>
-              </SelectContent>
-            </Select>
+            <select
+              value={filters.country}
+              onChange={(e) => handleFilterChange("country", e.target.value)}
+              className="border border-slate-500 bg-primary-foreground text-white focus:border-teal-400 w-full py-[14px] px-2 rounded-md"
+            >
+              <option value="all">All Countries</option>
+              {countries.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Gender Filter */}
@@ -78,59 +93,58 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
             <Label htmlFor="gender" className="text-white text-sm font-medium mb-2 block">
               Gender
             </Label>
-            <Select value={filters.gender} onValueChange={(value) => handleFilterChange('gender', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
-                <SelectValue placeholder="All Genders" />
-              </SelectTrigger>
-              <SelectContent className=" border-slate-500 w-full">
-                <SelectItem value="all">All Genders</SelectItem>
-                <SelectItem value="Hen">Hen</SelectItem>
-                <SelectItem value="Cock">Cock</SelectItem>
-              </SelectContent>
-            </Select>
+            <select
+              value={filters.gender}
+              onChange={(e) => handleFilterChange("gender", e.target.value)}
+              className="border border-slate-500 bg-primary-foreground text-white focus:border-teal-400 w-full py-[14px] px-2 rounded-md"
+            >
+              <option value="all">All Genders</option>
+              <option value="Hen">Hen</option>
+              <option value="Cock">Cock</option>
+            </select>
           </div>
 
-          {/* Color Filter */}
-          <div>
-            <Label htmlFor="color" className="text-white text-sm font-medium mb-2 block">
-              Color
+          {/* Birth Year (typeable input with dropdown) */}
+          <div className="relative w-full">
+            <Label className="block text-sm font-medium text-white mb-2">
+              Birth Year
             </Label>
-            <Select value={filters.color} onValueChange={(value) => handleFilterChange('color', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
-                <SelectValue placeholder="All Colors" />
-              </SelectTrigger>
-              <SelectContent className=" border-slate-500 w-full">
-                <SelectItem value="all">All Colors</SelectItem>
-                <SelectItem value="Blue">Blue</SelectItem>
-                <SelectItem value="White">White</SelectItem>
-                <SelectItem value="Red">Red</SelectItem>
-                <SelectItem value="Black">Black</SelectItem>
-                <SelectItem value="Checkered">Checkered</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
-          {/* Year Filter */}
-          <div>
-            <Label htmlFor="year" className="text-white text-sm font-medium mb-2 block">
-              Year
-            </Label>
-            <Select value={filters.year} onValueChange={(value) => handleFilterChange('birthYear', value)}>
-              <SelectTrigger className=" border-slate-500 text-white focus:border-teal-400 w-full py-6">
-                <SelectValue placeholder="All Years" />
-              </SelectTrigger>
-              <SelectContent className=" border-slate-500 w-full">
-                <SelectItem value="all">All Years</SelectItem>
-                {yearOptions.map(year => (
-                  <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <input
+              type="text"
+              value={yearSearch}
+              onChange={(e) => {
+                setYearSearch(e.target.value);
+                setShowDropdown(true);
+              }}
+              placeholder="Enter or select year"
+              className="w-full px-3 py-[14px] border border-slate-500 bg-transparent rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              onFocus={() => setShowDropdown(true)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 100)} // delay close for click
+            />
+
+            {showDropdown && (
+              <ul className="absolute z-10 w-full bg-foreground border border-slate-500 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
+                {filteredYears.length > 0 ? (
+                  filteredYears.map((year) => (
+                    <li
+                      key={year}
+                      onClick={() => handleSelectYear(year)}
+                      className="px-3 py-2 hover:bg-teal-600 cursor-pointer"
+                    >
+                      {year}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-3 py-2 text-gray-400">No results found</li>
+                )}
+              </ul>
+            )}
           </div>
         </div>
       </CardContent>
     </div>
-  )
-}
+  );
+};
 
-export default PigeonFilters
+export default PigeonFilters;

@@ -31,6 +31,7 @@ import Image from "next/image";
 import * as XLSX from "xlsx";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
@@ -217,14 +218,16 @@ const nodeTypes = {
 
 export default function PigeonPedigreeChart() {
   const { id } = useParams();
-
+const {data:profileData}=useMyProfileQuery()
+  console.log("pedigree",profileData?.role)
+  const role=profileData?.role
   const { data: pedigreeData, isLoading } =
     useGetPigeonPedigreeChartDataQuery(id);
   // console.log("pedigreeData", pedigreeData);
   const chartRef = useRef(null);
 
   const { nodes: dynamicNodes, edges: dynamicEdges } = useMemo(() => {
-    return convertBackendToExistingFormat(pedigreeData);
+    return convertBackendToExistingFormat(pedigreeData, role);
   }, [pedigreeData]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(dynamicNodes);
@@ -508,11 +511,11 @@ export default function PigeonPedigreeChart() {
   return (
     <div className="container  mx-auto">
       <div className="flex flex-col md:flex-row items-center justify-between mt-12 px-4 md:px-8 lg:px-12">
-        <div className="max-w-2xl">
-          <h2 className="text-black font-bold text-2xl">
+        <div className="max-w-2xl mb-6">
+          <h2 className="text-black font-bold text-2xl mb-4">
             Pigeon pedigree chart
           </h2>
-          <p className="text-black">
+          <p className="text-destructive">
             The Pedigree Chart displays your pigeon's lineage across multiple
             generations, showing key details like name, ring number, and
             birthdate. It helps you track breeding relationships and plan future
@@ -539,7 +542,7 @@ export default function PigeonPedigreeChart() {
       </div>
       <div
         ref={chartRef}
-        className="w-full h-[2100px] flex justify-start items-center mt-0"
+        className="w-full h-[2000px] bg-gray-50 flex justify-start items-center mt-0 rounded-3xl"
       >
         {/* --- ReactFlow (now dynamic) --- */}
         <ReactFlow
