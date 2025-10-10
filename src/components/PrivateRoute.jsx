@@ -73,7 +73,7 @@ const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
       const userRole = userData?.role;
       const currentPath = window.location.pathname;
 
-      if (userRole !== "PAIDUSER") {
+      if (userRole !== "PAIDUSER" && userRole !== "SUPER_ADMIN") {
         const canAccess = loggedInDynamicRoutes.some((route) =>
           currentPath.startsWith(route)
         );
