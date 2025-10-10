@@ -259,7 +259,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       country: "Bangladesh",
       birthYear: new Date().getFullYear(),
       shortInfo: "",
-      breeder: "", // This will store breeder ID
+      breeder, // This will store breeder ID
       color: "",
       pattern: "",
       gender: "",
@@ -480,13 +480,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       const formDataToSend = new FormData();
 
       // Create the data object matching backend format
+    // Create the data object matching backend format
       const dataObject = {
         ringNumber: data.ringNumber,
         name: data.name,
         country: data.country,
         birthYear: parseInt(data.birthYear),
         shortInfo: data.shortInfo,
-        breeder: data.breeder, // This should be breeder ID
         color: data.color,
         racingRating: parseInt(data.racingRating) || 0,
         racherRating: data.racherRating || "Good", // Fixed spelling
@@ -505,6 +505,11 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
           ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
           : [],
       };
+
+      // Only add breeder if it has a valid value
+      if (data.breeder && data.breeder.trim() !== "") {
+        dataObject.breeder = data.breeder;
+      }
 
       // Only add results if race results are enabled and there are results
       if (showPigeonResult && raceResults.length > 0) {
@@ -767,7 +772,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       Breeder
                     </label>
                     <select
-                      {...register("breeder", { required: true })}
+                      {...register("breeder",{required:false} )}
                       className="w-full px-3 py-[14px] border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Breeder</option>

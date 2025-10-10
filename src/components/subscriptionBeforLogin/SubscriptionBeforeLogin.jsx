@@ -34,7 +34,7 @@ const SubscriptionBeforeLogin = () => {
     }
 
     if (paymentLink) {
-      window.open(paymentLink, "_blank");
+      router.push(paymentLink, );
     }
   };
 
