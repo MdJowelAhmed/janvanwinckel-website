@@ -55,8 +55,8 @@ const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
           icon: "error",
           title: "Session expired",
           text: "Please login again to continue.",
-          confirmButtonText: "Login",
-          confirmButtonColor: "#37B7C3",
+          // confirmButtonText: "Login",
+          // confirmButtonColor: "#37B7C3",
           timer: 2500,
         }).then(() => {
           localStorage.removeItem("token");
