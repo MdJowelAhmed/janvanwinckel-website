@@ -56,6 +56,7 @@
     "reaflow": "^5.4.1",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.1",
+    "sweetalert2": "^11.25.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
     "video.js": "^8.22.0",

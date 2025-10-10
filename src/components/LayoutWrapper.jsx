@@ -17,13 +17,14 @@ const LayoutWrapper = ({ children }) => {
     "/pigeon-database",
     "/",
     "/register",
+    "/profile-dashboard"
   ];
 
   // Dynamic routes accessible without login
   const publicDynamicRoutes = [];
 
   // Dynamic routes accessible only for logged-in users (any role)
-  const loggedInDynamicRoutes = ["/pigeon-overview/", "/pedigree-chart/", "/profile-dashboard"];
+  const loggedInDynamicRoutes = ["/pigeon-overview/", "/pedigree-chart/", ];
 
   const isPublicPage =
     publicRoutes.includes(pathname) ||

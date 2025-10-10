@@ -220,7 +220,7 @@ export default function ProfileDashboardComponents() {
                         </div>
                       )}
                     </div>
-                    <div className="absolute inset-0 bg-black bg-opacity-30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-black bg-opacity-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-30 transition-opacity">
                       <Upload className="text-white" size={20} />
                     </div>
                   </label>
@@ -248,7 +248,7 @@ export default function ProfileDashboardComponents() {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="py-3"
+                      className="py-6"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -278,7 +278,7 @@ export default function ProfileDashboardComponents() {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="py-3 cursor-not-allowed text-white"
+                      className="py-6 cursor-not-allowed text-white"
                       disabled
                     />
                   </div>
@@ -292,7 +292,7 @@ export default function ProfileDashboardComponents() {
                       name="contact"
                       value={formData.contact}
                       onChange={handleChange}
-                      className="w-full border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      className="w-full border rounded-md focus:ring-2 py-6 focus:ring-red-500 focus:border-red-500"
                       placeholder="Enter your contact number"
                     />
                   </div>
@@ -300,7 +300,7 @@ export default function ProfileDashboardComponents() {
 
                 <Button
                   type="submit"
-                  className="w-full py-4 bg-accent hover:bg-accent/90 text-white font-medium transition-colors duration-200"
+                  className="w-full py-6 bg-accent hover:bg-accent/90 text-white font-medium transition-colors duration-200"
                   disabled={updating || (formData.contact && phoneError)}
                 >
                   {updating ? "Updating..." : "Update Profile"}

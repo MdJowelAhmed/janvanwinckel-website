@@ -544,7 +544,7 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationModalOpen(true)}
-                  className="relative p-2 text-black hover:bg-gray-100 rounded-full transition-colors"
+                  className="relative p-2 cursor-pointer text-black hover:bg-gray-100 rounded-full transition-colors"
                   aria-label="Notifications"
                 >
                   <FaBell size={20} />
@@ -561,7 +561,7 @@ export default function Navbar() {
             {!userData?._id ? (
              <div className="flex items-center gap-5">
                <Link href="/login">
-                <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
+                <Button className="bg-accent text-white px-8  py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
                  
                  
                   Sign in
@@ -579,7 +579,7 @@ export default function Navbar() {
               /* Profile Dropdown - Only show if user is logged in */
               <div className="relative" ref={profileRef}>
                 <button
-                  className="relative flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 group"
+                  className="relative flex items-center cursor-pointer space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200 group"
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   aria-expanded={isProfileOpen}
                   aria-label="User profile menu"
@@ -719,7 +719,7 @@ export default function Navbar() {
                       <div className="border-t border-gray-100 mt-2 pt-2">
                         <button
                           onClick={handleLogout}
-                          className="flex items-center space-x-3 px-4 py-3 w-full hover:bg-red-50 transition-colors duration-150 group"
+                          className="flex items-center cursor-pointer space-x-3 px-4 py-3 w-full hover:bg-red-50 transition-colors duration-150 group"
                         >
                           <FaSignOutAlt className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform duration-150" />
                           <span className="text-red-600 group-hover:text-red-700">

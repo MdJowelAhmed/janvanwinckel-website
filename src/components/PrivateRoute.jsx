@@ -1,57 +1,71 @@
 "use client";
 import Spinner from "@/app/(commonLayout)/Spinner";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
-import { toast } from "sonner";
+import Swal from "sweetalert2";
 
 const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
   const router = useRouter();
   const [shouldFetch, setShouldFetch] = useState(false);
-  const [toastShown, setToastShown] = useState(false); // Track toast state
+  const alertShownRef = useRef(false); // ✅ useRef to prevent duplicate alerts
 
-  const { data: userData, isLoading: userLoading, error } = useMyProfileQuery(undefined, {
-    skip: !shouldFetch,
-  });
+  const { data: userData, isLoading: userLoading, error } = useMyProfileQuery(
+    undefined,
+    { skip: !shouldFetch }
+  );
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      if (!toastShown) {
+      if (!alertShownRef.current) {
+        alertShownRef.current = true; // instantly mark as shown
         localStorage.setItem("redirectPath", window.location.pathname);
-        toast.info("Please login first to access this page.", {
-          position: "top-center",
-          duration: 2000,
+
+        Swal.fire({
+          icon: "info",
+          title: "Please login first",
+          text: "You need to login to access this page.",
+          confirmButtonText: "Go to Login",
+          confirmButtonColor: "#3085d6",
+          timer: 2500,
+        }).then(() => {
+          router.push("/login");
         });
-        setToastShown(true); // Set toast as shown
+      } else {
+        router.push("/login");
       }
 
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-
-      return; // stop here
+      return;
     }
 
     setShouldFetch(true);
-  }, [router, toastShown]);
+  }, [router]);
 
   useEffect(() => {
     if (!shouldFetch || userLoading) return;
 
     if (error) {
-      if (!toastShown) {
+      if (!alertShownRef.current) {
+        alertShownRef.current = true;
         console.error("Error fetching user data:", error);
-        toast.error("Your session has expired. Please login again.");
-        setToastShown(true); // Set toast as shown
-      }
 
-      localStorage.removeItem("token");
-
-      setTimeout(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Session expired",
+          text: "Please login again to continue.",
+          confirmButtonText: "Login",
+          confirmButtonColor: "#37B7C3",
+          timer: 2500,
+        }).then(() => {
+          localStorage.removeItem("token");
+          router.push("/login");
+        });
+      } else {
+        localStorage.removeItem("token");
         router.push("/login");
-      }, 2000);
+      }
       return;
     }
 
@@ -64,29 +78,29 @@ const PrivateRoute = ({ children, loggedInDynamicRoutes = [] }) => {
           currentPath.startsWith(route)
         );
 
-        if (!canAccess) {
-          if (!toastShown) {
-            toast.warning("Please subscribe first to access this page.", {
-              position: "top-center",
-              duration: 2000,
-            });
-            setToastShown(true); // Set toast as shown
-          }
+        if (!canAccess && !alertShownRef.current) {
+          alertShownRef.current = true;
 
-          // ✅ Redirect to subscription page
-          setTimeout(() => {
+          Swal.fire({
+            icon: "warning",
+            title: "Subscription required",
+            text: "Please subscribe to access this page.",
+            confirmButtonText: "Go to Subscription",
+            confirmButtonColor: "#37B7C3",
+            timer: 2500,
+          }).then(() => {
             router.push("/subscription");
-          }, 2000);
-
-          return; // stop rendering protected page
+          });
+        } else {
+          router.push("/subscription");
         }
+
+        return;
       }
     }
-  }, [shouldFetch, userData, userLoading, error, router, loggedInDynamicRoutes, toastShown]);
+  }, [shouldFetch, userData, userLoading, error, router, loggedInDynamicRoutes]);
 
-  if (userLoading) {
-    return <Spinner />;
-  }
+  if (userLoading) return <Spinner />;
 
   return children;
 };

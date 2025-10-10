@@ -9,11 +9,11 @@ import { useRouter } from "next/navigation";
 const SubscriptionBeforeLogin = () => {
   const { data: userData } = useMyProfileQuery();
   const router = useRouter();
-  // console.log(userData);
+  console.log("userData", userData?.email);
   const { data, isLoading } = useGetWebPackagesQuery();
   const packages = data?.data;
   console.log(packages);
-
+  const usedFreeTrial = userData?.hasUsedFreeTrial;
   // Static features for free plan
   const freeFeatures = [
     { text: "100+ of PNG & SVG Uploaded Pictures", included: true },
@@ -34,9 +34,11 @@ const SubscriptionBeforeLogin = () => {
     }
 
     if (paymentLink) {
-      router.push(paymentLink, );
+      router.push(`${paymentLink}?prefilled_email=${userData?.email}`);
     }
   };
+
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="mb-16 mt-24 px-4 md:px-8 lg:px-12">
@@ -59,17 +61,12 @@ const SubscriptionBeforeLogin = () => {
           {/* Static Free Plan */}
 
           {/* Dynamic Packages from API */}
-          {isLoading ? (
-            
-              <Spinner />
-          
-          ) : packages && packages.length > 0 ? (
+          {packages && packages.length > 0 ? (
             packages.map((packageItem, index) => (
               <div
                 key={packageItem._id || index}
                 className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden flex flex-col"
               >
-          
                 <div className="flex-grow">
                   <div className="relative z-10 text-center">
                     <h3 className="text-2xl font-bold mb-1">
@@ -83,7 +80,7 @@ const SubscriptionBeforeLogin = () => {
                         / {packageItem.paymentType}
                       </span>
                     </div>
-                   
+
                     <div className="h-12 flex items-center justify-center">
                       <p className="text-teal-100">
                         {packageItem?.description || ""}
@@ -125,19 +122,31 @@ const SubscriptionBeforeLogin = () => {
                   </div>
                 </div>
 
-           
                 <button
                   onClick={() => handlePurchaseClick(packageItem.paymentLink)}
-                  className="w-full bg-white text-teal-600 py-3 px-6 rounded-sm font-semibold hover:bg-gray-50 transition-colors duration-300 shadow-md hover:shadow-lg relative z-10 mt-auto"
+                  disabled={
+                    packageItem.title === "Free Trial -1 Month" &&
+                    userData?.hasUsedFreeTrial
+                  } // ✅ disable if user already used free trial
+                  className={`w-full py-3 px-6 rounded-sm font-semibold transition-colors duration-300 shadow-md mt-auto relative z-10
+    ${
+      packageItem.title === "Free Trial -1 Month" && userData?.hasUsedFreeTrial
+        ? "bg-gray-300 text-gray-600 cursor-not-allowed" // ✅ disabled style
+        : "bg-white text-teal-600 hover:bg-gray-50 hover:shadow-lg cursor-pointer"
+    }
+  `}
                 >
-                  {packageItem.title?.toLowerCase() === "free"
-                    ? "30 Days Trial"
+                  {packageItem.title === "Free Trial -1 Month" &&
+                  userData?.hasUsedFreeTrial
+                    ? "Already Trialed" // ✅ button text for used trial
+                    : packageItem.title === "Free Trial -1 Month"
+                    ? "30 Days Free Trial"
                     : "Purchase Now"}
                 </button>
               </div>
             ))
           ) : (
-            <div className="bg-gradient-to-br from-gray-400 to-gray-500 rounded-3xl p-8 shadow-xl text-white relative overflow-hidden flex items-center justify-center">
+            <div className="bg-gradient-to-br w-full from-gray-400 to-gray-500 rounded-3xl p-8 shadow-xl text-white relative overflow-hidden flex items-center justify-center">
               <div className="text-center">
                 <p>No package available</p>
               </div>
