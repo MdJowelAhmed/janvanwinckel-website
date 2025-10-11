@@ -56,6 +56,16 @@ const pigeonApi = api.injectEndpoints({
       },
       providesTags: ["Pigeon"],
     }),
+    getAllPigeonSearch: builder.query({
+      query: (searchTerm) => {
+        // Directly use the searchTerm as query parameter
+        return {
+          url: `/pigeon/searchAll?searchTerm=${encodeURIComponent(searchTerm)}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Pigeon"],
+    }),
 
     getSinglePigeon: builder.query({
       query: (id) => {
@@ -183,6 +193,7 @@ export const {
   useGetPigeonPackagesQuery,
   useGetMyPigeonPackagesQuery,
   useGetPigeonSearchQuery,
+  useGetAllPigeonSearchQuery,
   useGetSinglePigeonQuery,
   useCreatePigeonMutation,
   useUpdatePigeonMutation,

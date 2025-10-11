@@ -23,7 +23,7 @@ import {
   useUpdatePigeonMutation,
   useGetPigeonPackagesQuery,
   useGetSinglePigeonQuery,
-  useGetPigeonSearchQuery,
+  useGetAllPigeonSearchQuery,
 } from "@/redux/featured/pigeon/pigeonApi";
 import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
 import Image from "next/image";
@@ -54,8 +54,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     });
   console.log("singlePigeon", singlePigeon);
   const { data: breeder } = useGetBreederQuery();
-  const { data: fatherData } = useGetPigeonSearchQuery(fatherSearchTerm);
-  const { data: motherData } = useGetPigeonSearchQuery(motherSearchTerm);
+  const { data: fatherData } = useGetAllPigeonSearchQuery(fatherSearchTerm);
+  const { data: motherData } = useGetAllPigeonSearchQuery(motherSearchTerm);
 
   const fatherList = fatherData?.data || [];
   const motherList = motherData?.data || [];
@@ -91,6 +91,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [DNAPhoto, setDNAPhoto] = useState(null);
   const [fatherRingNumber, setFatherRingNumber] = useState("");
   const [motherRingNumber, setMotherRingNumber] = useState("");
+  console.log("fatherRingNumber", fatherRingNumber);
+  console.log("motherRingNumber", motherRingNumber);
   
   const currentYear = new Date().getFullYear();
 
@@ -310,13 +312,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       if (pigeon.fatherRingId?.ringNumber) {
         setFatherRingNumber(pigeon.fatherRingId.ringNumber);
         setFatherSearchTerm(pigeon.fatherRingId.ringNumber);
-        setSelectedFatherId(pigeon.fatherRingId._id);
+        setSelectedFatherId(pigeon.fatherRingId.ringNumber);
       }
 
       if (pigeon.motherRingId?.ringNumber) {
         setMotherRingNumber(pigeon.motherRingId.ringNumber);
         setMotherSearchTerm(pigeon.motherRingId.ringNumber);
-        setSelectedMotherId(pigeon.motherRingId._id);
+        setSelectedMotherId(pigeon.motherRingId.ringNumber);
       }
       reset({
         ringNumber: pigeon.ringNumber || "",
@@ -1076,8 +1078,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                             key={pigeon._id}
                             className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
                             onClick={() => {
-                              setSelectedFatherId(pigeon._id);
-                              setFatherSearchTerm(pigeon.ringNumber);
+                              setSelectedFatherId(pigeon.ringNumber);
+                              setFatherSearchTerm(pigeon?.ringNumber);
                               setFatherRingNumber(pigeon.ringNumber);
                             }}
                           >
@@ -1123,7 +1125,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                             key={pigeon._id}
                             className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
                             onClick={() => {
-                              setSelectedMotherId(pigeon._id);
+                              setSelectedMotherId(pigeon.ringNumber);
                               setMotherSearchTerm(pigeon.ringNumber);
                               setMotherRingNumber(pigeon.ringNumber);
                             }}
