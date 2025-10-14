@@ -91,6 +91,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [DNAPhoto, setDNAPhoto] = useState(null);
   const [fatherRingNumber, setFatherRingNumber] = useState("");
   const [motherRingNumber, setMotherRingNumber] = useState("");
+  const [selectedFather, setSelectedFather] = useState();
+  const [selectedMother, setSelectedMother] = useState();
   console.log("fatherRingNumber", fatherRingNumber);
   console.log("motherRingNumber", motherRingNumber);
 
@@ -278,6 +280,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       motherRingId: selectedMotherId,
       verified: false,
       iconic: false,
+      addresults: "",
       iconicScore: 0,
     },
   });
@@ -342,6 +345,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         motherRingId: pigeon.motherRingId?.ringNumber || "",
         verified: pigeon.verified || false,
         iconic: pigeon.iconic || false,
+        addresults: pigeon.addresults || "",
         iconicScore: pigeon.iconicScore || 0,
       });
 
@@ -504,6 +508,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         motherRingId: selectedMotherId || "",
         verified: Boolean(data.verified),
         iconic: Boolean(data.iconic),
+        addresults: data.addresults || "",
         iconicScore: parseInt(data.iconicScore) || 0,
         // only for update -> keep remaining old images
         remaining: isEditMode
@@ -707,7 +712,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     Choose a Country
                   </label>
                   <select
-                    {...register("country", { required: true })}
+                    {...register("country")}
                     defaultValue=""
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
@@ -762,11 +767,12 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
               <div className="grid grid-cols-2 gap-4 gap-x-10">
                 <div className="">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Short Information of the pigeon
+                    Story Line
                   </label>
                   <textarea
                     {...register("shortInfo")}
-                    placeholder="Short information of the pigeon"
+                    placeholder={`(Son of Burj Khalifa)​
+Winner of the Dubai OLR​`}
                     rows={5}
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                   />
@@ -806,7 +812,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         Select Breeder Rating
                       </option>
 
-                      {Array.from({ length: 100 }, (_, i) => i+1)
+                      {Array.from({ length: 100 }, (_, i) => i + 1)
                         .reverse() // Reverse the array to get 100 to 0
                         .map((rating) => (
                           <option key={rating} value={rating}>
@@ -827,7 +833,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   {/* Dynamic Color & Pattern Selector */}
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Color  Pattern
+                      Color Pattern
                     </label>
 
                     {/* Main Button */}
@@ -935,6 +941,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       <option value="">Select Gender</option>
                       <option value="Hen">Hen</option>
                       <option value="Cock">Cock</option>
+                      <option value="Unspecified​">Unspecified​</option>
                     </select>
                   </div>
 
@@ -1045,7 +1052,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
               {/* <h2 className="text-lg font-semibold mb-4">Parent Selection</h2> */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                 {/* Father Ring ID */}
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Father Ring ID
                   </label>
@@ -1066,6 +1073,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     placeholder="Father Ring Number"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
+
                   <p className="text-xs text-destructive mt-1">
                     Enter a part of the ring or part of the name to search for
                     the corresponding Pigeon
@@ -1081,9 +1089,10 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                             key={pigeon._id}
                             className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
                             onClick={() => {
-                              setSelectedFatherId(pigeon.ringNumber);
-                              setFatherSearchTerm(pigeon?.ringNumber);
+                              setSelectedFatherId(pigeon._id); // fixed: should be _id
+                              setFatherSearchTerm(pigeon.ringNumber);
                               setFatherRingNumber(pigeon.ringNumber);
+                              setSelectedFather(pigeon); // store full selected pigeon info
                             }}
                           >
                             {pigeon.ringNumber} - {pigeon.name}
@@ -1091,11 +1100,27 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         ))}
                       </ul>
                     )}
+
+                  {/* Selected pigeon info */}
+                  {selectedFatherId && selectedFather && (
+                    <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
+                      <p className="text-sm">
+                        <span className="font-medium">Ring:</span>{" "}
+                        {selectedFather.ringNumber}
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-medium">Name:</span>{" "}
+                        {selectedFather.name}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <div>
+
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Mother Ring ID
                   </label>
+
                   <input
                     type="text"
                     {...register("motherRingId")}
@@ -1113,6 +1138,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     placeholder="Mother Ring Number"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
+
                   <p className="text-xs text-destructive mt-1">
                     Enter a part of the ring or part of the name to search for
                     the corresponding Pigeon
@@ -1128,9 +1154,10 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                             key={pigeon._id}
                             className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
                             onClick={() => {
-                              setSelectedMotherId(pigeon.ringNumber);
+                              setSelectedMotherId(pigeon._id); // ✅ _id save korte hobe
                               setMotherSearchTerm(pigeon.ringNumber);
                               setMotherRingNumber(pigeon.ringNumber);
+                              setSelectedMother(pigeon); // ✅ full pigeon info store korbe
                             }}
                           >
                             {pigeon.ringNumber} - {pigeon.name}
@@ -1138,13 +1165,27 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         ))}
                       </ul>
                     )}
+
+                  {/* Selected pigeon info */}
+                  {selectedMotherId && selectedMother && (
+                    <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
+                      <p className="text-sm">
+                        <span className="font-medium">Ring:</span>{" "}
+                        {selectedMother.ringNumber}
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-medium">Name:</span>{" "}
+                        {selectedMother.name}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right Column - Photo Upload */}
-          <div className="bg-white rounded-lg lg:col-span-2 p-6 shadow-sm">
+          <div className="bg-white rounded-lg lg:col-span-2 p-6 shadow-sm ">
             <PigeonPhotosSlider
               pigeonPhoto={pigeonPhoto}
               setPigeonPhoto={setPigeonPhoto}
@@ -1161,7 +1202,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
               getImageUrl={getImageUrl}
             />
 
-            <div className="flex items-center justify-between my-4">
+            {/* <div className="flex items-center justify-between my-4">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -1182,16 +1223,16 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   </Button>
                 )}
               </div>
-            </div>
+            </div> */}
 
-            {showPigeonResult && (
+            {/* {showPigeonResult && (
               <div className="space-y-6">
                 {raceResults.map((result, index) => (
                   <div
                     key={result.id}
                     className="border border-gray-200 rounded-lg p-4 relative"
                   >
-                    {/* Remove Button */}
+                   
                     <button
                       type="button"
                       onClick={() => removeRaceResult(result.id)}
@@ -1205,7 +1246,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     </h4>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
-                      {/* Race Name */}
+                 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Race Name
@@ -1221,7 +1262,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         />
                       </div>
 
-                      {/* Date */}
+                    
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Date
@@ -1236,7 +1277,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         />
                       </div>
 
-                      {/* Distance */}
+              
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Distance
@@ -1256,7 +1297,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         />
                       </div>
 
-                      {/* Total Birds */}
+                   
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Total Birds
@@ -1272,7 +1313,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         />
                       </div>
 
-                      {/* Place/Position */}
+                      
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Place/Position
@@ -1291,7 +1332,20 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   </div>
                 ))}
               </div>
-            )}
+            )} */}
+
+            <div className="mt-10">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Race result
+              </label>
+              <textarea
+                {...register("addresults")}
+                placeholder={`1st/828p Quiévrain 108km
+4th/3265p Melun 287km
+6th/3418p HotSpot 6 Dubai OLR`}
+                className="w-full px-3 h-60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
           </div>
         </div>
 

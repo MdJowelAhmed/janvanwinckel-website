@@ -419,7 +419,7 @@ export default function Navbar() {
   // Navigation items
   const navItems = [
     { name: "Home", path: "/" },
-        { name: "Subscription", path: "/subscription" },
+    { name: "Subscription", path: "/subscription" },
     { name: "Add Pigeon", path: "/add-pigeon" },
     { name: "Loft Overview", path: "/loft-overview" },
 
@@ -485,23 +485,27 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
 
-        <ul className="hidden md:flex space-x-8">
-            {navItems.map((item) => {
-             
-              if (item.name === "Loft Overview" && !userData?._id) {
-                return null;
-              }
-              if (item.name === "Add Pigeon" && !userData?._id) {
-                return null;
-              }
-            
-
-              // Hide "Add Pigeon" if user is not PAIDUSER
-              // if (item.name === "Add Pigeon" && userData?.role !== "PAIDUSER") {
-              //   return null;
-              // }
-
-              return (
+          <ul className="hidden md:flex space-x-8">
+            {navItems
+              .filter((item) => {
+                // Hide "Subscription" for PAIDUSER
+                if (
+                  item.name === "Subscription" &&
+                  userData?.role === "PAIDUSER"
+                ) {
+                  return false;
+                }
+                // Hide "Loft Overview" or "Add Pigeon" if user is not logged in
+                if (
+                  (item.name === "Loft Overview" ||
+                    item.name === "Add Pigeon") &&
+                  !userData?._id
+                ) {
+                  return false;
+                }
+                return true;
+              })
+              .map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.path}
@@ -514,8 +518,7 @@ export default function Navbar() {
                     {item.name}
                   </Link>
                 </li>
-              );
-            })}
+              ))}
           </ul>
 
           {/* User Controls */}
@@ -540,7 +543,7 @@ export default function Navbar() {
 
             {/* Notification Button - Only show if user is logged in */}
             {/* userData?.role === "PAIDUSER" && */}
-            {userData?._id &&  (
+            {/* {userData?._id && (
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationModalOpen(true)}
@@ -555,26 +558,22 @@ export default function Navbar() {
                   )}
                 </button>
               </div>
-            )}
+            )} */}
 
             {/* Login Button - Show when no user is logged in */}
             {!userData?._id ? (
-             <div className="flex items-center gap-5">
-               <Link href="/login">
-                <Button className="bg-accent text-white px-8  py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
-                 
-                 
-                  Sign in
-                </Button>
-              </Link>
-               <Link href="/register">
-                <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
-                
-                
-                  Sign up
-                </Button>
-              </Link>
-             </div>
+              <div className="flex items-center gap-5">
+                <Link href="/login">
+                  <Button className="bg-accent text-white px-8  py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
+                    Sign in
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button className="bg-accent text-white px-8 py-5 rounded hover:bg-primary/90 transition-colors duration-200 flex items-center gap-2">
+                    Sign up
+                  </Button>
+                </Link>
+              </div>
             ) : (
               /* Profile Dropdown - Only show if user is logged in */
               <div className="relative" ref={profileRef}>

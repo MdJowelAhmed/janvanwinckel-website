@@ -85,7 +85,7 @@ const PigeonNode = ({ data }) => {
       className={`${getCardSize(data?.generation)} 
         
         border-b-8 border-r-10 border-black
-          text-white rounded-none transition-all duration-300 px-4 py-2
+          text-white rounded-none transition-all duration-300 px-2 py-2
           ${getGenerationColor(data?.generation)} border`}
     >
       <Handle
@@ -94,47 +94,56 @@ const PigeonNode = ({ data }) => {
         className="w-3 h-3 !bg-slate-400"
       />
       <div className="flex items-center justify-between ">
-        {countryCode && (
-          <div className="flex items-center gap-1">
-            <Image
-              src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
-              alt={data.country}
-              width={24}
-              height={18}
-              className="w-6 h-5 rounded-sm"
-            />
-            <p className="text-black">{countryCode}</p>
-          </div>
-        )}
+        <div className="flex items-center justify-center gap-1">
+          {countryCode && (
+            <div className="flex items-center gap-1">
+              <Image
+                src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+                alt={data.country}
+                width={24}
+                height={18}
+                className="w-6 h-5 rounded-sm"
+              />
+              <p className="text-black">{countryCode}</p>
+            </div>
+          )}
 
-        {/* <Crown className="w-3 h-3 text-amber-600" /> */}
-        {data.birthYear && (
-          <span className="text-black">
-            {data.birthYear.toString().slice(-2)}
-          </span>
-        )}
-        {data.ringNumber && (
-          <span className=" font-bold text-[#C33739]">{data.ringNumber}</span>
-        )}
-        {data.gender && (
-          <span className="text-black text-xl">
-            {getGenderIcon(data.gender)}
-          </span>
-        )}
-        <Image
-          src="/assests/Letter-P.png"
-          alt="Letter P"
-          width={24}
-          height={24}
-          className="w-6 h-6"
-        />
-        <Image
-          src="/assests/Gold-cup.png"
-          alt="Letter P"
-          width={30}
-          height={30}
-          className="w-6 h-6"
-        />
+          {/* <Crown className="w-3 h-3 text-amber-600" /> */}
+          {data.birthYear && (
+            <span className="text-black">
+              {data.birthYear.toString().slice(-2)}
+            </span>
+          )}
+          {data.ringNumber && (
+            <span className=" font-bold text-[#C33739]">{data.ringNumber}</span>
+          )}
+        </div>
+        <div className="flex items-center justify-center gap-1">
+          {" "}
+          {data.gender && (
+            <span className="text-black text-xl">
+              {getGenderIcon(data.gender)}
+            </span>
+          )}
+          {data?.ringNumber && (
+            <Image
+              src="/assests/Letter-P.png"
+              alt="Letter P"
+              width={24}
+              height={24}
+              className="w-6 h-6"
+            />
+          )}
+          {data?.ringNumber && (
+            <Image
+              src="/assests/Gold-cup.png"
+              alt="Letter P"
+              width={30}
+              height={30}
+              className="w-6 h-6"
+            />
+          )}
+        </div>
 
         {/* <WinnerPedigree /> */}
       </div>
@@ -170,7 +179,9 @@ const PigeonNode = ({ data }) => {
 
         {data.description && (
           <div className="">
-            <p className="text-sm text-slate-700">{data.description}</p>
+            <p className="text-sm text-slate-700">
+              {data?.description?.slice(0, 500)}
+            </p>
           </div>
         )}
         {data.colorName && (
@@ -198,16 +209,11 @@ const PigeonNode = ({ data }) => {
           )} */}
       </div>
 
-
-     
-
-    
-        <Handle
-          type="source"
-          position={Position.Right}
-          className="w-3 h-3 !bg-slate-400"
-        />
-    
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="w-3 h-3 !bg-slate-400"
+      />
     </div>
   );
 };
@@ -218,9 +224,9 @@ const nodeTypes = {
 
 export default function PigeonPedigreeChart() {
   const { id } = useParams();
-const {data:profileData}=useMyProfileQuery()
-  console.log("pedigree",profileData?.role)
-  const role=profileData?.role
+  const { data: profileData } = useMyProfileQuery();
+  console.log("pedigree", profileData?.role);
+  const role = profileData?.role;
   const { data: pedigreeData, isLoading } =
     useGetPigeonPedigreeChartDataQuery(id);
   // console.log("pedigreeData", pedigreeData);
@@ -512,20 +518,20 @@ const {data:profileData}=useMyProfileQuery()
     <div className="container  mx-auto">
       <div className="flex flex-col md:flex-row items-center justify-between mt-12 px-4 md:px-8 lg:px-12">
         <div className="max-w-2xl mb-6">
-          <h2 className="text-black font-bold text-2xl mb-4">
-            Pigeon pedigree chart
+          <h2 className="text-black font-bold text-2xl lg:text-4xl mb-4">
+            Pigeon pedigree
           </h2>
-          <p className="text-destructive">
+          {/* <p className="text-destructive">
             The Pedigree Chart displays your pigeon's lineage across multiple
             generations, showing key details like name, ring number, and
             birthdate. It helps you track breeding relationships and plan future
             pairings.
-          </p>
+          </p> */}
         </div>
         <div className="flex gap-5">
           <Button
             onClick={exportToExcel}
-            className="bg-primary text-white hover:text-white flex items-center gap-2"
+            className="bg-primary py-6 text-white hover:text-white flex items-center gap-2"
           >
             <Download className="w-4 h-4" />
             Export as Excel
@@ -533,7 +539,7 @@ const {data:profileData}=useMyProfileQuery()
           <Button
             onClick={exportToPDF}
             data-export-pdf
-            className="bg-primary text-white hover:text-white flex items-center gap-2"
+            className="bg-primary py-6 text-white hover:text-white flex items-center gap-2"
           >
             <Download className="w-4 h-4" />
             Export as PDF
@@ -542,7 +548,7 @@ const {data:profileData}=useMyProfileQuery()
       </div>
       <div
         ref={chartRef}
-        className="w-full h-[2000px] bg-gray-50 flex justify-start items-center mt-0 rounded-3xl"
+       className="w-full h-[2000px] bg-transparent flex justify-start items-center mt-0 rounded-3xl"
       >
         {/* --- ReactFlow (now dynamic) --- */}
         <ReactFlow
