@@ -93,25 +93,28 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [motherRingNumber, setMotherRingNumber] = useState("");
   console.log("fatherRingNumber", fatherRingNumber);
   console.log("motherRingNumber", motherRingNumber);
-  
-  const currentYear = new Date().getFullYear();
 
+  const currentYear = new Date().getFullYear();
+  const futureYear = currentYear + 2; // This will allow selecting up to current year + 2
+  const startYear = 1927;
 
   const allYears = Array.from(
-    { length: currentYear - 1926 + 1 },
-    (_, i) => 1926 + i
+    { length: futureYear - startYear + 1 },
+    (_, i) => startYear + i
   );
 
   const [search, setSearch] = useState("");
   const [filteredYears, setFilteredYears] = useState(allYears);
   const [showDropdown, setShowDropdown] = useState(false);
+  const reversedYears = allYears.reverse();
 
+  // Filtered years based on search input
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
     setShowDropdown(true);
 
-    const filtered = allYears.filter((year) =>
+    const filtered = reversedYears.filter((year) =>
       year.toString().includes(value)
     );
     setFilteredYears(filtered);
@@ -240,11 +243,11 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
   const getColorDisplayValue = () => {
     if (selectedColor && selectedPattern) {
-      return `${selectedColor.replace("_", " ")} & ${selectedPattern}`;
+      return `${selectedColor.replace("_", " ")}  ${selectedPattern}`;
     } else if (selectedColor) {
       return selectedColor.replace("_", " ");
     }
-    return "Select Color & Pattern";
+    return "Select Color  Pattern";
   };
 
   const {
@@ -258,7 +261,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     defaultValues: {
       ringNumber: "",
       name: "",
-      country: "Bangladesh",
+      country: "",
       birthYear: new Date().getFullYear(),
       shortInfo: "",
       breeder, // This will store breeder ID
@@ -266,7 +269,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       pattern: "",
       gender: "",
       status: "",
-      location: "Dhaka",
+      location: "",
       notes: "",
       racingRating: 0,
       racherRating: "",
@@ -482,7 +485,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       const formDataToSend = new FormData();
 
       // Create the data object matching backend format
-    // Create the data object matching backend format
+      // Create the data object matching backend format
       const dataObject = {
         ringNumber: data.ringNumber,
         name: data.name,
@@ -644,14 +647,14 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       <div className="flex items-center gap-4 gap-x-10 mb-8">
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="text-4xl font-bold text-accent mb-4  text-center">
-            {isEditMode ? "Edit" : "Add"}{" "}
-            <span className="text-accent-foreground">Pigeon</span>
+            {isEditMode ? "Edit" : "Add"} a new pigeon to
+            <span className="text-accent-foreground"> your loft​</span>
           </h1>
-          <p className="text-destructive text-sm mt-1">
+          {/* <p className="text-destructive text-sm mt-1">
             Welcome to the pigeon pedigree database! To add a new pigeon, please
             fill out the following details. This will help us track its lineage
             and make it easier for you to manage your pigeons.
-          </p>
+          </p> */}
         </div>
       </div>
 
@@ -720,7 +723,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                 </div>
                 <div className="relative w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                     Birth Year
+                    Birth Year
                   </label>
 
                   <input
@@ -774,7 +777,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                       Breeder
                     </label>
                     <select
-                      {...register("breeder",{required:false} )}
+                      {...register("breeder", { required: false })}
                       className="w-full px-3 py-[14px] border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Breeder</option>
@@ -803,11 +806,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         Select Breeder Rating
                       </option>
 
-                      {Array.from({ length: 101 }, (_, i) => (
-                        <option key={i} value={i}>
-                          {i}
-                        </option>
-                      ))}
+                      {Array.from({ length: 100 }, (_, i) => i+1)
+                        .reverse() // Reverse the array to get 100 to 0
+                        .map((rating) => (
+                          <option key={rating} value={rating}>
+                            {rating}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </div>
@@ -822,7 +827,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   {/* Dynamic Color & Pattern Selector */}
                   <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Color & Pattern
+                      Color  Pattern
                     </label>
 
                     {/* Main Button */}
@@ -958,9 +963,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     </label>
                     <input
                       type="text"
-                      {...register("location", {
-                        required: "Location is required",
-                      })}
+                      {...register("location")}
                       placeholder="Write your location"
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
@@ -976,7 +979,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
               {/* Ratings */}
               <div className="">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Racer Rating
                     </label>
@@ -996,7 +999,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         {errors.racherRating.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1012,13 +1015,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                         Select Racing Rating
                       </option>
 
-                      {Array.from({ length: 100 }, (_, i) => i + 1).map(
-                        (rating) => (
+                      {Array.from({ length: 100 }, (_, i) => i + 1)
+                        .reverse() // Reverse the array to get 100 to 1
+                        .map((rating) => (
                           <option key={rating} value={rating}>
                             {rating}
                           </option>
-                        )
-                      )}
+                        ))}
                     </select>
                   </div>
                 </div>

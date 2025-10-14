@@ -35,6 +35,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
+import PigeonPdfExport from "./OverviewExport";
 
 const PigeonOverviewContainer = () => {
   const { id } = useParams();
@@ -44,10 +45,10 @@ const PigeonOverviewContainer = () => {
   const [showPigeonModal, setShowPigeonModal] = useState(false);
   const [selectedPigeon, setSelectedPigeon] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const {data:userData} = useMyProfileQuery();
-  console.log(userData)
+  const { data: userData } = useMyProfileQuery();
+  console.log(userData);
   const userRole = userData?.role;
-console.log(userRole)
+  console.log(userRole);
   const { data, isLoading } = useGetSinglePigeonQuery(id);
   const { data: siblingsData, isLoading: siblingsLoading } =
     useGetAllSiblingsQuery(id);
@@ -57,6 +58,7 @@ console.log(userRole)
   console.log("siblings", siblings);
 
   const pigeon = data?.data;
+  console.log("pigeon", pigeon);
 
   // Get all available images
   const getAvailableImages = () => {
@@ -103,7 +105,10 @@ console.log(userRole)
 
   return (
     <div className="min-h-screen md:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6 ">
+        <div className="w-full flex justify-end">
+          <PigeonPdfExport pigeon={pigeon} siblings={siblings} />
+        </div>
         {/* Header Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Pigeon Image with Carousel */}
@@ -330,120 +335,127 @@ console.log(userRole)
                 <strong className="text-accent-foreground font-semibold">
                   Your Story:{" "}
                 </strong>
-                <span>
-                  {pigeon?.story ||
-                    "The Blue Thunder pigeon is a blue-gray bird with dark bars, known for its calm nature and strong racing performance. It's popular among experienced breeders and racing enthusiasts."}
-                </span>
+                <span>{pigeon?.shortInfo || "N/A"}</span>
               </p>
             </div>
           </CardContent>
         </Card>
 
         {/* Siblings Information */}
-       {
-        userRole === "PAIDUSER" && (
-           <Card>
-          <CardHeader>
-            {/* Fix 3: Use proper button component */}
-            <button
-              variant="ghost"
-              className="w-full justify-between p-0 h-auto"
-              onClick={() => setShowSiblings(!showSiblings)}
-            >
-              <CardTitle className="text-xl font-bold text-accent flex items-center justify-between gap-2 w-full">
-                Siblings Information
-                {showSiblings ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </CardTitle>
-            </button>
-          </CardHeader>
-          {showSiblings && (
-            <CardContent>
-              {siblingsLoading ? (
-                <div className="flex justify-center p-4">
-                  <Spinner />
-                </div>
-              ) : siblings.length > 0 ? (
-                <div className="overflow-x-auto rounded-lg">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b bg-foreground text-white">
-                        <th className="text-left p-3 font-semibold">Name</th>
-                        <th className="text-left p-3 font-semibold">
-                          Siblings Type
-                        </th>
-                        <th className="text-left p-3 font-semibold">
-                          Ring Number
-                        </th>
-                        <th className="text-left p-3 font-semibold">
-                          Birth Year
-                        </th>
-                        <th className="text-left p-3 font-semibold">
-                          Breeder Rating
-                        </th>
-                        <th className="text-left p-3 font-semibold">
-                          Racer Rating
-                        </th>
-                        <th className="text-left p-3 font-semibold">Father</th>
-                        <th className="text-left p-3 font-semibold">Mother</th>
-                        <th className="text-left p-3 font-semibold">Gender</th>
-                        <th className="text-left p-3 font-semibold">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {siblings.map((sibling, index) => (
-                        <tr
-                          key={sibling._id || index}
-                          className="border-b bg-background text-white"
-                        >
-                          <td className="p-3 font-medium">
-                            {sibling.name || "N/A"}
-                          </td>
-                          <td className="p-3">{sibling.type || "N/A"}</td>
-                          <td className="p-3">{sibling.ringNumber || "N/A"}</td>
-                          <td className="p-3">{sibling.birthYear || "N/A"}</td>
-                          <td className="p-3">
-                            {sibling.breederRating || "N/A"}
-                          </td>
-                          <td className="p-3">
-                            {sibling.racerRating || "N/A"}
-                          </td>
-                          <td className="p-3">
-                            {sibling.father?.ringNumber || "N/A"}
-                          </td>
-                          <td className="p-3">
-                            {sibling.mother?.ringNumber || "N/A"}
-                          </td>
-                          <td className="p-3">{sibling.gender || "N/A"}</td>
-                          <td className="p-3">
-                            <Button
-                              className="text-white rounded-md"
-                              onClick={() => {
-                                setSelectedPigeon(sibling);
-                                setShowPigeonModal(true);
-                              }}
-                            >
-                              <FaRegEye />
-                            </Button>
-                          </td>
+        {userRole === "PAIDUSER" && (
+          <Card>
+            <CardHeader>
+              {/* Fix 3: Use proper button component */}
+              <button
+                variant="ghost"
+                className="w-full justify-between p-0 h-auto"
+                onClick={() => setShowSiblings(!showSiblings)}
+              >
+                <CardTitle className="text-xl font-bold text-accent flex items-center justify-between gap-2 w-full">
+                  Siblings Information
+                  {showSiblings ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </CardTitle>
+              </button>
+            </CardHeader>
+            {showSiblings && (
+              <CardContent>
+                {siblingsLoading ? (
+                  <div className="flex justify-center p-4">
+                    <Spinner />
+                  </div>
+                ) : siblings.length > 0 ? (
+                  <div className="overflow-x-auto rounded-lg">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-foreground text-white">
+                          <th className="text-left p-3 font-semibold">Name</th>
+                          <th className="text-left p-3 font-semibold">
+                            Siblings Type
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Ring Number
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Birth Year
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Breeder Rating
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Racer Rating
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Father
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Mother
+                          </th>
+                          <th className="text-left p-3 font-semibold">
+                            Gender
+                          </th>
+                          {/* <th className="text-left p-3 font-semibold">
+                            Action
+                          </th> */}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-gray-500 italic text-center p-4">
-                  No siblings found
-                </p>
-              )}
-            </CardContent>
-          )}
-        </Card>
-        )
-       }
+                      </thead>
+                      <tbody>
+                        {siblings.map((sibling, index) => (
+                          <tr
+                            key={sibling._id || index}
+                            className="border-b bg-background text-white"
+                          >
+                            <td className="p-3 font-medium">
+                              {sibling.name || "N/A"}
+                            </td>
+                            <td className="p-3">{sibling.type || "N/A"}</td>
+                            <td className="p-3">
+                              {sibling.ringNumber || "N/A"}
+                            </td>
+                            <td className="p-3">
+                              {sibling.birthYear || "N/A"}
+                            </td>
+                            <td className="p-3">
+                              {sibling.breederRating || "N/A"}
+                            </td>
+                            <td className="p-3">
+                              {sibling.racerRating || "N/A"}
+                            </td>
+                            <td className="p-3">
+                              {sibling.father?.ringNumber || "N/A"}
+                            </td>
+                            <td className="p-3">
+                              {sibling.mother?.ringNumber || "N/A"}
+                            </td>
+                            <td className="p-3">{sibling.gender || "N/A"}</td>
+                            {/* <td className="p-3">
+                              <Button
+                                className="text-white rounded-md"
+                                onClick={() => {
+                                  setSelectedPigeon(sibling);
+                                  setShowPigeonModal(true);
+                                }}
+                              >
+                                <FaRegEye />
+                              </Button>
+                            </td> */}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic text-center p-4">
+                    No siblings found
+                  </p>
+                )}
+              </CardContent>
+            )}
+          </Card>
+        )}
 
         {/* Race Results */}
         <Card>

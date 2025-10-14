@@ -45,15 +45,13 @@ const SubscriptionBeforeLogin = () => {
       <div className=" mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-accent ">
-            View Subscription{" "}
-            <span className="text-accent-foreground">Prices</span>
+          <h1 className="text-3xl md:text-4xl font-bold mb- text-accent ">
+          Choose Your Subscription Plan
+            {/* <span className="text-accent-foreground">Prices</span> */}
           </h1>
-          {/* <p className="text-destructive text-lg max-w-2xl mx-auto leading-relaxed">
-            Experience year-round comfort with our A-rated uPVC windows,
-            designed to keep your home warm in winter, cool in summer, and
-            stylish every day.
-          </p> */}
+          <p className="text-destructive text-2xl max-w-2xl mx-auto leading-relaxed">
+         thepigeonhub.com
+          </p>
         </div>
 
         {/* Pricing Cards */}
@@ -65,7 +63,7 @@ const SubscriptionBeforeLogin = () => {
             packages.map((packageItem, index) => (
               <div
                 key={packageItem._id || index}
-                className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white relative overflow-hidden flex flex-col"
+                className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl hover:bg-accent transition-all duration-300 text-white relative overflow-hidden flex flex-col"
               >
                 <div className="flex-grow">
                   <div className="relative z-10 text-center">
@@ -128,11 +126,11 @@ const SubscriptionBeforeLogin = () => {
                     packageItem.title === "Free Trial -1 Month" &&
                     userData?.hasUsedFreeTrial
                   } // ✅ disable if user already used free trial
-                  className={`w-full py-3 px-6 rounded-sm font-semibold transition-colors duration-300 shadow-md mt-auto relative z-10
+                  className={`w-full py-3 px-6 rounded-sm font-semibold  transition-colors duration-300 shadow-md mt-auto relative z-10
     ${
       packageItem.title === "Free Trial -1 Month" && userData?.hasUsedFreeTrial
         ? "bg-gray-300 text-gray-600 cursor-not-allowed" // ✅ disabled style
-        : "bg-white text-teal-600 hover:bg-gray-50 hover:shadow-lg cursor-pointer"
+        : "bg-white text-teal-600 hover:bg-[#088395] hover:text-white hover:shadow-lg cursor-pointer"
     }
   `}
                 >

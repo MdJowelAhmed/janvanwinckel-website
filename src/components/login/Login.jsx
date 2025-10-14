@@ -88,7 +88,7 @@ export default function LoginUser() {
             {/* User Name or Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-sm mb-2 text-white">
-                User name or email
+                User email
               </label>
               <Input
                 id="email"
