@@ -186,6 +186,15 @@ const pigeonApi = api.injectEndpoints({
       },
       invalidatesTags: ["Pigeon"],
     }),
+    
+    pigeonAddMyLoftOverview: builder.mutation({
+      query: (body) => ({
+        url: "/pigeon/add",
+        method: "POST",
+        body, 
+      }),
+      invalidatesTags: ["Pigeon"],
+    }),
   }),
 });
 
@@ -208,6 +217,7 @@ export const {
   // Lazy queries
   useLazySearchPigeonsQuery,
   useLazyExportPigeonsQuery,
+  usePigeonAddMyLoftOverviewMutation,
 } = pigeonApi;
 
 export default pigeonApi;

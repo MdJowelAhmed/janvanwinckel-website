@@ -180,7 +180,7 @@ const PigeonNode = ({ data }) => {
         {data.description && (
           <div className="">
             <p className="text-sm text-slate-700">
-              {data?.description?.slice(0, 500)}
+              {data?.description?.slice(0, 650)}
             </p>
           </div>
         )}

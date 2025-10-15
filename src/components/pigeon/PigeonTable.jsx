@@ -33,6 +33,8 @@ import { useDeletePigeonMutation } from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
 import { getCode } from "country-list";
 import Image from "next/image";
+import Swal from "sweetalert2";
+import { DeleteConfirm } from "../share/deleteConfimation";
 
 const PigeonTable = ({
   data,
@@ -110,21 +112,50 @@ const PigeonTable = ({
     router.push(`/pedigree-chart/${pigeonId}`);
   };
 
-  const handleDelete = async (pigeonId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this pigeon? This action cannot be undone."
-      )
-    ) {
-      try {
-        await deletePigeon(pigeonId).unwrap();
-        // Optionally show success message
-      } catch (error) {
-        console.error("Failed to delete pigeon:", error);
-        alert("Failed to delete pigeon. Please try again.");
-      }
+
+
+const handleDelete = async (pigeonId) => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#37B7C3",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await deletePigeon(pigeonId).unwrap();
+      Swal.fire({
+        title: "Deleted!",
+        text: "Pigeon deleted successfully.",
+        icon: "success",
+        confirmButtonColor: "#37B7C3",
+      });
+    } catch (error) {
+      console.error("Failed to delete pigeon:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to delete pigeon. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#37B7C3",
+      });
     }
-  };
+  }
+};
+
+// const handleDelete = async (pigeonId) => {
+//   try {
+//     await deletePigeon(pigeonId).unwrap();
+//     toast.success("Pigeon deleted successfully!");
+//   } catch (error) {
+//     console.error("Failed to delete pigeon:", error);
+//     toast.error("Failed to delete pigeon. Please try again.");
+//   }
+// };
+
 
   return (
     <div className="space-y-4 ">
@@ -144,7 +175,7 @@ const PigeonTable = ({
                   <TableHead className="text-white">Ring Number</TableHead>
                   <TableHead className="text-white">Birth Year</TableHead>
                   <TableHead className="text-white">Quality Breeder</TableHead>
-                  <TableHead className="text-white">Quality Racer</TableHead>
+                  {/* <TableHead className="text-white">Quality Racer</TableHead> */}
                   <TableHead className="text-white">Racing Rating</TableHead>
                   {/* <TableHead className="text-white">Pattern</TableHead> */}
                   <TableHead className="text-white">Status</TableHead>
@@ -215,7 +246,7 @@ const PigeonTable = ({
 
                     <TableCell className="text-[#B0B6A4]">{pigeon.birthYear}</TableCell>
                     <TableCell>{pigeon.breederRating}</TableCell>
-                    <TableCell>{pigeon.racherRating}</TableCell>
+                    {/* <TableCell>{pigeon.racherRating}</TableCell> */}
 
                     {/* <TableCell>
                       <div className="text-sm">
@@ -299,6 +330,10 @@ const PigeonTable = ({
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Pigeon
                           </DropdownMenuItem>
+
+                          {/* <DropdownMenuItem asChild>
+  <DeleteConfirm pigeonId={pigeon._id} onConfirm={handleDelete} />
+</DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

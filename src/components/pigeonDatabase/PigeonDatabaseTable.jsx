@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Trash2,
   GitBranch,
+  Plus,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,9 +30,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import { useDeletePigeonMutation } from "@/redux/featured/pigeon/pigeonApi";
+import { useDeletePigeonMutation, usePigeonAddMyLoftOverviewMutation } from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
 import { getCode } from "country-list";
+import { toast } from "sonner";
+import Swal from "sweetalert2";
 
 const PigeonTable = ({
   data,
@@ -42,6 +45,62 @@ const PigeonTable = ({
 }) => {
   const router = useRouter();
   const [deletePigeon] = useDeletePigeonMutation();
+  const [pigeonAddMyLoftOverview] = usePigeonAddMyLoftOverviewMutation();
+
+// const handleAddMyLoftOverview = async (pigeonId) => {
+//   try {
+//     const payload = { pigeonId }; // backend expected format
+//     await pigeonAddMyLoftOverview(payload).unwrap();
+
+//     toast.success("Pigeon added to My Loft Overview successfully!");
+//   } catch (error) {
+//     console.error("Error adding pigeon to My Loft Overview:", error);
+//     toast.error(error?.data?.message || "Failed to add pigeon. Please try again.");
+//   }
+// };
+
+
+
+
+
+
+const handleAddMyLoftOverview = async (pigeonId) => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to add this pigeon to My Loft Overview?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#37B7C3", // teal-600
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, add it!",
+    cancelButtonText: "Cancel",
+  });
+
+  if (!result.isConfirmed) return; 
+
+  try {
+    const payload = { pigeonId };
+    await pigeonAddMyLoftOverview(payload).unwrap();
+
+    Swal.fire({
+      title: "Added!",
+      text: "Pigeon added to My Loft Overview successfully!",
+      icon: "success",
+      confirmButtonColor: "#37B7C3",
+    });
+  } catch (error) {
+    console.error("Error adding pigeon to My Loft Overview:", error);
+    Swal.fire({
+      title: "Failed!",
+      text: error?.data?.message || "Failed to add pigeon. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
+  }
+};
+
+
+
 
   if (isLoading) {
     return <TableSkeleton />;
@@ -143,7 +202,7 @@ const PigeonTable = ({
                   <TableHead className="text-white">Ring Number</TableHead>
                   <TableHead className="text-white">Birth Year</TableHead>
                   <TableHead className="text-white">Quality Breeder</TableHead>
-                  <TableHead className="text-white">Quality Racer</TableHead>
+                  {/* <TableHead className="text-white">Quality Racer</TableHead> */}
                   <TableHead className="text-white">Racing Rating</TableHead>
                   <TableHead className="text-white">Verified</TableHead>
                   <TableHead className="text-white">Status</TableHead>
@@ -179,7 +238,8 @@ const PigeonTable = ({
                       </Avatar>
                     </TableCell>
 
-                    <TableCell className="font-medium text-[#3AB27F]">
+                    <TableCell className="font-medium text-[#3AB27F]" onClick={() => handleAddMyLoftOverview(pigeon._id)}>
+                      <Plus className="inline-block w-4 h-4 mr-2" />
                       {pigeon.name}
                     </TableCell>
                     <TableCell>
@@ -212,7 +272,7 @@ const PigeonTable = ({
 
                     <TableCell className="text-[#B0B6A4]">{pigeon.birthYear}</TableCell>
                     <TableCell className=" text-center">{pigeon.breederRating}</TableCell>
-                    <TableCell>{pigeon.racherRating}</TableCell>
+                    {/* <TableCell>{pigeon.racherRating}</TableCell> */}
 
                     {/* <TableCell>
                       <div className="text-sm">

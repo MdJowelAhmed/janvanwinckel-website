@@ -89,6 +89,9 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const [ownershipPhoto, setOwnershipPhoto] = useState(null);
   const [pedigreePhoto, setPedigreePhoto] = useState(null);
   const [DNAPhoto, setDNAPhoto] = useState(null);
+  const [breederSearchTerm, setBreederSearchTerm] = useState("");
+  const [selectedBreeder, setSelectedBreeder] = useState(null);
+  const [showBreederDropdown, setShowBreederDropdown] = useState(false);
   const [fatherRingNumber, setFatherRingNumber] = useState("");
   const [motherRingNumber, setMotherRingNumber] = useState("");
   const [selectedFather, setSelectedFather] = useState();
@@ -96,36 +99,69 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   console.log("fatherRingNumber", fatherRingNumber);
   console.log("motherRingNumber", motherRingNumber);
 
+  // Birth Year Input এর সঠিক implementation
+
   const currentYear = new Date().getFullYear();
-  const futureYear = currentYear + 2; // This will allow selecting up to current year + 2
+  const futureYear = currentYear + 2;
   const startYear = 1927;
 
   const allYears = Array.from(
     { length: futureYear - startYear + 1 },
     (_, i) => startYear + i
-  );
+  ).reverse(); // এখানেই reverse করুন
 
   const [search, setSearch] = useState("");
   const [filteredYears, setFilteredYears] = useState(allYears);
   const [showDropdown, setShowDropdown] = useState(false);
-  const reversedYears = allYears.reverse();
 
-  // Filtered years based on search input
+  // Search handler
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearch(value);
     setShowDropdown(true);
 
-    const filtered = reversedYears.filter((year) =>
-      year.toString().includes(value)
-    );
+    const filtered = allYears.filter((year) => year.toString().includes(value));
     setFilteredYears(filtered);
   };
 
+  // Select handler - এটাই main fix
   const handleSelect = (year) => {
-    setSearch(year.toString());
+    setSearch(year.toString()); // input field এ দেখাবে
+    setValue("birthYear", year); // form value set করবে - এটাই backend এ যাবে
     setShowDropdown(false);
+
+    console.log("Selected year:", year); // check করার জন্য
   };
+
+  // Filtered years based on search input
+  // const handleSearch = (e) => {
+  //   const value = e.target.value;
+  //   setSearch(value);
+  //   setShowDropdown(true);
+
+  //   const filtered = reversedYears.filter((year) =>
+  //     year.toString().includes(value)
+  //   );
+  //   setFilteredYears(filtered);
+  // };
+
+  // const handleSearch = (e) => {
+  //   const value = e.target.value;
+  //   setSearch(value); // Update search state
+  //   setShowDropdown(true); // Show dropdown on input change
+
+  //   const filtered = reversedYears.filter((year) =>
+  //     year.toString().includes(value)
+  //   );
+  //   setFilteredYears(filtered); // Update filtered years
+  // };
+
+  // handleSelect function to update both the input and the form value
+  // const handleSelect = (year) => {
+  //   setSearch(year.toString()); // input এ দেখাবে
+  //   setShowDropdown(false);
+  //   setValue("birthYear", year); // form value তে সংরক্ষণ করবে
+  // };
 
   // Generic photo upload handler
   const handleSpecificPhotoUpload = (event, photoType, setPhotoState) => {
@@ -326,20 +362,36 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         setMotherSearchTerm(pigeon.motherRingId.ringNumber);
         setSelectedMotherId(pigeon.motherRingId.ringNumber);
       }
+
+      // Set breeder name for display
+      if (pigeon.breeder) {
+        const breederName =
+          typeof pigeon.breeder === "object"
+            ? pigeon.breeder.breederName
+            : pigeon.breeder;
+        setBreederSearchTerm(breederName);
+        if (typeof pigeon.breeder === "object") {
+          setSelectedBreeder(pigeon.breeder);
+        }
+      }
+
       reset({
         ringNumber: pigeon.ringNumber || "",
         name: pigeon.name || "",
-        country: pigeon.country || "Bangladesh",
-        birthYear: pigeon.birthYear || new Date().getFullYear(),
+        country: pigeon.country || "",
+        birthYear: pigeon.birthYear || "" ,
         shortInfo: pigeon.shortInfo || "",
-        breeder: pigeon.breeder?._id,
+        breeder:
+          typeof pigeon.breeder === "object"
+            ? pigeon.breeder.breederName
+            : pigeon.breeder || "",
         color: pigeon.color || "",
         pattern: pigeon.pattern || "",
         gender: pigeon.gender || "",
-        status: pigeon.status || "Active",
-        location: pigeon.location || "Dhaka",
+        status: pigeon.status || "",
+        location: pigeon.location || "",
         notes: pigeon.notes || "",
-        racherRating: pigeon.racherRating || "Good",
+        racherRating: pigeon.racherRating || "",
         breederRating: pigeon.breederRating || 0,
         fatherRingId: pigeon.fatherRingId?.ringNumber || "",
         motherRingId: pigeon.motherRingId?.ringNumber || "",
@@ -376,70 +428,6 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         setDNAPhoto({ url: pigeon.DNAPhoto });
       }
 
-      if (isEditMode) {
-        // For update: track remaining photos and new photos
-        const remainingPhotos = {};
-        const newPhotos = {};
-
-        // Check each photo type
-        if (pigeonPhoto) {
-          if (pigeonPhoto.file) {
-            newPhotos.pigeonPhoto = pigeonPhoto.file;
-          } else {
-            remainingPhotos.pigeonPhoto = pigeonPhoto.url;
-          }
-        }
-
-        if (eyePhoto) {
-          if (eyePhoto.file) {
-            newPhotos.eyePhoto = eyePhoto.file;
-          } else {
-            remainingPhotos.eyePhoto = eyePhoto.url;
-          }
-        }
-
-        if (ownershipPhoto) {
-          if (ownershipPhoto.file) {
-            newPhotos.ownershipPhoto = ownershipPhoto.file;
-          } else {
-            remainingPhotos.ownershipPhoto = ownershipPhoto.url;
-          }
-        }
-
-        if (pedigreePhoto) {
-          if (pedigreePhoto.file) {
-            newPhotos.pedigreePhoto = pedigreePhoto.file;
-          } else {
-            remainingPhotos.pedigreePhoto = pedigreePhoto.url;
-          }
-        }
-
-        if (DNAPhoto) {
-          if (DNAPhoto.file) {
-            newPhotos.DNAPhoto = DNAPhoto.file;
-          } else {
-            remainingPhotos.DNAPhoto = DNAPhoto.url;
-          }
-        }
-
-        // dataObject.remainingPhotos = remainingPhotos;
-
-        // Append new photos
-        Object.entries(newPhotos).forEach(([key, file]) => {
-          formDataToSend.append(key, file);
-        });
-      } else {
-        // For create: append all photos
-        if (pigeonPhoto?.file)
-          formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
-        if (eyePhoto?.file) formDataToSend.append("eyePhoto", eyePhoto.file);
-        if (ownershipPhoto?.file)
-          formDataToSend.append("ownershipPhoto", ownershipPhoto.file);
-        if (pedigreePhoto?.file)
-          formDataToSend.append("pedigreePhoto", pedigreePhoto.file);
-        if (DNAPhoto?.file) formDataToSend.append("DNAPhoto", DNAPhoto.file);
-      }
-
       // Load race results if they exist
       if (pigeon.results && Array.isArray(pigeon.results)) {
         setRaceResults(
@@ -457,71 +445,36 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     }
   }, [isEditMode, singlePigeon, reset]);
 
-  // const handlePhotoUpload = (event) => {
-  //   const files = Array.from(event.target.files);
-  //   if (photos.length + files.length > 6) {
-  //     toast.error("You can upload maximum 6 photos");
-  //     return;
-  //   }
-
-  //   files.forEach((file) => {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       setPhotos((prev) => [
-  //         ...prev,
-  //         {
-  //           id: Date.now() + Math.random(),
-  //           file,
-  //           url: e.target.result,
-  //         },
-  //       ]);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   });
-  // };
-
-  // const removePhoto = (photoId) => {
-  //   setPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
-  // };
-
   const onSubmit = async (data) => {
     try {
       const formDataToSend = new FormData();
 
-      // Create the data object matching backend format
-      // Create the data object matching backend format
       const dataObject = {
         ringNumber: data.ringNumber,
         name: data.name,
         country: data.country,
         birthYear: parseInt(data.birthYear),
         shortInfo: data.shortInfo,
+        breeder: breederSearchTerm || data.breeder,
         color: data.color,
         racingRating: parseInt(data.racingRating) || 0,
-        racherRating: data.racherRating || "Good", // Fixed spelling
+        racherRating: data.racherRating || "",
         breederRating: parseInt(data.breederRating) || 0,
         gender: data.gender,
-        status: data.status || "Breeding",
+        status: data.status || "",
         location: data.location,
         notes: data.notes,
-        fatherRingId: selectedFatherId || "",
-        motherRingId: selectedMotherId || "",
+        fatherRingId: fatherSearchTerm || selectedFatherId || "",
+        motherRingId: motherSearchTerm || selectedMotherId || "",
         verified: Boolean(data.verified),
         iconic: Boolean(data.iconic),
         addresults: data.addresults || "",
         iconicScore: parseInt(data.iconicScore) || 0,
-        // only for update -> keep remaining old images
         remaining: isEditMode
           ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
           : [],
       };
 
-      // Only add breeder if it has a valid value
-      if (data.breeder && data.breeder.trim() !== "") {
-        dataObject.breeder = data.breeder;
-      }
-
-      // Only add results if race results are enabled and there are results
       if (showPigeonResult && raceResults.length > 0) {
         const formattedResults = raceResults.map((result) => ({
           name: result.name,
@@ -535,16 +488,12 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
       // Handle specific photos properly
       if (isEditMode) {
-        // For update: track remaining photos and new photos
         const remainingPhotos = {};
 
-        // Check each photo type and handle remaining vs new
         if (pigeonPhoto) {
           if (pigeonPhoto.file) {
-            // New photo - will be uploaded
             formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
           } else {
-            // Existing photo - keep it
             remainingPhotos.pigeonPhoto = pigeonPhoto.url;
           }
         }
@@ -575,16 +524,14 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
         if (DNAPhoto) {
           if (DNAPhoto.file) {
-            formDataToSend.append("DNAPhoto", DNAPhoto.file); // Note: backend expects "DNAPhoto"
+            formDataToSend.append("DNAPhoto", DNAPhoto.file);
           } else {
-            remainingPhotos.DNAPhoto = DNAPhoto.url; // Note: backend field name
+            remainingPhotos.DNAPhoto = DNAPhoto.url;
           }
         }
 
-        // Add remaining photos to data object
         dataObject.remainingPhotos = remainingPhotos;
       } else {
-        // For create: append all specific photos
         if (pigeonPhoto?.file) {
           formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
         }
@@ -602,15 +549,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         }
       }
 
-      // Handle general photos (if you still want to support them)
+      // Handle general photos
       if (isEditMode) {
         const newImages = photos.filter((photo) => photo.file);
-        // Append only new images
         newImages.forEach((photo) => {
           formDataToSend.append("image", photo.file);
         });
       } else {
-        // For create: append all images
         photos.forEach((photo) => {
           if (photo.file) {
             formDataToSend.append("image", photo.file);
@@ -618,16 +563,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         });
       }
 
-      // Append data as JSON string
       formDataToSend.append("data", JSON.stringify(dataObject));
 
-      // Debug log
-      console.log("Data object:", dataObject);
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log("FormData entry:", key, value);
-      }
-
-      // API call
       if (isEditMode) {
         await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
         toast.success("Pigeon updated successfully!");
@@ -655,11 +592,6 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
             {isEditMode ? "Edit" : "Add"} a new pigeon to
             <span className="text-accent-foreground"> your loft​</span>
           </h1>
-          {/* <p className="text-destructive text-sm mt-1">
-            Welcome to the pigeon pedigree database! To add a new pigeon, please
-            fill out the following details. This will help us track its lineage
-            and make it easier for you to manage your pigeons.
-          </p> */}
         </div>
       </div>
 
@@ -733,14 +665,16 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                   <input
                     type="text"
-                    {...register("birthYear")}
-                    value={search}
+                    value={search} // শুধু search state থেকে value নিন
                     onChange={handleSearch}
                     placeholder="Enter or select your birth year"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     onFocus={() => setShowDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowDropdown(false), 100)} // dropdown close after click
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                   />
+
+                  {/* Hidden input for react-hook-form */}
+                  <input type="hidden" {...register("birthYear")} />
 
                   {showDropdown && (
                     <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
@@ -782,21 +716,63 @@ Winner of the Dubai OLR​`}
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Breeder
                     </label>
-                    <select
-                      {...register("breeder", { required: false })}
-                      className="w-full px-3 py-[14px] border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    >
-                      <option value="">Select Breeder</option>
-                      {breederList &&
-                        breederList.map((breeder) => (
-                          <option
-                            key={breeder._id || breeder.id}
-                            value={breeder._id || breeder.id}
-                          >
-                            {breeder.breederName}
-                          </option>
-                        ))}
-                    </select>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        {...register("breeder")}
+                        value={breederSearchTerm}
+                        onChange={(e) => {
+                          setBreederSearchTerm(e.target.value);
+                          setShowBreederDropdown(true);
+                          setSelectedBreeder(null);
+                        }}
+                        onFocus={() => setShowBreederDropdown(true)}
+                        onBlur={() =>
+                          setTimeout(() => setShowBreederDropdown(false), 200)
+                        }
+                        placeholder="Type breeder name or select from list"
+                        className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      />
+
+                      {/* Dropdown list for verified breeders */}
+                      {showBreederDropdown &&
+                        breederList &&
+                        breederList.length > 0 &&
+                        breederSearchTerm && (
+                          <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-40 overflow-y-auto shadow-md mt-1">
+                            {breederList
+                              .filter((breeder) =>
+                                breeder.breederName
+                                  .toLowerCase()
+                                  .includes(breederSearchTerm.toLowerCase())
+                              )
+                              .map((breeder) => (
+                                <li
+                                  key={breeder._id || breeder.id}
+                                  className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                                  onClick={() => {
+                                    setBreederSearchTerm(breeder.breederName);
+                                    setSelectedBreeder(breeder);
+                                    setShowBreederDropdown(false);
+                                    setValue("breeder", breeder.breederName);
+                                  }}
+                                >
+                                  {breeder.breederName}
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+
+                      {/* Show selected breeder info */}
+                      {/* {selectedBreeder && (
+                        <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
+                          <p className="text-sm">
+                            <span className="font-medium">Breeder:</span>{" "}
+                            {selectedBreeder.breederName}
+                          </p>
+                        </div>
+                      )} */}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -941,7 +917,7 @@ Winner of the Dubai OLR​`}
                       <option value="">Select Gender</option>
                       <option value="Hen">Hen</option>
                       <option value="Cock">Cock</option>
-                      <option value="Unspecified​">Unspecified​</option>
+                      <option value="Unspecified">Unspecified</option>
                     </select>
                   </div>
 
@@ -1056,64 +1032,67 @@ Winner of the Dubai OLR​`}
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Father Ring ID
                   </label>
-                  <input
-                    type="text"
-                    {...register("fatherRingId")}
-                    value={
-                      selectedFatherId
-                        ? fatherList.find((f) => f._id === selectedFatherId)
-                            ?.ringNumber || fatherRingNumber
-                        : fatherSearchTerm
-                    }
-                    onChange={(e) => {
-                      setFatherSearchTerm(e.target.value);
-                      setSelectedFatherId(""); // reset selection if user types
-                      setFatherRingNumber(""); // clear stored ring number
-                    }}
-                    placeholder="Father Ring Number"
-                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
 
-                  <p className="text-xs text-destructive mt-1">
-                    Enter a part of the ring or part of the name to search for
-                    the corresponding Pigeon
-                  </p>
+                  <div>
+                    <input
+                      type="text"
+                      {...register("fatherRingId")}
+                      value={
+                        selectedFatherId
+                          ? fatherList.find((f) => f._id === selectedFatherId)
+                              ?.ringNumber || fatherRingNumber
+                          : fatherSearchTerm
+                      }
+                      onChange={(e) => {
+                        setFatherSearchTerm(e.target.value);
+                        setSelectedFatherId(""); // reset selection if user types
+                        setFatherRingNumber(""); // clear stored ring number
+                      }}
+                      placeholder="Search father ring number or name"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
 
-                  {/* Dropdown list */}
-                  {fatherList?.length > 0 &&
-                    !selectedFatherId &&
-                    fatherSearchTerm && (
-                      <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white z-10 absolute max-w-[410px]">
-                        {fatherList.map((pigeon) => (
-                          <li
-                            key={pigeon._id}
-                            className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
-                            onClick={() => {
-                              setSelectedFatherId(pigeon._id); // fixed: should be _id
-                              setFatherSearchTerm(pigeon.ringNumber);
-                              setFatherRingNumber(pigeon.ringNumber);
-                              setSelectedFather(pigeon); // store full selected pigeon info
-                            }}
-                          >
-                            {pigeon.ringNumber} - {pigeon.name}
-                          </li>
-                        ))}
-                      </ul>
+                    <p className="text-xs text-destructive mt-1">
+                      Enter a part of the ring or part of the name to search for
+                      the corresponding Pigeon
+                    </p>
+
+                    {/* Dropdown list */}
+                    {fatherList?.length > 0 &&
+                      !selectedFatherId &&
+                      fatherSearchTerm && (
+                        <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white z-10 absolute max-w-[410px]">
+                          {fatherList.map((pigeon) => (
+                            <li
+                              key={pigeon._id}
+                              className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
+                              onClick={() => {
+                                setSelectedFatherId(pigeon.ringNumber); // fixed: should be _id
+                                setFatherSearchTerm(pigeon.ringNumber);
+                                setFatherRingNumber(pigeon.ringNumber);
+                                setSelectedFather(pigeon); // store full selected pigeon info
+                              }}
+                            >
+                              {pigeon.ringNumber} - {pigeon.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                    {/* Selected pigeon info */}
+                    {selectedFatherId && selectedFather && (
+                      <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
+                        <p className="text-sm">
+                          <span className="font-medium">Ring:</span>{" "}
+                          {selectedFather.ringNumber}
+                        </p>
+                        <p className="text-sm">
+                          <span className="font-medium">Name:</span>{" "}
+                          {selectedFather.name}
+                        </p>
+                      </div>
                     )}
-
-                  {/* Selected pigeon info */}
-                  {selectedFatherId && selectedFather && (
-                    <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
-                      <p className="text-sm">
-                        <span className="font-medium">Ring:</span>{" "}
-                        {selectedFather.ringNumber}
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-medium">Name:</span>{" "}
-                        {selectedFather.name}
-                      </p>
-                    </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="relative">
@@ -1121,64 +1100,66 @@ Winner of the Dubai OLR​`}
                     Mother Ring ID
                   </label>
 
-                  <input
-                    type="text"
-                    {...register("motherRingId")}
-                    value={
-                      selectedMotherId
-                        ? motherList.find((m) => m._id === selectedMotherId)
-                            ?.ringNumber || motherRingNumber
-                        : motherSearchTerm
-                    }
-                    onChange={(e) => {
-                      setMotherSearchTerm(e.target.value);
-                      setSelectedMotherId(""); // reset selection if user types
-                      setMotherRingNumber(""); // clear stored ring number
-                    }}
-                    placeholder="Mother Ring Number"
-                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      {...register("motherRingId")}
+                      value={
+                        selectedMotherId
+                          ? motherList.find((m) => m._id === selectedMotherId)
+                              ?.ringNumber || motherRingNumber
+                          : motherSearchTerm
+                      }
+                      onChange={(e) => {
+                        setMotherSearchTerm(e.target.value);
+                        setSelectedMotherId(""); // reset selection if user types
+                        setMotherRingNumber(""); // clear stored ring number
+                      }}
+                      placeholder="Search mother ring number or name"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
 
-                  <p className="text-xs text-destructive mt-1">
-                    Enter a part of the ring or part of the name to search for
-                    the corresponding Pigeon
-                  </p>
+                    <p className="text-xs text-destructive mt-1">
+                      Enter a part of the ring or part of the name to search for
+                      the corresponding Pigeon
+                    </p>
 
-                  {/* Dropdown list */}
-                  {motherList?.length > 0 &&
-                    !selectedMotherId &&
-                    motherSearchTerm && (
-                      <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white z-10 absolute max-w-[410px]">
-                        {motherList.map((pigeon) => (
-                          <li
-                            key={pigeon._id}
-                            className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
-                            onClick={() => {
-                              setSelectedMotherId(pigeon._id); // ✅ _id save korte hobe
-                              setMotherSearchTerm(pigeon.ringNumber);
-                              setMotherRingNumber(pigeon.ringNumber);
-                              setSelectedMother(pigeon); // ✅ full pigeon info store korbe
-                            }}
-                          >
-                            {pigeon.ringNumber} - {pigeon.name}
-                          </li>
-                        ))}
-                      </ul>
+                    {/* Dropdown list */}
+                    {motherList?.length > 0 &&
+                      !selectedMotherId &&
+                      motherSearchTerm && (
+                        <ul className="border border-gray-300 rounded mt-1 max-h-40 overflow-auto bg-white z-10 absolute max-w-[410px]">
+                          {motherList.map((pigeon) => (
+                            <li
+                              key={pigeon._id}
+                              className="px-3 py-[14px] hover:bg-teal-100 cursor-pointer"
+                              onClick={() => {
+                                setSelectedMotherId(pigeon.ringNumber); // ✅ _id save korte hobe
+                                setMotherSearchTerm(pigeon.ringNumber);
+                                setMotherRingNumber(pigeon.ringNumber);
+                                setSelectedMother(pigeon); // ✅ full pigeon info store korbe
+                              }}
+                            >
+                              {pigeon.ringNumber} - {pigeon.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                    {/* Selected pigeon info */}
+                    {selectedMotherId && selectedMother && (
+                      <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
+                        <p className="text-sm">
+                          <span className="font-medium">Ring:</span>{" "}
+                          {selectedMother.ringNumber}
+                        </p>
+                        <p className="text-sm">
+                          <span className="font-medium">Name:</span>{" "}
+                          {selectedMother.name}
+                        </p>
+                      </div>
                     )}
-
-                  {/* Selected pigeon info */}
-                  {selectedMotherId && selectedMother && (
-                    <div className="mt-2 p-2 border border-gray-200 rounded bg-gray-50">
-                      <p className="text-sm">
-                        <span className="font-medium">Ring:</span>{" "}
-                        {selectedMother.ringNumber}
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-medium">Name:</span>{" "}
-                        {selectedMother.name}
-                      </p>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1201,138 +1182,6 @@ Winner of the Dubai OLR​`}
               removeSpecificPhoto={removeSpecificPhoto}
               getImageUrl={getImageUrl}
             />
-
-            {/* <div className="flex items-center justify-between my-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="race-results-switch"
-                    checked={showPigeonResult}
-                    onCheckedChange={setShowPigeonResult}
-                  />
-                  <Label htmlFor="race-results-switch">Race Results</Label>
-                </div>
-                {showPigeonResult && (
-                  <Button
-                    type="button"
-                    onClick={addRaceResult}
-                    className="flex items-center gap-2 px-3 py-1 text-white transition-colors text-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Result Race
-                  </Button>
-                )}
-              </div>
-            </div> */}
-
-            {/* {showPigeonResult && (
-              <div className="space-y-6">
-                {raceResults.map((result, index) => (
-                  <div
-                    key={result.id}
-                    className="border border-gray-200 rounded-lg p-4 relative"
-                  >
-                   
-                    <button
-                      type="button"
-                      onClick={() => removeRaceResult(result.id)}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-
-                    <h4 className="text-md font-medium text-gray-800 mb-4">
-                      Race Result #{index + 1}
-                    </h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
-                 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Race Name
-                        </label>
-                        <input
-                          type="text"
-                          value={result.name}
-                          onChange={(e) =>
-                            updateRaceResult(result.id, "name", e.target.value)
-                          }
-                          placeholder="Enter race name"
-                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        />
-                      </div>
-
-                    
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Date
-                        </label>
-                        <input
-                          type="date"
-                          value={result.date}
-                          onChange={(e) =>
-                            updateRaceResult(result.id, "date", e.target.value)
-                          }
-                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        />
-                      </div>
-
-              
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Distance
-                        </label>
-                        <input
-                          type="text"
-                          value={result.distance}
-                          onChange={(e) =>
-                            updateRaceResult(
-                              result.id,
-                              "distance",
-                              e.target.value
-                            )
-                          }
-                          placeholder="e.g., 500m, 600m"
-                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        />
-                      </div>
-
-                   
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Total Birds
-                        </label>
-                        <input
-                          type="number"
-                          value={result.total}
-                          onChange={(e) =>
-                            updateRaceResult(result.id, "total", e.target.value)
-                          }
-                          placeholder="Total participating birds"
-                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        />
-                      </div>
-
-                      
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Place/Position
-                        </label>
-                        <input
-                          type="text"
-                          value={result.place}
-                          onChange={(e) =>
-                            updateRaceResult(result.id, "place", e.target.value)
-                          }
-                          placeholder="e.g., 1st, 2nd, Winner"
-                          className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )} */}
 
             <div className="mt-10">
               <label className="block text-sm font-medium text-gray-700 mb-2">

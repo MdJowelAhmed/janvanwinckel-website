@@ -65,7 +65,7 @@ const PigeonOverviewContainer = () => {
     const images = [];
     if (pigeon?.pigeonPhoto) images.push(pigeon.pigeonPhoto);
     if (pigeon?.eyePhoto) images.push(pigeon.eyePhoto);
-    if (pigeon?.pedigree) images.push(pigeon.pedigree);
+    if (pigeon?.pedigree) images.push(pigeon.pedigreePhoto);
     if (pigeon?.DNAPhoto) images.push(pigeon.DNAPhoto);
     if (pigeon?.ownershipPhoto) images.push(pigeon.ownershipPhoto);
     return images;
@@ -124,7 +124,7 @@ const PigeonOverviewContainer = () => {
                         alt={pigeon?.name || "Pigeon"}
                         height={400}
                         width={400}
-                        className="w-full h-full  object-cover rounded-md"
+                        className="w-full h-full  object- rounded-md"
                       />
                     </>
                   ) : (
@@ -150,7 +150,7 @@ const PigeonOverviewContainer = () => {
                         onClick={() => handleDotClick(index)}
                         className={`w-2 h-2 rounded-full transition-all duration-200 ${
                           index === currentImageIndex
-                            ? "bg-accent-foreground w-8 h-2 "
+                            ? "bg-accent-foreground w-5 h-2 "
                             : "bg-accent hover:bg-accent/90"
                         }`}
                       />
@@ -237,12 +237,20 @@ const PigeonOverviewContainer = () => {
             </CardHeader>
             <CardContent>
               {pigeon?.fatherRingId ? (
-                <p className="text-gray-500 italic">
+               <div>
+                 <p className="text-gray-500 italic">
                   Father:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.fatherRingId?.ringNumber || "N/A"}
+                  </strong>
+                </p>
+                 <p className="text-gray-500 italic">
+                  Father Name:{" "}
                   <strong className="text-accent-foreground">
                     {pigeon?.fatherRingId?.name || "N/A"}
                   </strong>
                 </p>
+               </div>
               ) : (
                 <p className="text-gray-500 italic">
                   Information not available
@@ -259,12 +267,20 @@ const PigeonOverviewContainer = () => {
             </CardHeader>
             <CardContent>
               {pigeon?.motherRingId ? (
-                <p className="text-gray-500 italic">
+                <div>
+                  <p className="text-gray-500 italic">
                   Mother:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.motherRingId?.ringNumber || "N/A"}
+                  </strong>
+                </p>
+                 <p className="text-gray-500 italic">
+                  Mother Name:{" "}
                   <strong className="text-accent-foreground">
                     {pigeon?.motherRingId?.name || "N/A"}
                   </strong>
                 </p>
+                </div>
               ) : (
                 <p className="text-gray-500 italic">
                   Information not available
@@ -457,10 +473,23 @@ const PigeonOverviewContainer = () => {
           </Card>
         )}
 
-        {/* Race Results */}
+        {/* Race Results  */}
         <Card>
+          <div>
+            {pigeon?.addresults &&(
+              <div className="mt-4 px-6">
+                <label className="block text-sm lg:text-xl font-bold text-accent mb-2">
+                  Race result
+                </label>
+                <p className="text-gray-700">{pigeon?.addresults}</p>
+              </div>
+            )}
+          </div>
+        </Card>
+
+        {/* Race Results */}
+        {/* <Card>
           <CardHeader>
-            {/* Fix 4: Use proper button component */}
             <button
               variant="ghost"
               className="w-full justify-between p-0 h-auto"
@@ -538,7 +567,9 @@ const PigeonOverviewContainer = () => {
               )}
             </CardContent>
           )}
-        </Card>
+        </Card> */}
+
+
       </div>
 
       {/* Pigeon Details Modal */}
