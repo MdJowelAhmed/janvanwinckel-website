@@ -1,9 +1,10 @@
 'use client'
 import AddPigeonContainer from '@/components/pigeon/AddPigeon'
 import { useSearchParams } from 'next/navigation'
-import React from 'react'
+import React, { Suspense } from 'react'
 
-const AddPigeon = () => {
+// Inner component that uses useSearchParams
+const AddPigeonContent = () => {
   const searchParams = useSearchParams()
   const editId = searchParams.get('edit')
   
@@ -11,6 +12,15 @@ const AddPigeon = () => {
     <div>
       <AddPigeonContainer pigeonId={editId} />
     </div>
+  )
+}
+
+// Main component with Suspense boundary
+const AddPigeon = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AddPigeonContent />
+    </Suspense>
   )
 }
 

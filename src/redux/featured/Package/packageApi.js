@@ -42,8 +42,18 @@ const packagesApi = api.injectEndpoints({
             providesTags: ["Package"],
         }),
 
+        cancelSubscription: builder.mutation({
+            query: () => {
+                return {
+                  method: "POST",
+                  url: `/subscription/cancel`,
+                };
+            },
+            invalidatesTags: ["Package"],
+        }),
+
     }),
 });
 
-export const { useGetWebPackagesQuery, useCheckoutForSubscriptionMutation,useRunningPackageQuery,useGetMyAccessQuery } = packagesApi;
+export const { useGetWebPackagesQuery, useCheckoutForSubscriptionMutation,useRunningPackageQuery,useGetMyAccessQuery,useCancelSubscriptionMutation } = packagesApi;
 

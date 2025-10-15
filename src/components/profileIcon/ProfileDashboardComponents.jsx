@@ -5,7 +5,7 @@ import {
   useMyProfileQuery,
   useUpdateProfileMutation,
 } from "@/redux/featured/auth/authApi";
-import { useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
+import { useCancelSubscriptionMutation, useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
 import { Bird, BirdIcon, Calendar, Phone, Upload, User, User2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -45,6 +45,7 @@ export default function ProfileDashboardComponents() {
 
   const { data: packageResponse } = useRunningPackageQuery();
   const packageData = packageResponse?.data;
+  const [cancelSubscription, { isLoading: cancelLoading }] = useCancelSubscriptionMutation();
 
   useEffect(() => {
     if (userData) {
@@ -145,6 +146,24 @@ export default function ProfileDashboardComponents() {
         error.data?.message ||
           error.message ||
           "An error occurred while updating the profile"
+      );
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    try {
+      const response = await cancelSubscription().unwrap();
+      if (response.success) {
+        toast.success("Subscription cancelled successfully!");
+        refetch(); // Refresh user data
+      } else {
+        toast.error(response.message || "Failed to cancel subscription!");
+      }
+    } catch (error) {
+      toast.error(
+        error.data?.message ||
+          error.message ||
+          "An error occurred while cancelling the subscription"
       );
     }
   };
@@ -367,7 +386,7 @@ export default function ProfileDashboardComponents() {
         </Card>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
        
        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
@@ -395,8 +414,9 @@ export default function ProfileDashboardComponents() {
             </p>
           </CardContent>
         </Card>
-      </div> */}
+      </div>
 
+<Button onClick={handleCancelSubscription} className="w-full py-6 bg-accent hover:bg-accent/90 text-white font-medium transition-colors duration-200">Cancel Subscription</Button>
       {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
     </div>
   );
