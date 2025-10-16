@@ -306,209 +306,242 @@ export default function PigeonPedigreeChart() {
   }, [nodes]);
 
   // PDF Export Function
-  const exportToPDF = useCallback(async () => {
-    try {
-      if (!chartRef.current) {
-        alert("Chart not ready for export. Please try again.");
-        return;
-      }
-
-      // Show loading state
-      const exportButton = document.querySelector("[data-export-pdf]");
-      if (exportButton) {
-        exportButton.textContent = "Exporting...";
-        exportButton.disabled = true;
-      }
-
-      // Create a comprehensive function to convert lab colors to RGB
-      const convertLabToRgb = (labString) => {
-        // Extract values from lab() function
-        const labMatch = labString.match(/lab\(\s*([^)]+)\s*\)/);
-        if (!labMatch) return labString;
-
-        const values = labMatch[1]
-          .split(/\s+/)
-          .map((v) => parseFloat(v.replace("%", "")));
-        const [l, a, b] = values;
-
-        // Simple lab to RGB conversion (approximation)
-        // For a more accurate conversion, you might want to use a color library
-        const y = (l + 16) / 116;
-        const x = a / 500 + y;
-        const z = y - b / 200;
-
-        const r = Math.max(
-          0,
-          Math.min(
-            255,
-            Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))
-          )
-        );
-        const g = Math.max(
-          0,
-          Math.min(
-            255,
-            Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))
-          )
-        );
-        const blue = Math.max(
-          0,
-          Math.min(255, Math.round(255 * (0.0557 * x - 0.204 * y + 1.057 * z)))
-        );
-
-        return `rgb(${r}, ${g}, ${blue})`;
-      };
-
-      // More comprehensive approach to handle lab colors
-      const temporarilyReplaceLabColors = (element) => {
-        const originalStyles = [];
-
-        // Function to recursively process all elements
-        const processElement = (el) => {
-          if (el.nodeType === Node.ELEMENT_NODE) {
-            const style = el.getAttribute("style");
-            const computedStyle = window.getComputedStyle(el);
-
-            // Check both inline styles and computed styles for lab colors
-            let needsReplacement = false;
-            let newStyle = style || "";
-
-            // Check inline style attribute
-            if (style && style.includes("lab(")) {
-              needsReplacement = true;
-              newStyle = style.replace(/lab\([^)]+\)/g, (match) => {
-                return convertLabToRgb(match);
-              });
-            }
-
-            // Check computed styles for common color properties
-            const colorProperties = [
-              "color",
-              "background-color",
-              "border-color",
-              "fill",
-              "stroke",
-            ];
-            colorProperties.forEach((prop) => {
-              const value = computedStyle.getPropertyValue(prop);
-              if (value && value.includes("lab(")) {
-                needsReplacement = true;
-                const convertedColor = convertLabToRgb(value);
-                newStyle += `; ${prop}: ${convertedColor} !important`;
-              }
-            });
-
-            if (needsReplacement) {
-              originalStyles.push({
-                element: el,
-                originalStyle: style,
-                hasStyle: el.hasAttribute("style"),
-              });
-              el.setAttribute("style", newStyle);
-            }
-
-            // Process child elements
-            Array.from(el.children).forEach(processElement);
-          }
-        };
-
-        processElement(element);
-        return originalStyles;
-      };
-
-      // Apply lab color replacements
-      const styleBackups = temporarilyReplaceLabColors(chartRef.current);
-
-      // Wait a moment for DOM updates
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Configure html2canvas with better error handling
-      const canvas = await html2canvas(chartRef.current, {
-        scale: 2, // Higher resolution
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        width: chartRef.current.scrollWidth,
-        height: chartRef.current.scrollHeight,
-        logging: false, // Disable logging to reduce console noise
-        ignoreElements: (element) => {
-          // Skip elements that might cause issues
-          return (
-            element.classList &&
-            element.classList.contains("html2canvas-ignore")
-          );
-        },
-      });
-
-      // Restore original styles
-      styleBackups.forEach((backup) => {
-        if (backup.hasStyle && backup.originalStyle) {
-          backup.element.setAttribute("style", backup.originalStyle);
-        } else if (!backup.hasStyle) {
-          backup.element.removeAttribute("style");
-        }
-      });
-
-      const imgData = canvas.toDataURL("image/png", 1.0); // Full quality
-
-      // Calculate PDF dimensions
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-
-      // Calculate scale to fit on standard paper size
-      const maxWidth = imgWidth > imgHeight ? 1120 : 790; // A4 landscape/portrait at 150 DPI
-      const maxHeight = imgWidth > imgHeight ? 790 : 1120;
-
-      const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight, 1);
-      const finalWidth = imgWidth * scale;
-      const finalHeight = imgHeight * scale;
-
-      // Create PDF with appropriate orientation
-      const pdf = new jsPDF({
-        orientation: imgWidth > imgHeight ? "landscape" : "portrait",
-        unit: "px",
-        format: [finalWidth + 40, finalHeight + 40], // Add padding
-      });
-
-      // Center the image on the page
-      const xOffset = 20;
-      const yOffset = 20;
-
-      // Add the image to PDF
-      pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
-
-      // Generate filename with current date
-      const currentDate = new Date().toISOString().split("T")[0];
-      const filename = `pigeon-pedigree-chart-${currentDate}.pdf`;
-
-      // Save PDF
-      pdf.save(filename);
-
-      console.log("PDF export completed successfully");
-    } catch (error) {
-      console.error("Error exporting to PDF:", error);
-
-      // More specific error messages
-      if (error.message && error.message.includes("lab")) {
-        alert(
-          "Error: Unsupported color format detected. Please try refreshing the page and exporting again."
-        );
-      } else if (error.message && error.message.includes("canvas")) {
-        alert(
-          "Error: Unable to capture chart image. Please ensure the chart is fully loaded and try again."
-        );
-      } else {
-        alert("Error exporting to PDF. Please try again or refresh the page.");
-      }
-    } finally {
-      // Reset button state
-      const exportButton = document.querySelector("[data-export-pdf]");
-      if (exportButton) {
-        exportButton.textContent = "Export as PDF";
-        exportButton.disabled = false;
-      }
+ // Enhanced PDF Export Function with OKLCH support
+const exportToPDF = useCallback(async () => {
+  try {
+    if (!chartRef.current) {
+      alert("Chart not ready for export. Please try again.");
+      return;
     }
-  }, []);
+
+    // Show loading state
+    const exportButton = document.querySelector("[data-export-pdf]");
+    if (exportButton) {
+      exportButton.textContent = "Exporting...";
+      exportButton.disabled = true;
+    }
+
+    // Convert OKLCH to RGB
+    const convertOklchToRgb = (oklchString) => {
+      const oklchMatch = oklchString.match(/oklch\(\s*([^)]+)\s*\)/);
+      if (!oklchMatch) return oklchString;
+
+      const values = oklchMatch[1].split(/\s+/).map(v => parseFloat(v.replace("%", "")));
+      const [l, c, h] = values;
+
+      // OKLCH to RGB conversion (simplified)
+      const hRad = (h || 0) * Math.PI / 180;
+      const a = c * Math.cos(hRad);
+      const b = c * Math.sin(hRad);
+
+      // Convert to RGB
+      const y = (l + 16) / 116;
+      const x = a / 500 + y;
+      const z = y - b / 200;
+
+      const r = Math.max(0, Math.min(255, Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))));
+      const g = Math.max(0, Math.min(255, Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))));
+      const blue = Math.max(0, Math.min(255, Math.round(255 * (0.0557 * x - 0.204 * y + 1.057 * z))));
+
+      return `rgb(${r}, ${g}, ${blue})`;
+    };
+
+    // Convert LAB to RGB
+    const convertLabToRgb = (labString) => {
+      const labMatch = labString.match(/lab\(\s*([^)]+)\s*\)/);
+      if (!labMatch) return labString;
+
+      const values = labMatch[1].split(/\s+/).map(v => parseFloat(v.replace("%", "")));
+      const [l, a, b] = values;
+
+      const y = (l + 16) / 116;
+      const x = a / 500 + y;
+      const z = y - b / 200;
+
+      const r = Math.max(0, Math.min(255, Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))));
+      const g = Math.max(0, Math.min(255, Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))));
+      const blue = Math.max(0, Math.min(255, Math.round(255 * (0.0557 * x - 0.204 * y + 1.057 * z))));
+
+      return `rgb(${r}, ${g}, ${blue})`;
+    };
+
+    // Convert LCH to RGB
+    const convertLchToRgb = (lchString) => {
+      const lchMatch = lchString.match(/lch\(\s*([^)]+)\s*\)/);
+      if (!lchMatch) return lchString;
+
+      const values = lchMatch[1].split(/\s+/).map(v => parseFloat(v.replace("%", "")));
+      const [l, c, h] = values;
+
+      // LCH to LAB
+      const hRad = (h || 0) * Math.PI / 180;
+      const a = c * Math.cos(hRad);
+      const b = c * Math.sin(hRad);
+
+      // LAB to RGB
+      const y = (l + 16) / 116;
+      const x = a / 500 + y;
+      const z = y - b / 200;
+
+      const r = Math.max(0, Math.min(255, Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))));
+      const g = Math.max(0, Math.min(255, Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))));
+      const blue = Math.max(0, Math.min(255, Math.round(255 * (0.0557 * x - 0.204 * y + 1.057 * z))));
+
+      return `rgb(${r}, ${g}, ${blue})`;
+    };
+
+    // Universal color converter
+    const convertColorToRgb = (colorString) => {
+      if (colorString.includes("oklch(")) return convertOklchToRgb(colorString);
+      if (colorString.includes("lab(")) return convertLabToRgb(colorString);
+      if (colorString.includes("lch(")) return convertLchToRgb(colorString);
+      return colorString;
+    };
+
+    // Replace all modern color formats with RGB
+    const temporarilyReplaceModernColors = (element) => {
+      const originalStyles = [];
+
+      const processElement = (el) => {
+        if (el.nodeType === Node.ELEMENT_NODE) {
+          const style = el.getAttribute("style");
+          const computedStyle = window.getComputedStyle(el);
+
+          let needsReplacement = false;
+          let newStyle = style || "";
+
+          // Check inline style attribute for modern color formats
+          if (style && (style.includes("oklch(") || style.includes("lab(") || style.includes("lch("))) {
+            needsReplacement = true;
+            newStyle = style.replace(/(oklch|lab|lch)\([^)]+\)/g, (match) => {
+              return convertColorToRgb(match);
+            });
+          }
+
+          // Check computed styles for modern color formats
+          const colorProperties = [
+            "color",
+            "background-color",
+            "border-color",
+            "border-top-color",
+            "border-right-color",
+            "border-bottom-color",
+            "border-left-color",
+            "fill",
+            "stroke",
+            "outline-color",
+            "text-decoration-color",
+          ];
+
+          colorProperties.forEach((prop) => {
+            const value = computedStyle.getPropertyValue(prop);
+            if (value && (value.includes("oklch(") || value.includes("lab(") || value.includes("lch("))) {
+              needsReplacement = true;
+              const convertedColor = convertColorToRgb(value);
+              newStyle += `; ${prop}: ${convertedColor} !important`;
+            }
+          });
+
+          if (needsReplacement) {
+            originalStyles.push({
+              element: el,
+              originalStyle: style,
+              hasStyle: el.hasAttribute("style"),
+            });
+            el.setAttribute("style", newStyle);
+          }
+
+          // Process child elements
+          Array.from(el.children).forEach(processElement);
+        }
+      };
+
+      processElement(element);
+      return originalStyles;
+    };
+
+    // Apply color replacements
+    const styleBackups = temporarilyReplaceModernColors(chartRef.current);
+
+    // Wait for DOM updates
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    // Configure html2canvas
+    const canvas = await html2canvas(chartRef.current, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      width: chartRef.current.scrollWidth,
+      height: chartRef.current.scrollHeight,
+      logging: false,
+      ignoreElements: (element) => {
+        return element.classList && element.classList.contains("html2canvas-ignore");
+      },
+    });
+
+    // Restore original styles
+    styleBackups.forEach((backup) => {
+      if (backup.hasStyle && backup.originalStyle) {
+        backup.element.setAttribute("style", backup.originalStyle);
+      } else if (!backup.hasStyle) {
+        backup.element.removeAttribute("style");
+      }
+    });
+
+    const imgData = canvas.toDataURL("image/png", 1.0);
+
+    // Calculate PDF dimensions
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const maxWidth = imgWidth > imgHeight ? 1120 : 790;
+    const maxHeight = imgWidth > imgHeight ? 790 : 1120;
+    const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight, 1);
+    const finalWidth = imgWidth * scale;
+    const finalHeight = imgHeight * scale;
+
+    // Create PDF
+    const pdf = new jsPDF({
+      orientation: imgWidth > imgHeight ? "landscape" : "portrait",
+      unit: "px",
+      format: [finalWidth + 40, finalHeight + 40],
+    });
+
+    const xOffset = 20;
+    const yOffset = 20;
+
+    pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
+
+    // Save PDF
+    const currentDate = new Date().toISOString().split("T")[0];
+    const filename = `pigeon-pedigree-chart-${currentDate}.pdf`;
+    pdf.save(filename);
+
+    console.log("PDF export completed successfully");
+  } catch (error) {
+    console.error("Error exporting to PDF:", error);
+
+    // More specific error messages
+    if (error.message && (error.message.includes("oklch") || error.message.includes("lab") || error.message.includes("lch"))) {
+      alert(
+        "Error: Unsupported color format detected. Please try refreshing the page and exporting again."
+      );
+    } else if (error.message && error.message.includes("canvas")) {
+      alert(
+        "Error: Unable to capture chart image. Please ensure the chart is fully loaded and try again."
+      );
+    } else {
+      alert("Error exporting to PDF. Please try again or refresh the page.");
+    }
+  } finally {
+    // Reset button state
+    const exportButton = document.querySelector("[data-export-pdf]");
+    if (exportButton) {
+      exportButton.textContent = "Export as PDF";
+      exportButton.disabled = false;
+    }
+  }
+}, []);
 
   const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
 
