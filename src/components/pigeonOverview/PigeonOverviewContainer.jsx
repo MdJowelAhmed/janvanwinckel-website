@@ -301,17 +301,40 @@ const PigeonOverviewContainer = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Breeder:{" "}
-                  <strong className="text-accent-foreground">
-                    {pigeon?.breeder?.breederName || "N/A"}
-                  </strong>
+                <p className="text-sm text-gray-600 flex items-center gap-2">
+                  <div>
+                    {" "}
+                    Breeder:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.breeder?.breederName || "N/A"}
+                    </strong>
+                  </div>
+                   {pigeon?.breeder?.status ? (
+                    <Image
+                      src="/assests/Letter-B.png"
+                      alt="Verified"
+                      height={20}
+                      width={20}
+                      className="w-5 h-5 inline-block"
+                    />
+                  ) : null}
                 </p>
-                <p className="text-sm text-gray-600">
-                  Breeder Loft Name:{" "}
-                  <strong className="text-accent-foreground">
-                    {pigeon?.breeder?.loftName || "N/A"}
-                  </strong>
+                <p className="text-sm text-gray-600 flex items-center gap-2">
+                  <div>
+                    Breeder Loft Name:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.breeder?.loftName || "N/A"}
+                    </strong>
+                  </div>
+                  {pigeon?.breeder?.status ? (
+                    <Image
+                      src="/assests/Letter-B.png"
+                      alt="Verified"
+                      height={20}
+                      width={20}
+                      className="w-5 h-5 inline-block"
+                    />
+                  ) : null}
                 </p>
                 <p className="text-sm text-gray-600">
                   Location:{" "}

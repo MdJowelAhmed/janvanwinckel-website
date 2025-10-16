@@ -42,6 +42,7 @@ import { getImageUrl } from "../share/imageUrl";
 import { toast } from "react-hot-toast"; // Make sure you have this import
 import moment from "moment";
 import { HiOutlineStatusOffline, HiOutlineStatusOnline } from "react-icons/hi";
+import Swal from "sweetalert2";
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
@@ -168,23 +169,55 @@ export default function ProfileDashboardComponents() {
     }
   };
 
-  const handleCancelSubscription = async () => {
-    try {
+
+const handleCancelSubscription = async () => {
+  try {
+    // Step 1: SweetAlert confirmation
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to cancel your subscription. ",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, cancel it!",
+      cancelButtonText: "No, keep it",
+    });
+
+
+    if (result.isConfirmed) {
       const response = await cancelSubscription().unwrap();
+
       if (response.success) {
-        toast.success("Subscription cancelled successfully!");
+        Swal.fire({
+          title: "Cancelled!",
+          text: "Your subscription has been cancelled successfully.",
+          icon: "success",
+          confirmButtonColor: "#A92C2C",
+        });
         refetch(); // Refresh user data
       } else {
-        toast.error(response.message || "Failed to cancel subscription!");
+        Swal.fire({
+          title: "Failed!",
+          text: response.message || "Failed to cancel subscription!",
+          icon: "error",
+          confirmButtonColor: "#A92C2C",
+        });
       }
-    } catch (error) {
-      toast.error(
-        error.data?.message ||
-          error.message ||
-          "An error occurred while cancelling the subscription"
-      );
     }
-  };
+  } catch (error) {
+    Swal.fire({
+      title: "Error!",
+      text:
+        error.data?.message ||
+        error.message ||
+        "An error occurred while cancelling the subscription",
+      icon: "error",
+      confirmButtonColor: "#A92C2C",
+    });
+  }
+};
+
 
   if (isLoading) return <Spinner />;
 
@@ -406,35 +439,37 @@ export default function ProfileDashboardComponents() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {userData?.subscription?.package && (
-                <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="text-accent">
-                <MdOutlineSubscriptions size={40} />
-              </div>
-              <h3 className="font-medium text-accent">Subscription Package</h3>
-            </div>
-            <p className="text-lg font-bold mt-4 text-gray-800">
-              {userData?.subscription?.package || "N/A"}
-            </p>
-          </CardContent>
-        </Card>
-        )}
-      {userData?.subscription?.status && (
           <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="text-accent">
-                <HiOutlineStatusOnline size={40} />
+            <CardContent className="">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-accent">
+                  <MdOutlineSubscriptions size={40} />
+                </div>
+                <h3 className="font-medium text-accent">
+                  Subscription Package
+                </h3>
               </div>
-              <h3 className="font-medium text-accent">Subscription Status</h3>
-            </div>
-            <p className="text-lg font-bold mt-4 text-gray-800">
-              {userData?.subscription?.status}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+              <p className="text-lg font-bold mt-4 text-gray-800">
+                {userData?.subscription?.package || "N/A"}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+        {userData?.subscription?.status && (
+          <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-accent">
+                  <HiOutlineStatusOnline size={40} />
+                </div>
+                <h3 className="font-medium text-accent">Subscription Status</h3>
+              </div>
+              <p className="text-lg font-bold mt-4 text-gray-800">
+                {userData?.subscription?.status}
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {userData?.subscription?.startDate && (
@@ -455,37 +490,39 @@ export default function ProfileDashboardComponents() {
             </CardContent>
           </Card>
         )}
-      {userData?.subscription?.startDate && (
-           <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="text-accent">
-                <Calendar size={40} />
+        {userData?.subscription?.startDate && (
+          <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-accent">
+                  <Calendar size={40} />
+                </div>
+                <h3 className="font-medium text-accent">
+                  Subscription End Date
+                </h3>
               </div>
-              <h3 className="font-medium text-accent">Subscription End Date</h3>
-            </div>
-            <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription?.endDate).format("LL") || "N/A"}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+              <p className="text-lg font-bold mt-4 text-gray-800">
+                {moment(userData?.subscription?.endDate).format("LL") || "N/A"}
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {userData?.subscription && (
         <div className="mt-6">
           {userData?.subscription.status === "active" ? (
-            // ✅ Active হলে Cancel Button দেখাও
-            <button
-              onClick={handleCancelSubscription}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-            >
-              Cancel Subscription
-            </button>
+            <div className="flex justify-center">
+              <Button
+                onClick={handleCancelSubscription}
+                className="w-1/2 text-white  px-4 py-6 rounded-md "
+              >
+                Cancel Subscription
+              </Button>
+            </div>
           ) : userData?.subscription.status === "cancel" ? (
-            // ✅ Cancel হলে, EndDate চেক করো
             new Date(userData?.subscription.endDate) > new Date() ? (
-              <p className="text-yellow-600 font-semibold">
+              <p className="text-accent font-semibold">
                 Already cancelled. Will expire on{" "}
                 {new Date(userData?.subscription.endDate).toLocaleDateString()}.
               </p>

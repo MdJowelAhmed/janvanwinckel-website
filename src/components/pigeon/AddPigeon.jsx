@@ -302,7 +302,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       breeder, // This will store breeder ID
       color: "",
       pattern: "",
-      gender: "",
+      gender :"Unspecified",
       status: "",
       location: "",
       notes: "",
@@ -384,7 +384,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
             : pigeon?.breeder || "",
         color: pigeon.color || "",
         pattern: pigeon.pattern || "",
-        gender: pigeon.gender || "",
+        gender: pigeon.gender,
         status: pigeon.status || "",
         location: pigeon.location || "",
         notes: pigeon.notes || "",
@@ -911,9 +911,7 @@ Winner of the Dubai OLR​`}
                       Gender *
                     </label>
                     <select
-                      {...register("gender", {
-                        required: "Gender is required",
-                      })}
+                      {...register("gender")}
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="">Select Gender</option>

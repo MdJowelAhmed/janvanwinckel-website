@@ -90,6 +90,7 @@ export default function Navbar() {
 
   // Redux queries and mutations
   const { data: userData } = useMyProfileQuery();
+  const role = userData?.role;
   console.log("navbar", userData);
   const {
     data: notificationData,
@@ -131,7 +132,7 @@ export default function Navbar() {
 
       // Initialize socket connection with improved configuration
       // socketRef.current = io("http://10.10.7.41:5001/api/v1", {
-        socketRef.current = io("https://ftp.thepigeonhub.com/api/v1", {
+      socketRef.current = io("https://ftp.thepigeonhub.com/api/v1", {
         transports: ["websocket", "polling"], // Fallback to polling if websocket fails
         upgrade: true,
         rememberUpgrade: true,
@@ -490,11 +491,13 @@ export default function Navbar() {
               .filter((item) => {
                 // Hide "Subscription" for PAIDUSER
                 if (
-                  item.name === "Subscription" &&
+                  (item.name === "Subscription" ||
+                    item.name === "Add Pigeon") &&
                   userData?.role === "PAIDUSER"
                 ) {
                   return false;
                 }
+
                 // Hide "Loft Overview" or "Add Pigeon" if user is not logged in
                 if (
                   (item.name === "Loft Overview" ||
@@ -503,22 +506,31 @@ export default function Navbar() {
                 ) {
                   return false;
                 }
+
                 return true;
               })
-              .map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.path}
-                    className={`relative pb-1 text-black transition-all duration-300 ease-in-out ${
-                      pathname === item.path
-                        ? "border-b-2 border-primary text-black"
-                        : "hover:border-b-2 hover:border-primary text-black"
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
+              .map((item) => {
+                // যদি PAIDUSER হয়, তাহলে "Home" ক্লিক করলে /loft-overview এ যাবে
+                const redirectPath =
+                  item.name === "Home" && userData?.role === "PAIDUSER"
+                    ? "/loft-overview"
+                    : item.path;
+
+                return (
+                  <li key={item.name}>
+                    <Link
+                      href={redirectPath}
+                      className={`relative pb-1 text-black transition-all duration-300 ease-in-out ${
+                        pathname === item.path
+                          ? "border-b-2 border-primary text-black"
+                          : "hover:border-b-2 hover:border-primary text-black"
+                      }`}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
 
           {/* User Controls */}

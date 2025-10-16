@@ -98,7 +98,7 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       );
       yPosition += 12;
 
-      // Add Pigeon Image if available - Fixed logic
+      // Add Pigeon Image if available
       const imageSource = pigeon?.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigreePhoto;
       if (imageSource) {
         try {
@@ -145,12 +145,17 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         })`
       );
 
-      // Additional Information
+      // Additional Information Section - All data included
       addSectionHeader("Additional Information");
       addText(`Breeder: ${pigeon?.breeder?.breederName || "N/A"}`);
       addText(`Breeder Loft Name: ${pigeon?.breeder?.loftName || "N/A"}`);
       addText(`Location: ${pigeon?.location || "N/A"}`);
+      addText(`Father Ring Number: ${pigeon?.fatherRingId?.ringNumber || "N/A"}`);
+      addText(`Mother Ring Number: ${pigeon?.motherRingId?.ringNumber || "N/A"}`);
+      addText(`Country: ${pigeon?.country || "N/A"}`);
+      addText(`Status: ${pigeon?.status || "N/A"}`);
 
+      // Your Story
       if (pigeon?.shortInfo) {
         yPosition += 3;
         addText("Your Story:", 10, true);
@@ -170,99 +175,20 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         });
       }
 
-      // Race Results - Only add if data exists
-      if (pigeon?.results && pigeon.results.length > 0) {
+      // Race Results - As text list (no table)
+      if (pigeon?.addresults && Array.isArray(pigeon.addresults) && pigeon.addresults.length > 0) {
         addSectionHeader("Race Results");
-
-        // Check if we need a new page for the table
-        if (yPosition > pageHeight - 50) {
-          pdf.addPage();
-          yPosition = margin;
-        }
-
-        // Table headers
-        const tableTop = yPosition;
-        const colWidths = {
-          name: 50,
-          date: 30,
-          distance: 25,
-          total: 25,
-          place: 25,
-        };
-        let xPos = margin;
-
-        // Header background with custom color
-        pdf.setFillColor(55, 183, 195);
-        pdf.rect(margin, tableTop - 5,  pageWidth - 2 * margin, 7, "F");
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(255, 255, 255);
-
-        pdf.text("Name", xPos, tableTop);
-        xPos += colWidths.name;
-        pdf.text("Date", xPos, tableTop);
-        xPos += colWidths.date;
-        pdf.text("Distance", xPos, tableTop);
-        xPos += colWidths.distance;
-        pdf.text("Total Birds", xPos, tableTop);
-        xPos += colWidths.total;
-        pdf.text("Place", xPos, tableTop);
-
-        pdf.setTextColor(0, 0, 0);
-        yPosition = tableTop + 5;
-
-        // Table rows
-        pdf.setFont("helvetica", "normal");
-        pigeon.results.forEach((race, index) => {
-          if (yPosition > pageHeight - 20) {
+        
+        pigeon.addresults.forEach((result, index) => {
+          if (yPosition > pageHeight - margin) {
             pdf.addPage();
             yPosition = margin;
           }
-
-          xPos = margin;
-          const rowY = yPosition;
-
-          // Alternate row background
-          if (index % 2 === 0) {
-            pdf.setFillColor(245, 245, 245);
-            pdf.rect(margin, rowY - 4, pageWidth - 2 * margin, 7, "F");
-          }
-
-          pdf.text(race.name || "N/A", xPos, rowY);
-          xPos += colWidths.name;
-          pdf.text(
-            race.date ? moment(race.date).format("DD MMM YYYY") : "N/A",
-            xPos,
-            rowY
-          );
-          xPos += colWidths.date;
-          pdf.text(race.distance?.toString() || "N/A", xPos, rowY);
-          xPos += colWidths.distance;
-          pdf.text(race.total?.toString() || "N/A", xPos, rowY);
-          xPos += colWidths.total;
-          pdf.text(race.place?.toString() || "N/A", xPos, rowY);
-
-          yPosition += 7;
+          pdf.setFontSize(9);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`${index + 1}. ${result}`, margin, yPosition);
+          yPosition += 6;
         });
-
-        if (pigeon.raceNotes) {
-          yPosition += 5;
-          addText("Additional Notes:", 10, true);
-          const notesLines = pdf.splitTextToSize(
-            pigeon.raceNotes,
-            pageWidth - 2 * margin
-          );
-          notesLines.forEach((line) => {
-            if (yPosition > pageHeight - margin) {
-              pdf.addPage();
-              yPosition = margin;
-            }
-            pdf.setFontSize(9);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(line, margin, yPosition);
-            yPosition += 5;
-          });
-        }
       }
 
       // Siblings Information - Only add if data exists

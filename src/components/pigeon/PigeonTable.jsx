@@ -35,6 +35,7 @@ import { getCode } from "country-list";
 import Image from "next/image";
 import Swal from "sweetalert2";
 import { DeleteConfirm } from "../share/deleteConfimation";
+import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 
 const PigeonTable = ({
   data,
@@ -45,10 +46,14 @@ const PigeonTable = ({
 }) => {
   const router = useRouter();
   const [deletePigeon] = useDeletePigeonMutation();
+  const { data: userData } = useMyProfileQuery();
+  const userId = userData?._id;
 
   if (isLoading) {
     return <TableSkeleton />;
   }
+
+  console.log("userId:", userId);
 
   if (!data?.data?.data?.length) {
     return (
@@ -112,50 +117,47 @@ const PigeonTable = ({
     router.push(`/pedigree-chart/${pigeonId}`);
   };
 
+  const handleDelete = async (pigeonId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#37B7C3",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
 
-
-const handleDelete = async (pigeonId) => {
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#37B7C3",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!",
-  });
-
-  if (result.isConfirmed) {
-    try {
-      await deletePigeon(pigeonId).unwrap();
-      Swal.fire({
-        title: "Deleted!",
-        text: "Pigeon deleted successfully.",
-        icon: "success",
-        confirmButtonColor: "#37B7C3",
-      });
-    } catch (error) {
-      console.error("Failed to delete pigeon:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to delete pigeon. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#37B7C3",
-      });
+    if (result.isConfirmed) {
+      try {
+        await deletePigeon(pigeonId).unwrap();
+        Swal.fire({
+          title: "Deleted!",
+          text: "Pigeon deleted successfully.",
+          icon: "success",
+          confirmButtonColor: "#37B7C3",
+        });
+      } catch (error) {
+        console.error("Failed to delete pigeon:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to delete pigeon. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#37B7C3",
+        });
+      }
     }
-  }
-};
+  };
 
-// const handleDelete = async (pigeonId) => {
-//   try {
-//     await deletePigeon(pigeonId).unwrap();
-//     toast.success("Pigeon deleted successfully!");
-//   } catch (error) {
-//     console.error("Failed to delete pigeon:", error);
-//     toast.error("Failed to delete pigeon. Please try again.");
-//   }
-// };
-
+  // const handleDelete = async (pigeonId) => {
+  //   try {
+  //     await deletePigeon(pigeonId).unwrap();
+  //     toast.success("Pigeon deleted successfully!");
+  //   } catch (error) {
+  //     console.error("Failed to delete pigeon:", error);
+  //     toast.error("Failed to delete pigeon. Please try again.");
+  //   }
+  // };
 
   return (
     <div className="space-y-4 ">
@@ -200,8 +202,13 @@ const handleDelete = async (pigeonId) => {
                       <Avatar className="w-10 h-10">
                         <AvatarImage
                           src={
-                            getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigree || pigeon?.DNAPhoto || pigeon?.ownershipPhoto) ||
-                            "/placeholder-pigeon.jpg"
+                            getImageUrl(
+                              pigeon.pigeonPhoto ||
+                                pigeon?.eyePhoto ||
+                                pigeon?.pedigree ||
+                                pigeon?.DNAPhoto ||
+                                pigeon?.ownershipPhoto
+                            ) || "/placeholder-pigeon.jpg"
                           }
                           alt={pigeon.name}
                         />
@@ -244,7 +251,9 @@ const handleDelete = async (pigeonId) => {
                       {pigeon.ringNumber}
                     </TableCell>
 
-                    <TableCell className="text-[#B0B6A4]">{pigeon.birthYear}</TableCell>
+                    <TableCell className="text-[#B0B6A4]">
+                      {pigeon.birthYear}
+                    </TableCell>
                     <TableCell>{pigeon.breederRating}</TableCell>
                     {/* <TableCell>{pigeon.racherRating}</TableCell> */}
 
@@ -302,13 +311,17 @@ const handleDelete = async (pigeonId) => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem
-                            onClick={() => onEdit(pigeon._id)}
-                            className="cursor-pointer"
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit Pigeon
-                          </DropdownMenuItem>
+                          {/* Only show Edit button if logged-in user owns this pigeon */}
+                          {pigeon?.user?._id === userId && (
+                            <DropdownMenuItem
+                              onClick={() => onEdit(pigeon._id)}
+                              className="cursor-pointer"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit Pigeon
+                            </DropdownMenuItem>
+                          )}
+
                           <DropdownMenuItem
                             onClick={() => handleView(pigeon._id)}
                             className="cursor-pointer"
@@ -316,6 +329,7 @@ const handleDelete = async (pigeonId) => {
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
+
                           <DropdownMenuItem
                             onClick={() => handlePedigree(pigeon._id)}
                             className="cursor-pointer"
@@ -323,6 +337,7 @@ const handleDelete = async (pigeonId) => {
                             <GitBranch className="h-4 w-4 mr-2" />
                             View Pedigree
                           </DropdownMenuItem>
+
                           <DropdownMenuItem
                             onClick={() => handleDelete(pigeon._id)}
                             className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -330,10 +345,6 @@ const handleDelete = async (pigeonId) => {
                             <Trash2 className="h-4 w-4 mr-2" />
                             Delete Pigeon
                           </DropdownMenuItem>
-
-                          {/* <DropdownMenuItem asChild>
-  <DeleteConfirm pigeonId={pigeon._id} onConfirm={handleDelete} />
-</DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

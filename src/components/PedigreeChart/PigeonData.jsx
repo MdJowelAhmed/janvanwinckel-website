@@ -16,38 +16,39 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
   const maxGeneration = role === "PAIDUSER" ? 4 : 3;
 
   // Helper function to format results
-// const formatResults = (results) => {
-//   if (!Array.isArray(results) || results.length === 0) return null;
-//   const firstResult = results[0];
-//   return `${firstResult.name || ""}: ${firstResult.place || ""} (${
-//     firstResult.date ? new Date(firstResult.date).getFullYear() : ""
-//   })`;
-// };
+  // const formatResults = (results) => {
+  //   if (!Array.isArray(results) || results.length === 0) return null;
+  //   const firstResult = results[0];
+  //   return `${firstResult.name || ""}: ${firstResult.place || ""} (${
+  //     firstResult.date ? new Date(firstResult.date).getFullYear() : ""
+  //   })`;
+  // };
 
-const formatResults = (results) => {
-  if (!results || !Array.isArray(results) || results.length === 0) {
-    return null;
-  }
-  return results.join("\n");
-};
-
-
+  const formatResults = (results) => {
+    if (!results || !Array.isArray(results) || results.length === 0) {
+      return null;
+    }
+    return results.join("\n");
+  };
 
   // Helper function to get gender from data
   const getGender = (genderData) => {
     if (typeof genderData === "string") {
-      return genderData.toLowerCase() === "hen" ? "Hen" : "Cock";
+      const gender = genderData.toLowerCase();
+      if (gender === "hen") return "Hen";
+      if (gender === "cock") return "Cock";
+      if (gender === "unspecified") return "Unspecified";
     }
-    return "Cock";
+    return "Unspecified"; // Default case
   };
 
   // Helper function to get breeder name with status check
   const getBreederInfo = (breeder) => {
     if (typeof breeder === "object" && breeder) {
-      const name = breeder.breederName ;
+      const name = breeder.breederName;
       return name;
     }
-    return breeder ;
+    return breeder;
   };
 
   // Helper function to get consistent breeder verification status
@@ -77,18 +78,17 @@ const formatResults = (results) => {
     type: "pigeonNode",
     position: { x: 0, y: 500 },
     data: {
-      name: subject.name ,
-      ringNumber: subject.ringNumber ,
+      name: subject.name,
+      ringNumber: subject.ringNumber,
       owner: getBreederInfo(subject.breeder),
-      country: subject.country ,
+      country: subject.country,
       gender: getGender(subject.gender),
       generation: 0,
       position: "Subject",
-      birthYear: subject.birthYear?.toString() ,
+      birthYear: subject.birthYear?.toString(),
       color: "#FFFFE0",
-      colorName: subject.color ,
-      description:
-        subject.notes || subject.shortInfo ,
+      colorName: subject.color,
+      description: subject.notes || subject.shortInfo,
       achievements: formatResults(subject.addresults),
       verified: getBreederVerification(subject.breeder),
       handles: "top-bottom",
@@ -103,19 +103,18 @@ const formatResults = (results) => {
       type: "pigeonNode",
       position: { x: 320, y: -200 },
       data: {
-        name: subject.fatherRingId.name ,
-        ringNumber: subject.fatherRingId.ringNumber ,
+        name: subject.fatherRingId.name,
+        ringNumber: subject.fatherRingId.ringNumber,
         owner: getBreederInfo(subject.fatherRingId.breeder),
-        country: subject.fatherRingId.country ,
+        country: subject.fatherRingId.country,
         gender: getGender(subject.fatherRingId.gender),
         generation: 1,
         position: "Father",
-        birthYear: subject.fatherRingId.birthYear?.toString() ,
+        birthYear: subject.fatherRingId.birthYear?.toString(),
         color: "#ADD8E6",
-        colorName: subject.fatherRingId.color ,
+        colorName: subject.fatherRingId.color,
         description:
-          subject.fatherRingId.notes ||
-          subject.fatherRingId.shortInfo,
+          subject.fatherRingId.notes || subject.fatherRingId.shortInfo,
         achievements: formatResults(subject.fatherRingId.addresults),
         verified: getBreederVerification(subject.fatherRingId.breeder),
         handles: "right-only",
@@ -142,19 +141,18 @@ const formatResults = (results) => {
       type: "pigeonNode",
       position: { x: 320, y: window.screen?.height - -130 || 1000 },
       data: {
-        name: subject.motherRingId.name ,
-        ringNumber: subject.motherRingId.ringNumber ,
+        name: subject.motherRingId.name,
+        ringNumber: subject.motherRingId.ringNumber,
         owner: getBreederInfo(subject.motherRingId.breeder),
-        country: subject.motherRingId.country ,
+        country: subject.motherRingId.country,
         gender: getGender(subject.motherRingId.gender),
         generation: 1,
         position: "Mother",
-        birthYear: subject.motherRingId.birthYear?.toString() ,
+        birthYear: subject.motherRingId.birthYear?.toString(),
         color: "#fff",
-        colorName: subject.motherRingId.color ,
+        colorName: subject.motherRingId.color,
         description:
-          subject.motherRingId.notes ||
-          subject.motherRingId.shortInfo ,
+          subject.motherRingId.notes || subject.motherRingId.shortInfo,
         achievements: formatResults(subject.motherRingId.addresults),
         verified: getBreederVerification(subject.motherRingId.breeder),
         handles: "right-only",
@@ -195,23 +193,23 @@ const formatResults = (results) => {
       type: "pigeonNode",
       position: { x: 640, y: -200 },
       data: {
-        name: subject.fatherRingId.fatherRingId.name ,
-        ringNumber: subject.fatherRingId.fatherRingId.ringNumber ,
+        name: subject.fatherRingId.fatherRingId.name,
+        ringNumber: subject.fatherRingId.fatherRingId.ringNumber,
         owner: getBreederInfo(subject.fatherRingId.fatherRingId.breeder),
-        country: subject.fatherRingId.fatherRingId.country ,
+        country: subject.fatherRingId.fatherRingId.country,
         gender: getGender(subject.fatherRingId.fatherRingId.gender),
         generation: 2,
         position: "Grandfather (FP)",
-        birthYear:
-          subject.fatherRingId.fatherRingId.birthYear?.toString() ,
+        birthYear: subject.fatherRingId.fatherRingId.birthYear?.toString(),
         color: "#fff",
-        colorName: subject.fatherRingId.fatherRingId.color || "Blue",
+        colorName: subject.fatherRingId.fatherRingId.color ,
         description:
           subject.fatherRingId.fatherRingId.notes ||
           subject.fatherRingId.fatherRingId.shortInfo ||
           "Top racing cock.",
-        achievements:
-          formatResults(subject.fatherRingId.fatherRingId.addresults),
+        achievements: formatResults(
+          subject.fatherRingId.fatherRingId.addresults
+        ),
         verified: getBreederVerification(
           subject.fatherRingId.fatherRingId.breeder
         ),
@@ -239,20 +237,19 @@ const formatResults = (results) => {
       type: "pigeonNode",
       position: { x: 640, y: 330 },
       data: {
-        name: subject.fatherRingId.motherRingId.name ,
-        ringNumber: subject.fatherRingId.motherRingId.ringNumber ,
+        name: subject.fatherRingId.motherRingId.name,
+        ringNumber: subject.fatherRingId.motherRingId.ringNumber,
         owner: getBreederInfo(subject.fatherRingId.motherRingId.breeder),
-        country: subject.fatherRingId.motherRingId.country ,
+        country: subject.fatherRingId.motherRingId.country,
         gender: getGender(subject.fatherRingId.motherRingId.gender),
         generation: 2,
         position: "Grandmother (FP)",
-        birthYear:
-          subject.fatherRingId.motherRingId.birthYear?.toString() ,
+        birthYear: subject.fatherRingId.motherRingId.birthYear?.toString(),
         color: "#fff",
-        colorName: subject.fatherRingId.motherRingId.color || "Sky Blue",
+        colorName: subject.fatherRingId.motherRingId.color ,
         description:
           subject.fatherRingId.motherRingId.notes ||
-          subject.fatherRingId.motherRingId.shortInfo ,
+          subject.fatherRingId.motherRingId.shortInfo,
         achievements:
           formatResults(subject.fatherRingId.motherRingId.addresults) ||
           "Top producer",
@@ -283,20 +280,19 @@ const formatResults = (results) => {
       type: "pigeonNode",
       position: { x: 640, y: 870 },
       data: {
-        name: subject.motherRingId.fatherRingId.name ,
-        ringNumber: subject.motherRingId.fatherRingId.ringNumber ,
+        name: subject.motherRingId.fatherRingId.name,
+        ringNumber: subject.motherRingId.fatherRingId.ringNumber,
         owner: getBreederInfo(subject.motherRingId.fatherRingId.breeder),
-        country: subject.motherRingId.fatherRingId.country ,
+        country: subject.motherRingId.fatherRingId.country,
         gender: getGender(subject.motherRingId.fatherRingId.gender),
         generation: 2,
         position: "Grandfather (MP)",
-        birthYear:
-          subject.motherRingId.fatherRingId.birthYear?.toString() ,
+        birthYear: subject.motherRingId.fatherRingId.birthYear?.toString(),
         color: "#fff",
-        colorName: subject.motherRingId.fatherRingId.color ,
+        colorName: subject.motherRingId.fatherRingId.color,
         description:
           subject.motherRingId.fatherRingId.notes ||
-          subject.motherRingId.fatherRingId.shortInfo ,
+          subject.motherRingId.fatherRingId.shortInfo,
         achievements:
           formatResults(subject.motherRingId.fatherRingId.addresults) ||
           "National ace",
@@ -327,23 +323,23 @@ const formatResults = (results) => {
       type: "pigeonNode",
       position: { x: 640, y: 1400 },
       data: {
-        name: subject.motherRingId.motherRingId.name ,
-        ringNumber: subject.motherRingId.motherRingId.ringNumber ,
+        name: subject.motherRingId.motherRingId.name,
+        ringNumber: subject.motherRingId.motherRingId.ringNumber,
         owner: getBreederInfo(subject.motherRingId.motherRingId.breeder),
-        country: subject.motherRingId.motherRingId.country ,
+        country: subject.motherRingId.motherRingId.country,
         gender: getGender(subject.motherRingId.motherRingId.gender),
         generation: 2,
         position: "Grandmother (MP)",
-        birthYear:
-          subject.motherRingId.motherRingId.birthYear?.toString() ,
+        birthYear: subject.motherRingId.motherRingId.birthYear?.toString(),
         color: "#fff",
-        colorName: subject.motherRingId.motherRingId.color ,
+        colorName: subject.motherRingId.motherRingId.color,
         description:
           subject.motherRingId.motherRingId.notes ||
           subject.motherRingId.motherRingId.shortInfo ||
           "Foundation hen.",
-        achievements:
-          formatResults(subject.motherRingId.motherRingId.addresults) ,
+        achievements: formatResults(
+          subject.motherRingId.motherRingId.addresults
+        ),
         verified: getBreederVerification(
           subject.motherRingId.motherRingId.breeder
         ),
@@ -383,17 +379,16 @@ const formatResults = (results) => {
           position: position,
           data: {
             name: parentPath.name || defaultName,
-            ringNumber: parentPath.ringNumber ,
+            ringNumber: parentPath.ringNumber,
             owner: getBreederInfo(parentPath.breeder),
-            country: parentPath.country ,
+            country: parentPath.country,
             gender: getGender(parentPath.gender),
             generation: 3,
             position: nodeId,
-            birthYear: parentPath.birthYear?.toString() ,
+            birthYear: parentPath.birthYear?.toString(),
             color: color,
-            colorName: parentPath.color ,
-            description:
-              parentPath.notes || parentPath.shortInfo ,
+            colorName: parentPath.color,
+            description: parentPath.notes || parentPath.shortInfo,
             achievements: formatResults(parentPath.addresults),
             verified: getBreederVerification(parentPath.breeder),
             isEmpty: false,
@@ -517,14 +512,13 @@ const formatResults = (results) => {
           position: position.father,
           data: {
             name: parentPath.fatherRingId.name || `${defaultName} Father`,
-            ringNumber: parentPath.fatherRingId.ringNumber ,
+            ringNumber: parentPath.fatherRingId.ringNumber,
             owner: getBreederInfo(parentPath.fatherRingId.breeder),
-            country: parentPath.fatherRingId.country ,
+            country: parentPath.fatherRingId.country,
             gender: getGender(parentPath.fatherRingId.gender),
             generation: 4,
             position: `GG-GF (${nodeId})`,
-            birthYear:
-              parentPath.fatherRingId.birthYear?.toString() ,
+            birthYear: parentPath.fatherRingId.birthYear?.toString(),
             color: fatherColor,
             verified: parentPath.fatherRingId.verified || false,
             isEmpty: false,
@@ -557,14 +551,13 @@ const formatResults = (results) => {
           position: position.mother,
           data: {
             name: parentPath.motherRingId.name || `${defaultName} Mother`,
-            ringNumber: parentPath.motherRingId.ringNumber ,
+            ringNumber: parentPath.motherRingId.ringNumber,
             owner: getBreederInfo(parentPath.motherRingId.breeder),
-            country: parentPath.motherRingId.country ,
+            country: parentPath.motherRingId.country,
             gender: getGender(parentPath.motherRingId.gender),
             generation: 4,
             position: `GG-GM (${nodeId})`,
-            birthYear:
-              parentPath.motherRingId.birthYear?.toString() ,
+            birthYear: parentPath.motherRingId.birthYear?.toString(),
             color: motherColor,
             verified: parentPath.motherRingId.verified || false,
             isEmpty: false,
