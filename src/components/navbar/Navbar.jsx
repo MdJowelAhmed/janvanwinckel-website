@@ -130,8 +130,8 @@ export default function Navbar() {
       }
 
       // Initialize socket connection with improved configuration
-      socketRef.current = io("http://10.10.7.41:5001/api/v1", {
-        // socketRef.current = io("https://api.yogawithjen.life", {
+      // socketRef.current = io("http://10.10.7.41:5001/api/v1", {
+        socketRef.current = io("https://ftp.thepigeonhub.com/api/v1", {
         transports: ["websocket", "polling"], // Fallback to polling if websocket fails
         upgrade: true,
         rememberUpgrade: true,

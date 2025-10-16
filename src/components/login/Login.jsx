@@ -56,7 +56,7 @@ export default function LoginUser() {
       // Redirect based on role
       if (userRole === "PAIDUSER") {
         console.log("Redirecting PAIDUSER to home page");
-        router.push("/");
+        router.push("/loft-overview");
       } else if (userRole === "USER") {
         console.log("Redirecting USER to subscription page");
         router.push("/subscription");

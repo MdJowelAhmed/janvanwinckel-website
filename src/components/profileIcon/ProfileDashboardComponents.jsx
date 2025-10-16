@@ -5,8 +5,19 @@ import {
   useMyProfileQuery,
   useUpdateProfileMutation,
 } from "@/redux/featured/auth/authApi";
-import { useCancelSubscriptionMutation, useRunningPackageQuery } from "@/redux/featured/Package/packageApi";
-import { Bird, BirdIcon, Calendar, Phone, Upload, User, User2 } from "lucide-react";
+import {
+  useCancelSubscriptionMutation,
+  useRunningPackageQuery,
+} from "@/redux/featured/Package/packageApi";
+import {
+  Bird,
+  BirdIcon,
+  Calendar,
+  Phone,
+  Upload,
+  User,
+  User2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { MdEmail } from "react-icons/md";
@@ -45,7 +56,8 @@ export default function ProfileDashboardComponents() {
 
   const { data: packageResponse } = useRunningPackageQuery();
   const packageData = packageResponse?.data;
-  const [cancelSubscription, { isLoading: cancelLoading }] = useCancelSubscriptionMutation();
+  const [cancelSubscription, { isLoading: cancelLoading }] =
+    useCancelSubscriptionMutation();
 
   useEffect(() => {
     if (userData) {
@@ -171,7 +183,7 @@ export default function ProfileDashboardComponents() {
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 md:p-8 bg-white rounded-xl border border-gray-200 shadow-sm mt-6">
+    <div className="max-w-4xl mx-auto p-6 md:p-8 bg-white rounded-xl border border-gray-200 shadow-sm my-10">
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-6 relative">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="relative group">
@@ -205,7 +217,7 @@ export default function ProfileDashboardComponents() {
             <DialogTrigger asChild>
               <Button
                 variant="destructive"
-                className="bg-accent-foreground hover:bg-accent-foreground/90 shadow-sm"
+                className="bg-accent hover:bg-accent/70 rounded-sm px-6 py-5 shadow-sm"
               >
                 Edit Profile
               </Button>
@@ -307,7 +319,7 @@ export default function ProfileDashboardComponents() {
                       Contact Number
                     </label>
                     <Input
-                      type="text" 
+                      type="text"
                       name="contact"
                       value={formData.contact}
                       onChange={handleChange}
@@ -386,22 +398,23 @@ export default function ProfileDashboardComponents() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-       
-       <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
                 <Calendar size={40} />
               </div>
-              <h3 className="font-medium text-accent">Subscription start Date</h3>
+              <h3 className="font-medium text-accent">
+                Subscription start Date
+              </h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription?.startDate).format('LL') || "N/A"}
+              {moment(userData?.subscription?.startDate).format("LL") || "N/A"}
             </p>
           </CardContent>
         </Card>
-       <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
@@ -410,13 +423,22 @@ export default function ProfileDashboardComponents() {
               <h3 className="font-medium text-accent">Subscription End Date</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription?.endDate).format('LL') || "N/A"}
+              {moment(userData?.subscription?.endDate).format("LL") || "N/A"}
             </p>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
-<Button onClick={handleCancelSubscription} className="w-full py-6 bg-accent hover:bg-accent/90 text-white font-medium transition-colors duration-200">Cancel Subscription</Button>
+      {userData?.role === "PAIDUSER" && (
+        <div className="flex justify-center">
+          <Button
+            onClick={handleCancelSubscription}
+            className="w-1/2 m-2 mx-auto py-6 bg-accent hover:bg-accent/70 text-white font-medium transition-colors duration-200"
+          >
+            Cancel Subscription
+          </Button>
+        </div>
+      )}
       {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
     </div>
   );

@@ -53,7 +53,7 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto   rounded-lg mt-10" id="contact-us">
+    <div className="w-full max-w-5xl mx-auto max-h-screen flex items-center justify-center  rounded-lg mt-20" id="contact-us">
       <CardContent className="p-6">
         <div className="mb-12 max-w-2xl mx-auto text-center">
           <h2 className="text-4xl font-semibold flex justify-center items-center mb-6">

@@ -51,13 +51,13 @@ export default function Footer() {
               </Link> */}
 
               <Link
-                href="#about-us"
+                href="/about-us"
                 className="text-white hover:text-teal-200 text-sm"
               >
                About us
               </Link>
               <Link
-                href="#contact-us"
+                href="/contact"
                 className="text-white hover:text-teal-200 text-sm"
               >
                 Contact us
