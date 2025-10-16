@@ -14,13 +14,18 @@ import {
   BirdIcon,
   Calendar,
   Phone,
+  SubscriptIcon,
   Upload,
   User,
   User2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { MdEmail } from "react-icons/md";
+import {
+  MdEmail,
+  MdOutlineSubscriptions,
+  MdSubscriptions,
+} from "react-icons/md";
 import { Card, CardContent } from "../ui/card";
 import {
   Dialog,
@@ -36,6 +41,7 @@ import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { getImageUrl } from "../share/imageUrl";
 import { toast } from "react-hot-toast"; // Make sure you have this import
 import moment from "moment";
+import { HiOutlineStatusOffline, HiOutlineStatusOnline } from "react-icons/hi";
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
@@ -344,7 +350,7 @@ export default function ProfileDashboardComponents() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
+          <CardContent className="">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
                 <User2 size={40} />
@@ -358,7 +364,7 @@ export default function ProfileDashboardComponents() {
         </Card>
 
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
+          <CardContent className="">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
                 <MdEmail size={40} />
@@ -371,7 +377,7 @@ export default function ProfileDashboardComponents() {
           </CardContent>
         </Card>
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
+          <CardContent className="">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
                 <Phone size={40} />
@@ -384,7 +390,7 @@ export default function ProfileDashboardComponents() {
           </CardContent>
         </Card>
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
+          <CardContent className="">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
                 <BirdIcon size={40} />
@@ -398,24 +404,60 @@ export default function ProfileDashboardComponents() {
         </Card>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {userData?.subscription?.package && (
+                <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
-                <Calendar size={40} />
+                <MdOutlineSubscriptions size={40} />
               </div>
-              <h3 className="font-medium text-accent">
-                Subscription start Date
-              </h3>
+              <h3 className="font-medium text-accent">Subscription Package</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
-              {moment(userData?.subscription?.startDate).format("LL") || "N/A"}
+              {userData?.subscription?.package || "N/A"}
             </p>
           </CardContent>
         </Card>
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="pt-6">
+        )}
+      {userData?.subscription?.status && (
+          <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-accent">
+                <HiOutlineStatusOnline size={40} />
+              </div>
+              <h3 className="font-medium text-accent">Subscription Status</h3>
+            </div>
+            <p className="text-lg font-bold mt-4 text-gray-800">
+              {userData?.subscription?.status}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {userData?.subscription?.startDate && (
+          <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-accent">
+                  <Calendar size={40} />
+                </div>
+                <h3 className="font-medium text-accent">
+                  Subscription Start Date
+                </h3>
+              </div>
+              <p className="text-lg font-bold mt-4 text-gray-800">
+                {moment(userData?.subscription?.startDate).format("LL") ||
+                  "N/A"}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      {userData?.subscription?.startDate && (
+           <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+          <CardContent className="">
             <div className="flex items-center gap-3 mb-2">
               <div className="text-accent">
                 <Calendar size={40} />
@@ -427,18 +469,35 @@ export default function ProfileDashboardComponents() {
             </p>
           </CardContent>
         </Card>
-      </div> */}
+      )}
+      </div>
 
-      {userData?.role === "PAIDUSER" && (
-        <div className="flex justify-center">
-          <Button
-            onClick={handleCancelSubscription}
-            className="w-1/2 m-2 mx-auto py-6 bg-accent hover:bg-accent/70 text-white font-medium transition-colors duration-200"
-          >
-            Cancel Subscription
-          </Button>
+      {userData?.subscription && (
+        <div className="mt-6">
+          {userData?.subscription.status === "active" ? (
+            // ✅ Active হলে Cancel Button দেখাও
+            <button
+              onClick={handleCancelSubscription}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+            >
+              Cancel Subscription
+            </button>
+          ) : userData?.subscription.status === "cancel" ? (
+            // ✅ Cancel হলে, EndDate চেক করো
+            new Date(userData?.subscription.endDate) > new Date() ? (
+              <p className="text-yellow-600 font-semibold">
+                Already cancelled. Will expire on{" "}
+                {new Date(userData?.subscription.endDate).toLocaleDateString()}.
+              </p>
+            ) : (
+              <p className="text-gray-600 font-semibold">
+                Your package has expired.
+              </p>
+            )
+          ) : null}
         </div>
       )}
+
       {/* <SubscriptionCard packageData={packageData} userData={userData} /> */}
     </div>
   );

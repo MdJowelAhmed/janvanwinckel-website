@@ -25,9 +25,12 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
 // };
 
 const formatResults = (results) => {
-  if (!results || typeof results !== "string" || results.trim() === "") return null;
-  return results;
+  if (!results || !Array.isArray(results) || results.length === 0) {
+    return null;
+  }
+  return results.join("\n");
 };
+
 
 
   // Helper function to get gender from data

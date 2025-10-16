@@ -99,8 +99,6 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   console.log("fatherRingNumber", fatherRingNumber);
   console.log("motherRingNumber", motherRingNumber);
 
-  // Birth Year Input এর সঠিক implementation
-
   const currentYear = new Date().getFullYear();
   const futureYear = currentYear + 2;
   const startYear = 1927;
@@ -108,7 +106,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const allYears = Array.from(
     { length: futureYear - startYear + 1 },
     (_, i) => startYear + i
-  ).reverse(); // এখানেই reverse করুন
+  ).reverse();
 
   const [search, setSearch] = useState("");
   const [filteredYears, setFilteredYears] = useState(allYears);
@@ -124,13 +122,12 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     setFilteredYears(filtered);
   };
 
-  // Select handler - এটাই main fix
   const handleSelect = (year) => {
-    setSearch(year.toString()); // input field এ দেখাবে
-    setValue("birthYear", year); // form value set করবে - এটাই backend এ যাবে
+    setSearch(year.toString());
+    setValue("birthYear", year);
     setShowDropdown(false);
 
-    console.log("Selected year:", year); // check করার জন্য
+    console.log("Selected year:", year);
   };
 
   // Filtered years based on search input
@@ -379,12 +376,12 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         ringNumber: pigeon.ringNumber || "",
         name: pigeon.name || "",
         country: pigeon.country || "",
-        birthYear: pigeon.birthYear || "" ,
+        birthYear: pigeon.birthYear || "",
         shortInfo: pigeon.shortInfo || "",
         breeder:
-          typeof pigeon.breeder === "object"
-            ? pigeon.breeder.breederName
-            : pigeon.breeder || "",
+          typeof pigeon?.breeder === "object"
+            ? pigeon?.breeder?.breederName
+            : pigeon?.breeder || "",
         color: pigeon.color || "",
         pattern: pigeon.pattern || "",
         gender: pigeon.gender || "",
@@ -397,7 +394,12 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         motherRingId: pigeon.motherRingId?.ringNumber || "",
         verified: pigeon.verified || false,
         iconic: pigeon.iconic || false,
-        addresults: pigeon.addresults || "",
+
+        // ✅ Correct way to handle addresults
+        addresults: Array.isArray(pigeon.addresults)
+          ? pigeon.addresults.join("\n")
+          : pigeon.addresults || "",
+
         iconicScore: pigeon.iconicScore || 0,
       });
 
@@ -468,7 +470,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
         motherRingId: motherSearchTerm || selectedMotherId || "",
         verified: Boolean(data.verified),
         iconic: Boolean(data.iconic),
-        addresults: data.addresults || "",
+        addresults: data.addresults ? data.addresults.split("\n") : [],
         iconicScore: parseInt(data.iconicScore) || 0,
         remaining: isEditMode
           ? photos.filter((photo) => !photo.file).map((photo) => photo.url)
@@ -665,7 +667,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                   <input
                     type="text"
-                    value={search} // শুধু search state থেকে value নিন
+                    value={search}
                     onChange={handleSearch}
                     placeholder="Enter or select your birth year"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"

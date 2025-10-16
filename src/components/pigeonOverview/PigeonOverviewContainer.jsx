@@ -237,20 +237,20 @@ const PigeonOverviewContainer = () => {
             </CardHeader>
             <CardContent>
               {pigeon?.fatherRingId ? (
-               <div>
-                 <p className="text-gray-500 italic">
-                  Father:{" "}
-                  <strong className="text-accent-foreground">
-                    {pigeon?.fatherRingId?.ringNumber || "N/A"}
-                  </strong>
-                </p>
-                 <p className="text-gray-500 italic">
-                  Father Name:{" "}
-                  <strong className="text-accent-foreground">
-                    {pigeon?.fatherRingId?.name || "N/A"}
-                  </strong>
-                </p>
-               </div>
+                <div>
+                  <p className="text-gray-500 italic">
+                    Father:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.fatherRingId?.ringNumber || "N/A"}
+                    </strong>
+                  </p>
+                  <p className="text-gray-500 italic">
+                    Father Name:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.fatherRingId?.name || "N/A"}
+                    </strong>
+                  </p>
+                </div>
               ) : (
                 <p className="text-gray-500 italic">
                   Information not available
@@ -269,17 +269,17 @@ const PigeonOverviewContainer = () => {
               {pigeon?.motherRingId ? (
                 <div>
                   <p className="text-gray-500 italic">
-                  Mother:{" "}
-                  <strong className="text-accent-foreground">
-                    {pigeon?.motherRingId?.ringNumber || "N/A"}
-                  </strong>
-                </p>
-                 <p className="text-gray-500 italic">
-                  Mother Name:{" "}
-                  <strong className="text-accent-foreground">
-                    {pigeon?.motherRingId?.name || "N/A"}
-                  </strong>
-                </p>
+                    Mother:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.motherRingId?.ringNumber || "N/A"}
+                    </strong>
+                  </p>
+                  <p className="text-gray-500 italic">
+                    Mother Name:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.motherRingId?.name || "N/A"}
+                    </strong>
+                  </p>
                 </div>
               ) : (
                 <p className="text-gray-500 italic">
@@ -476,12 +476,16 @@ const PigeonOverviewContainer = () => {
         {/* Race Results  */}
         <Card>
           <div>
-            {pigeon?.addresults &&(
+            {pigeon?.addresults && Array.isArray(pigeon.addresults) && (
               <div className="mt-4 px-6">
                 <label className="block text-sm lg:text-xl font-bold text-accent mb-2">
                   Race result
                 </label>
-                <p className="text-gray-700">{pigeon?.addresults}</p>
+                <div className="text-gray-700 space-y-1">
+                  {pigeon.addresults.map((result, index) => (
+                    <p key={index}>{result}</p>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -568,8 +572,6 @@ const PigeonOverviewContainer = () => {
             </CardContent>
           )}
         </Card> */}
-
-
       </div>
 
       {/* Pigeon Details Modal */}
