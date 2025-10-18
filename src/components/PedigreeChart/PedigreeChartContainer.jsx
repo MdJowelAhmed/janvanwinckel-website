@@ -35,9 +35,11 @@ import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
-  console.log(data.gender);
-  console.log(data.verified);
-  console.log(data.colorName);
+  console.log(data.achievements);
+  console.log("data.verified:", data.verified);
+  // console.log(data.colorName);
+  console.log("data?.iconic:", data?.iconic);
+  console.log("data?.breederVerified:", data?.breederVerified);
   const getGenderIcon = (gender) => {
     if (gender === "Cock") return "♂";
     if (gender === "Hen") return "♀";
@@ -129,7 +131,7 @@ const PigeonNode = ({ data }) => {
               {getGenderIcon(data.gender)}
             </span>
           )}
-          {data?.ringNumber && (
+          {data.verified && (
             <Image
               src="/assests/Letter-P.png"
               alt="Letter P"
@@ -138,7 +140,7 @@ const PigeonNode = ({ data }) => {
               className="w-6 h-6"
             />
           )}
-          {data?.ringNumber && (
+          {data?.iconic && (
             <Image
               src="/assests/Gold-cup.png"
               alt="Letter P"
@@ -166,7 +168,7 @@ const PigeonNode = ({ data }) => {
               <span className="truncate ">{data.owner}</span>
             </div>
           )}
-          {data?.verified && (
+          {data?.breederVerified && (
             <div className="flex items-center gap-2 text-xl  italic text-black ">
               <Image
                 src="/assests/Letter-B.png"
@@ -188,22 +190,25 @@ const PigeonNode = ({ data }) => {
         )}
         {data.colorName && (
           <div className="">
-            <p className="text-sm text-slate-700"> color : {data.colorName}</p>
+            <p className="text-sm text-slate-700"> {data.colorName}</p>
           </div>
         )}
         {data.achievements && (
-          <div className="flex items-center gap-1">
-            <p className="text-xs text-black">Results: </p>
+          <div className="flex items-start gap-1">
+            <p className="text-xs text-black">Results:</p>
             <Image
               src="/assests/Gold-tropy.png"
               alt="Letter P"
               width={24}
               height={24}
-              className="w-6 h-6"
+              className="w-6 h-6 mt-[2px]"
             />
-            <p className="text-xs text-black">{data.achievements}</p>
+            <p className="text-xs text-black whitespace-pre-line">
+              {data.achievements}
+            </p>
           </div>
         )}
+
         {/* {data.position && (
             <span variant="secondary" className="text-xs px-1 text-black">
               {data.position}

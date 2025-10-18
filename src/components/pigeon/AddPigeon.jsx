@@ -57,8 +57,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
   const { data: fatherData } = useGetAllPigeonSearchQuery(fatherSearchTerm);
   const { data: motherData } = useGetAllPigeonSearchQuery(motherSearchTerm);
 
-  const fatherList = fatherData?.data || [];
-  const motherList = motherData?.data || [];
+ const fatherList = (fatherData?.data || []).filter(
+  (item) => item.gender === "Cock"
+);
+
+  const motherList = (motherData?.data || []).filter(
+    (item) => item.gender === "Hen"
+  );
   console.log("fatherList", fatherList);
   console.log("motherList", motherList);
   const breederList = breeder?.data?.breeder;
@@ -707,8 +712,11 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                   </label>
                   <textarea
                     {...register("shortInfo")}
-                    placeholder={`(Son of Burj Khalifa)​
-Winner of the Dubai OLR​`}
+                    placeholder={`For example:
+Son of Burj Khalifa
+Winner of the Dubai OLR
+5 times 1st price winner
+Bought for USD 50,000`}
                     rows={5}
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                   />
@@ -790,7 +798,7 @@ Winner of the Dubai OLR​`}
                         Select Breeder Rating
                       </option>
 
-                      {Array.from({ length: 100 }, (_, i) => i + 1)
+                      {Array.from({ length: 99 }, (_, i) => i + 1)
                         .reverse() // Reverse the array to get 100 to 0
                         .map((rating) => (
                           <option key={rating} value={rating}>
@@ -947,7 +955,7 @@ Winner of the Dubai OLR​`}
                     <input
                       type="text"
                       {...register("location")}
-                      placeholder="Write your location"
+                      placeholder="Write your Location"
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                     {errors.location && (
@@ -998,7 +1006,7 @@ Winner of the Dubai OLR​`}
                         Select Racing Rating
                       </option>
 
-                      {Array.from({ length: 100 }, (_, i) => i + 1)
+                      {Array.from({ length: 99 }, (_, i) => i + 1)
                         .reverse() // Reverse the array to get 100 to 1
                         .map((rating) => (
                           <option key={rating} value={rating}>
@@ -1189,7 +1197,8 @@ Winner of the Dubai OLR​`}
               </label>
               <textarea
                 {...register("addresults")}
-                placeholder={`1st/828p Quiévrain 108km
+                placeholder={`For example:
+1st/828p Quiévrain 108km
 4th/3265p Melun 287km
 6th/3418p HotSpot 6 Dubai OLR`}
                 className="w-full px-3 h-60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"

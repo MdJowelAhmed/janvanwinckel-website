@@ -99,10 +99,10 @@ export default function ResetPasswordCom() {
         </div>
 
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 md:mb-4">
+          <h2 className="text-2xl text-white md:text-3xl font-bold text-center mb-2 md:mb-4">
             Reset Password
           </h2>
-          <p className="text-center mb-4 md:mb-6 text-xs md:text-sm">
+          <p className="text-center mb-4 md:mb-6 text-xs md:text-sm text-white">
             Password must have 8 characters
           </p>
 

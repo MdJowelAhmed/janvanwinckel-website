@@ -84,10 +84,10 @@ export default function ForgotPassword() {
           </div>
 
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 md:mb-4">
+            <h2 className="text-2xl text-white md:text-3xl font-bold text-center mb-2 md:mb-4">
               Forgot Password
             </h2>
-            <p className="text-center mb-4 md:mb-6 text-sm md:text-base">
+            <p className="text-center mb-4 md:mb-6 text-sm md:text-base text-white">
               No worries, we'll send you reset instructions.
             </p>
 

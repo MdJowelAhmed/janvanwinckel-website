@@ -30,11 +30,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import { useDeletePigeonMutation, usePigeonAddMyLoftOverviewMutation } from "@/redux/featured/pigeon/pigeonApi";
+import {
+  useDeletePigeonMutation,
+  usePigeonAddMyLoftOverviewMutation,
+} from "@/redux/featured/pigeon/pigeonApi";
 import { getImageUrl } from "../share/imageUrl";
 import { getCode } from "country-list";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 const PigeonTable = ({
   data,
@@ -47,60 +51,52 @@ const PigeonTable = ({
   const [deletePigeon] = useDeletePigeonMutation();
   const [pigeonAddMyLoftOverview] = usePigeonAddMyLoftOverviewMutation();
 
-// const handleAddMyLoftOverview = async (pigeonId) => {
-//   try {
-//     const payload = { pigeonId }; // backend expected format
-//     await pigeonAddMyLoftOverview(payload).unwrap();
+  // const handleAddMyLoftOverview = async (pigeonId) => {
+  //   try {
+  //     const payload = { pigeonId }; // backend expected format
+  //     await pigeonAddMyLoftOverview(payload).unwrap();
 
-//     toast.success("Pigeon added to My Loft Overview successfully!");
-//   } catch (error) {
-//     console.error("Error adding pigeon to My Loft Overview:", error);
-//     toast.error(error?.data?.message || "Failed to add pigeon. Please try again.");
-//   }
-// };
+  //     toast.success("Pigeon added to My Loft Overview successfully!");
+  //   } catch (error) {
+  //     console.error("Error adding pigeon to My Loft Overview:", error);
+  //     toast.error(error?.data?.message || "Failed to add pigeon. Please try again.");
+  //   }
+  // };
 
-
-
-
-
-
-const handleAddMyLoftOverview = async (pigeonId) => {
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: "Do you want to add this pigeon to My Loft Overview?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#37B7C3", // teal-600
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, add it!",
-    cancelButtonText: "Cancel",
-  });
-
-  if (!result.isConfirmed) return; 
-
-  try {
-    const payload = { pigeonId };
-    await pigeonAddMyLoftOverview(payload).unwrap();
-
-    Swal.fire({
-      title: "Added!",
-      text: "Pigeon added to My Loft Overview successfully!",
-      icon: "success",
-      confirmButtonColor: "#37B7C3",
+  const handleAddMyLoftOverview = async (pigeonId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to add this pigeon to My Loft Overview?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#37B7C3", // teal-600
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, add it!",
+      cancelButtonText: "Cancel",
     });
-  } catch (error) {
-    console.error("Error adding pigeon to My Loft Overview:", error);
-    Swal.fire({
-      title: "Failed!",
-      text: error?.data?.message || "Failed to add pigeon. Please try again.",
-      icon: "error",
-      confirmButtonColor: "#d33",
-    });
-  }
-};
 
+    if (!result.isConfirmed) return;
 
+    try {
+      const payload = { pigeonId };
+      await pigeonAddMyLoftOverview(payload).unwrap();
 
+      Swal.fire({
+        title: "Added!",
+        text: "Pigeon added to My Loft Overview successfully!",
+        icon: "success",
+        confirmButtonColor: "#37B7C3",
+      });
+    } catch (error) {
+      console.error("Error adding pigeon to My Loft Overview:", error);
+      Swal.fire({
+        title: "Failed!",
+        text: error?.data?.message || "Failed to add pigeon. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
 
   if (isLoading) {
     return <TableSkeleton />;
@@ -227,8 +223,13 @@ const handleAddMyLoftOverview = async (pigeonId) => {
                       <Avatar className="w-10 h-10">
                         <AvatarImage
                           src={
-                            getImageUrl(pigeon.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigreePhoto || pigeon?.DNAPhoto || pigeon?.ownershipPhoto) ||
-                            "/placeholder-pigeon.jpg"
+                            getImageUrl(
+                              pigeon.pigeonPhoto ||
+                                pigeon?.eyePhoto ||
+                                pigeon?.pedigreePhoto ||
+                                pigeon?.DNAPhoto ||
+                                pigeon?.ownershipPhoto
+                            ) || "/placeholder-pigeon.jpg"
                           }
                           alt={pigeon.name}
                         />
@@ -238,8 +239,22 @@ const handleAddMyLoftOverview = async (pigeonId) => {
                       </Avatar>
                     </TableCell>
 
-                    <TableCell className="font-medium text-[#3AB27F]" onClick={() => handleAddMyLoftOverview(pigeon._id)}>
-                      <Plus className="inline-block w-4 h-4 mr-2" />
+                    <TableCell className="font-bold text-text-[#3AB27F]">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Plus
+                              className="inline-block font-black w-7 h-7 mr-2 text-accent cursor-pointer"
+                              onClick={() =>
+                                handleAddMyLoftOverview(pigeon._id)
+                              }
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Add to Your Loft</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       {pigeon.name}
                     </TableCell>
                     <TableCell>
@@ -270,8 +285,12 @@ const handleAddMyLoftOverview = async (pigeonId) => {
                       {pigeon.ringNumber}
                     </TableCell>
 
-                    <TableCell className="text-[#B0B6A4]">{pigeon.birthYear}</TableCell>
-                    <TableCell className=" text-center">{pigeon.breederRating}</TableCell>
+                    <TableCell className="text-[#B0B6A4]">
+                      {pigeon.birthYear}
+                    </TableCell>
+                    <TableCell className=" text-center">
+                      {pigeon.breederRating}
+                    </TableCell>
                     {/* <TableCell>{pigeon.racherRating}</TableCell> */}
 
                     {/* <TableCell>
@@ -292,7 +311,9 @@ const handleAddMyLoftOverview = async (pigeonId) => {
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
 
-                    <TableCell>{pigeon.verified ? "Verified" : "False"}</TableCell>
+                    <TableCell>
+                      {pigeon.verified ? "Verified" : "False"}
+                    </TableCell>
 
                     <TableCell className="text-[#3AB27F]">
                       {pigeon.status}

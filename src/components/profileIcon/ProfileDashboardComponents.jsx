@@ -169,55 +169,52 @@ export default function ProfileDashboardComponents() {
     }
   };
 
+  const handleCancelSubscription = async () => {
+    try {
+      // Step 1: SweetAlert confirmation
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You are about to cancel your subscription. ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, cancel it!",
+        cancelButtonText: "No, keep it",
+      });
 
-const handleCancelSubscription = async () => {
-  try {
-    // Step 1: SweetAlert confirmation
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to cancel your subscription. ",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, cancel it!",
-      cancelButtonText: "No, keep it",
-    });
+      if (result.isConfirmed) {
+        const response = await cancelSubscription().unwrap();
 
-
-    if (result.isConfirmed) {
-      const response = await cancelSubscription().unwrap();
-
-      if (response.success) {
-        Swal.fire({
-          title: "Cancelled!",
-          text: "Your subscription has been cancelled successfully.",
-          icon: "success",
-          confirmButtonColor: "#A92C2C",
-        });
-        refetch(); // Refresh user data
-      } else {
-        Swal.fire({
-          title: "Failed!",
-          text: response.message || "Failed to cancel subscription!",
-          icon: "error",
-          confirmButtonColor: "#A92C2C",
-        });
+        if (response.success) {
+          Swal.fire({
+            title: "Cancelled!",
+            text: "Your subscription has been cancelled successfully.",
+            icon: "success",
+            confirmButtonColor: "#A92C2C",
+          });
+          refetch(); // Refresh user data
+        } else {
+          Swal.fire({
+            title: "Failed!",
+            text: response.message || "Failed to cancel subscription!",
+            icon: "error",
+            confirmButtonColor: "#A92C2C",
+          });
+        }
       }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text:
+          error.data?.message ||
+          error.message ||
+          "An error occurred while cancelling the subscription",
+        icon: "error",
+        confirmButtonColor: "#A92C2C",
+      });
     }
-  } catch (error) {
-    Swal.fire({
-      title: "Error!",
-      text:
-        error.data?.message ||
-        error.message ||
-        "An error occurred while cancelling the subscription",
-      icon: "error",
-      confirmButtonColor: "#A92C2C",
-    });
-  }
-};
-
+  };
 
   if (isLoading) return <Spinner />;
 
@@ -244,8 +241,25 @@ const handleCancelSubscription = async () => {
           </div>
           <div className="text-center md:text-left">
             <h2 className="text-2xl font-bold text-gray-800">
-              {userData?.name || userData?.userName}
+              {userData?.name
+                ? userData.name
+                    .split(" ")
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")
+                : userData?.userName
+                    ?.split(" ")
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")}
             </h2>
+
             <p className="text-gray-600">{userData?.email}</p>
             <p className="text-gray-500 mt-1">{userData?.contact}</p>
           </div>
@@ -390,9 +404,25 @@ const handleCancelSubscription = async () => {
               </div>
               <h3 className="font-medium text-accent"> User Name </h3>
             </div>
-            <p className="text-lg font-bold mt-4 text-gray-800">
-              {userData?.name || userData?.userName || "N/A"}
-            </p>
+            <h2 className="text-2xl font-bold text-gray-800">
+              {userData?.name
+                ? userData.name
+                    .split(" ")
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")
+                : userData?.userName
+                    ?.split(" ")
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")}
+            </h2>
           </CardContent>
         </Card>
 
