@@ -687,7 +687,7 @@ export default function PigeonPedigreeChart() {
       </div>
       <div
         ref={chartRef}
-        className="w-full h-[2000px] bg-transparent flex justify-start items-center mt-0 rounded-3xl"
+        className="w-full h-[1400px] 2xl:h-[2000px] bg-transparent flex justify-start items-center mt-0 rounded-3xl"
       >
         {/* --- ReactFlow (now dynamic) --- */}
         <ReactFlow

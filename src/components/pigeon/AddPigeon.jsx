@@ -177,8 +177,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     }
 
     // Validate file size (e.g., 5MB max)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size should be less than 5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size should be less than 10MB");
       return;
     }
 
@@ -304,7 +304,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       country: "",
       birthYear: new Date().getFullYear(),
       shortInfo: "",
-      breeder, // This will store breeder ID
+      breeder: "", // Changed from breeder object to empty string
       color: "",
       pattern: "",
       gender :"Unspecified",
@@ -955,7 +955,7 @@ Bought for USD 50,000`}
                     <input
                       type="text"
                       {...register("location")}
-                      placeholder="Write your Location"
+                      placeholder="Location"
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                     {errors.location && (

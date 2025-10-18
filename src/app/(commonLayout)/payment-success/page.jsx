@@ -1,9 +1,14 @@
+"use client";
+
 import React from "react";
 import { CheckCircle, ArrowLeft, Download, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 
 const PaymentSuccessPage = () => {
+  const { data: userData } = useMyProfileQuery();
+  console.log("userData from success", userData);
   return (
     <div className="min-h-screen  flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
@@ -12,13 +17,16 @@ const PaymentSuccessPage = () => {
           <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Payment Successful!
+          <h1 className=" text-gray-900 mb-2">
+            {userData?.subscription?.package
+              ? `You have successfully subscribed to the ${userData.subscription.package} package.`
+              : "Thank you for subscribing your free trial, enjoy exploring all of our features"}
           </h1>
-          <p className="text-gray-600">
+
+          {/* <p className="text-gray-600">
             Thank you for your purchase. Your payment has been processed
             successfully.
-          </p>
+          </p> */}
         </div>
 
         {/* Payment Details */}
@@ -68,7 +76,7 @@ const PaymentSuccessPage = () => {
           <Link href="/loft-overview">
             <Button className="flex-1 bg-accent text-white hover:bg-accent/90 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
               {/* <ArrowLeft className="w-4 h-4" /> */}
-             Go to Loft Overview
+              Go to Loft Overview
             </Button>
           </Link>
 

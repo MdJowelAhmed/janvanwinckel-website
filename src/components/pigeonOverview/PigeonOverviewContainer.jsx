@@ -124,8 +124,31 @@ const PigeonOverviewContainer = () => {
                         alt={pigeon?.name || "Pigeon"}
                         height={400}
                         width={400}
-                        className="w-full h-full  object- rounded-md"
+                        className="w-full h-full object-cover rounded-md"
                       />
+
+                      {/* Navigation Arrows */}
+                      {availableImages.length > 1 && (
+                        <>
+                          {/* Left Arrow */}
+                          <button
+                            onClick={handlePrevImage}
+                            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+
+                          {/* Right Arrow */}
+                          <button
+                            onClick={handleNextImage}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
                     </>
                   ) : (
                     <div className="w-full h-full rounded-md bg-gray-200 flex items-center justify-center">
@@ -309,7 +332,7 @@ const PigeonOverviewContainer = () => {
                       {pigeon?.breeder?.breederName || "N/A"}
                     </strong>
                   </div>
-                   {pigeon?.breeder?.status ? (
+                  {pigeon?.breeder?.status ? (
                     <Image
                       src="/assests/Letter-B.png"
                       alt="Verified"
@@ -377,6 +400,16 @@ const PigeonOverviewContainer = () => {
                 <span>{pigeon?.shortInfo || "N/A"}</span>
               </p>
             </div>
+            {pigeon?.notes && (
+              <div>
+                <p>
+                  <strong className="text-accent-foreground font-semibold">
+                    Notes:{" "}
+                  </strong>
+                  <span>{pigeon?.notes}</span>
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

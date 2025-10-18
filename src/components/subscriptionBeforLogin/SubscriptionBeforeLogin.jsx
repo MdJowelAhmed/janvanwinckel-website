@@ -44,7 +44,7 @@ const SubscriptionBeforeLogin = () => {
     <div className="mb-16 mt-24 px-4 md:px-8 lg:px-12">
       <div className=" mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-4">
           <h1 className="text-3xl md:text-4xl font-bold mb- text-accent ">
           Choose Your Subscription Plan
             {/* <span className="text-accent-foreground">Prices</span> */}

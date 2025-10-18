@@ -127,7 +127,10 @@ const PigeonPhotosSlider = ({
 
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm">
-      <h2 className="text-lg font-semibold mb-4">Pigeon Photos</h2>
+      <h2 className="text-lg font-semibold mb-2">Pigeon Photos</h2>
+      <p className="text-xs text-destructive mb-4">
+        Please upload images of your pigeon. Accepted formats: JPEG, PNG, JPG. Maximum file size: 10MB.
+      </p>
 
       <div className="relative">
         {/* Left scroll button */}

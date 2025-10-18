@@ -155,7 +155,7 @@ const formatResults = (results) => {
     nodes.push({
       id: "mother_1",
       type: "pigeonNode",
-      position: { x: 320, y: window.screen?.height - -130 || 1000 },
+      position: { x: 320, y: window.screen?.height - 200 || 1000 },
       data: {
         name: subject.motherRingId.name,
         ringNumber: subject.motherRingId.ringNumber,

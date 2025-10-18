@@ -17,7 +17,9 @@ const LayoutWrapper = ({ children }) => {
     "/pigeon-database",
     "/",
     "/register",
-    "/profile-dashboard"
+    "/profile-dashboard",
+    "/contact",
+    "/about-us"
   ];
 
   // Dynamic routes accessible without login

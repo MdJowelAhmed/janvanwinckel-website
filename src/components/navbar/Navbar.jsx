@@ -489,7 +489,7 @@ export default function Navbar() {
           <ul className="hidden md:flex space-x-8">
             {navItems
               .filter((item) => {
-                // Hide "Subscription" for PAIDUSER
+                // If PAIDUSER → hide "Subscription" and "Add Pigeon"
                 if (
                   (item.name === "Subscription" ||
                     item.name === "Add Pigeon") &&
@@ -498,7 +498,12 @@ export default function Navbar() {
                   return false;
                 }
 
-                // Hide "Loft Overview" or "Add Pigeon" if user is not logged in
+                // If USER → hide "Add Pigeon"
+                if (item.name === "Add Pigeon" && userData?.role === "USER") {
+                  return false;
+                }
+
+                // Hide "Loft Overview" or "Add Pigeon" if not logged in
                 if (
                   (item.name === "Loft Overview" ||
                     item.name === "Add Pigeon") &&
@@ -510,7 +515,6 @@ export default function Navbar() {
                 return true;
               })
               .map((item) => {
-                // যদি PAIDUSER হয়, তাহলে "Home" ক্লিক করলে /loft-overview এ যাবে
                 const redirectPath =
                   item.name === "Home" && userData?.role === "PAIDUSER"
                     ? "/loft-overview"
