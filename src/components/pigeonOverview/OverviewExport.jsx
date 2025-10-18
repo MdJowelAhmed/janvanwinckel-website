@@ -396,7 +396,7 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
   return (
     <Button
       onClick={handleExportPDF}
-      className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 h-12 rounded-md flex items-center gap-2"
+      className="bg-accent hover:bg-accent/80 text-white px-6 h-12 rounded-md flex items-center gap-2"
     >
       <Download className="w-4 h-4" />
       Export PDF

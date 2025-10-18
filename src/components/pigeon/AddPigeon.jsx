@@ -54,6 +54,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     });
   console.log("singlePigeon", singlePigeon);
   const { data: breeder } = useGetBreederQuery();
+  
   const { data: fatherData } = useGetAllPigeonSearchQuery(fatherSearchTerm);
   const { data: motherData } = useGetAllPigeonSearchQuery(motherSearchTerm);
 
@@ -740,36 +741,74 @@ Bought for USD 50,000`}
                         onBlur={() =>
                           setTimeout(() => setShowBreederDropdown(false), 200)
                         }
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && breederSearchTerm) {
+                            e.preventDefault();
+                            // Check if there are no matches in the existing list
+                            const matches = breederList?.filter(breeder => 
+                              breeder.breederName.toLowerCase().includes(breederSearchTerm.toLowerCase())
+                            );
+                            if (matches?.length === 0) {
+                              // Use the typed value as a new breeder
+                              setValue("breeder", breederSearchTerm);
+                              setShowBreederDropdown(false);
+                            }
+                          }
+                        }}
                         placeholder="Type breeder name or select from list"
                         className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                       />
 
                       {/* Dropdown list for verified breeders */}
-                      {showBreederDropdown &&
-                        breederList &&
-                        breederList.length > 0 &&
-                        breederSearchTerm && (
+                      {showBreederDropdown && breederList && breederList.length > 0 && (
                           <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-40 overflow-y-auto shadow-md mt-1">
-                            {breederList
-                              .filter((breeder) =>
+                            {breederSearchTerm 
+                              ? breederList
+                                  .filter((breeder) =>
+                                    breeder.breederName
+                                      .toLowerCase()
+                                      .includes(breederSearchTerm.toLowerCase())
+                                  )
+                                  .map((breeder) => (
+                                    <li
+                                      key={breeder._id || breeder.id}
+                                      className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                                      onClick={() => {
+                                        setBreederSearchTerm(breeder.breederName);
+                                        setSelectedBreeder(breeder);
+                                        setShowBreederDropdown(false);
+                                        setValue("breeder", breeder.breederName);
+                                      }}
+                                    >
+                                      {breeder.breederName}
+                                    </li>
+                                  ))
+                              : breederList.map((breeder) => (
+                                  <li
+                                    key={breeder._id || breeder.id}
+                                    className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                                    onClick={() => {
+                                      setBreederSearchTerm(breeder.breederName);
+                                      setSelectedBreeder(breeder);
+                                      setShowBreederDropdown(false);
+                                      setValue("breeder", breeder.breederName);
+                                    }}
+                                  >
+                                    {breeder.breederName}
+                                  </li>
+                                ))
+                            }
+                            {breederSearchTerm && 
+                              breederList.filter((breeder) =>
                                 breeder.breederName
                                   .toLowerCase()
                                   .includes(breederSearchTerm.toLowerCase())
-                              )
-                              .map((breeder) => (
-                                <li
-                                  key={breeder._id || breeder.id}
-                                  className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
-                                  onClick={() => {
-                                    setBreederSearchTerm(breeder.breederName);
-                                    setSelectedBreeder(breeder);
-                                    setShowBreederDropdown(false);
-                                    setValue("breeder", breeder.breederName);
-                                  }}
-                                >
-                                  {breeder.breederName}
+                              ).length === 0 && (
+                                <li className="px-3 py-2 text-gray-500">
+                                  No matches found. Press Enter to add "{breederSearchTerm}" as a new breeder.
                                 </li>
-                              ))}
+                              )
+                            }
                           </ul>
                         )}
 
