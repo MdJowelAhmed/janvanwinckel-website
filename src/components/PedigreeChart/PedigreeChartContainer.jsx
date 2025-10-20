@@ -20,7 +20,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { User, Calendar, Crown, Award, Info, Download } from "lucide-react";
+import {
+  User,
+  Calendar,
+  Crown,
+  Award,
+  Info,
+  Download,
+  DownloadCloud,
+} from "lucide-react";
 import { useGetPigeonPedigreeChartDataQuery } from "@/redux/featured/pigeon/pigeonApi";
 import { convertBackendToExistingFormat } from "./PigeonData";
 import { useParams } from "next/navigation";
@@ -32,6 +40,12 @@ import * as XLSX from "xlsx";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
@@ -99,59 +113,123 @@ const PigeonNode = ({ data }) => {
         position={Position.Left}
         className="w-3 h-3 !bg-slate-400"
       />
-      <div className="flex items-center justify-between ">
-        <div className="flex items-center justify-center gap-1">
+      <div className="flex items-center justify-between">
+        {/* Left Side - Country, Birth Year, Ring Number */}
+        <div
+          className="flex items-center justify-center gap-1"
+          style={{ alignItems: "center" }}
+        >
           {countryCode && (
-            <div className="flex items-center gap-1">
-              <Image
+            <div
+              className="flex items-center gap-1"
+              style={{ alignItems: "center", height: "24px" }}
+            >
+              <img
                 src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
                 alt={data.country}
-                width={24}
-                height={18}
+                width="24"
+                height="18"
                 className="w-6 h-5 rounded-sm"
+                style={{
+                  width: "24px",
+                  height: "18px",
+                  verticalAlign: "middle",
+                  display: "inline-block",
+                }}
+                crossOrigin="anonymous"
               />
-              <p className="text-black">{countryCode}</p>
+              <p
+                className="text-black"
+                style={{
+                  lineHeight: "24px",
+                  margin: 0,
+                  display: "inline-block",
+                  verticalAlign: "middle",
+                }}
+              >
+                {countryCode}
+              </p>
             </div>
           )}
 
-          {/* <Crown className="w-3 h-3 text-amber-600" /> */}
           {data.birthYear && (
-            <span className="text-black">
+            <span
+              className="text-black"
+              style={{
+                lineHeight: "24px",
+                display: "inline-block",
+                verticalAlign: "middle",
+              }}
+            >
               {data.birthYear.toString().slice(-2)}
             </span>
           )}
+
           {data.ringNumber && (
-            <span className=" font-bold text-[#C33739]">{data.ringNumber}</span>
-          )}
-        </div>
-        <div className="flex items-center justify-center gap-1">
-          {" "}
-          {data.gender && (
-            <span className="text-black text-xl">
-              {getGenderIcon(data.gender)}
+            <span
+              className="font-bold text-[#C33739]"
+              style={{
+                lineHeight: "24px",
+                display: "inline-block",
+                verticalAlign: "middle",
+              }}
+            >
+              {data.ringNumber}
             </span>
-          )}
-          {data.verified && (
-            <Image
-              src="/assests/Letter-P.png"
-              alt="Letter P"
-              width={24}
-              height={24}
-              className="w-6 h-6"
-            />
-          )}
-          {data?.iconic && (
-            <Image
-              src="/assests/Gold-cup.png"
-              alt="Letter P"
-              width={30}
-              height={30}
-              className="w-6 h-6"
-            />
           )}
         </div>
 
-        {/* <WinnerPedigree /> */}
+        {/* Right Side - Gender, Verified, Iconic */}
+        <div
+          className="flex items-center justify-center gap-1"
+          style={{ alignItems: "center", height: "24px" }}
+        >
+          {data.gender && (
+            <span
+              className="text-black text-xl"
+              style={{
+                verticalAlign: "middle",
+                lineHeight: "24px",
+                display: "inline-block",
+                height: "24px",
+              }}
+            >
+              {getGenderIcon(data.gender)}
+            </span>
+          )}
+
+          {data.verified && (
+            <img
+              src="/assests/Letter-P.png"
+              alt="Letter P"
+              width="24"
+              height="24"
+              className="w-6 h-6"
+              style={{
+                width: "24px",
+                height: "24px",
+                verticalAlign: "middle",
+                display: "inline-block",
+              }}
+            />
+          )}
+
+          {data?.iconic && (
+            <img
+              src="/assests/Gold-cup.png"
+              alt="Gold Cup"
+              width="24"
+              height="24"
+              className="w-6 h-6"
+              style={{
+                width: "24px",
+                height: "24px",
+                verticalAlign: "middle",
+                display: "inline-block",
+              }}
+            />
+          )}
+        </div>
       </div>
 
       <div className="">
@@ -170,7 +248,7 @@ const PigeonNode = ({ data }) => {
           )}
           {data?.breederVerified && (
             <div className="flex items-center gap-2 text-xl  italic text-black ">
-              <Image
+              <img
                 src="/assests/Letter-B.png"
                 alt="Letter P"
                 width={24}
@@ -196,7 +274,7 @@ const PigeonNode = ({ data }) => {
         {data.achievements && (
           <div className="flex items-start gap-1">
             <p className="text-xs text-black">Results:</p>
-            <Image
+            <img
               src="/assests/Gold-tropy.png"
               alt="Letter P"
               width={24}
@@ -313,12 +391,10 @@ export default function PigeonPedigreeChart() {
   }, [nodes]);
 
   // PDF Export Function
-  // Enhanced PDF Export Function with OKLCH support
-  const exportToPDF = useCallback(async () => {
+  const captureChartAndSave = useCallback(async (filenameOverride) => {
     try {
       if (!chartRef.current) {
-        alert("Chart not ready for export. Please try again.");
-        return;
+        throw new Error("Chart not ready");
       }
 
       // Show loading state
@@ -328,49 +404,24 @@ export default function PigeonPedigreeChart() {
         exportButton.disabled = true;
       }
 
-      // Convert OKLCH to RGB
-      const convertOklchToRgb = (oklchString) => {
-        const oklchMatch = oklchString.match(/oklch\(\s*([^)]+)\s*\)/);
-        if (!oklchMatch) return oklchString;
+      // CRITICAL FIX: Temporarily increase height to ensure all content is visible
+      const originalHeight = chartRef.current.style.height;
+      const originalMinHeight = chartRef.current.style.minHeight;
+      const reactFlowElement = chartRef.current.querySelector(".react-flow");
+      const reactFlowOriginalHeight = reactFlowElement
+        ? reactFlowElement.style.height
+        : null;
 
-        const values = oklchMatch[1]
-          .split(/\s+/)
-          .map((v) => parseFloat(v.replace("%", "")));
-        const [l, c, h] = values;
+      // Force minimum height to ensure all edges are rendered
+      chartRef.current.style.height = "2000px";
+      chartRef.current.style.minHeight = "2000px";
+      if (reactFlowElement) {
+        reactFlowElement.style.height = "2000px";
+      }
 
-        // OKLCH to RGB conversion (simplified)
-        const hRad = ((h || 0) * Math.PI) / 180;
-        const a = c * Math.cos(hRad);
-        const b = c * Math.sin(hRad);
+      // Wait for ReactFlow to adjust to new height
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-        // Convert to RGB
-        const y = (l + 16) / 116;
-        const x = a / 500 + y;
-        const z = y - b / 200;
-
-        const r = Math.max(
-          0,
-          Math.min(
-            255,
-            Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))
-          )
-        );
-        const g = Math.max(
-          0,
-          Math.min(
-            255,
-            Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))
-          )
-        );
-        const blue = Math.max(
-          0,
-          Math.min(255, Math.round(255 * (0.0557 * x - 0.204 * y + 1.057 * z)))
-        );
-
-        return `rgb(${r}, ${g}, ${blue})`;
-      };
-
-      // Convert LAB to RGB
       const convertLabToRgb = (labString) => {
         const labMatch = labString.match(/lab\(\s*([^)]+)\s*\)/);
         if (!labMatch) return labString;
@@ -406,59 +457,7 @@ export default function PigeonPedigreeChart() {
         return `rgb(${r}, ${g}, ${blue})`;
       };
 
-      // Convert LCH to RGB
-      const convertLchToRgb = (lchString) => {
-        const lchMatch = lchString.match(/lch\(\s*([^)]+)\s*\)/);
-        if (!lchMatch) return lchString;
-
-        const values = lchMatch[1]
-          .split(/\s+/)
-          .map((v) => parseFloat(v.replace("%", "")));
-        const [l, c, h] = values;
-
-        // LCH to LAB
-        const hRad = ((h || 0) * Math.PI) / 180;
-        const a = c * Math.cos(hRad);
-        const b = c * Math.sin(hRad);
-
-        // LAB to RGB
-        const y = (l + 16) / 116;
-        const x = a / 500 + y;
-        const z = y - b / 200;
-
-        const r = Math.max(
-          0,
-          Math.min(
-            255,
-            Math.round(255 * (3.2406 * x - 1.5372 * y - 0.4986 * z))
-          )
-        );
-        const g = Math.max(
-          0,
-          Math.min(
-            255,
-            Math.round(255 * (-0.9689 * x + 1.8758 * y + 0.0415 * z))
-          )
-        );
-        const blue = Math.max(
-          0,
-          Math.min(255, Math.round(255 * (0.0557 * x - 0.204 * y + 1.057 * z)))
-        );
-
-        return `rgb(${r}, ${g}, ${blue})`;
-      };
-
-      // Universal color converter
-      const convertColorToRgb = (colorString) => {
-        if (colorString.includes("oklch("))
-          return convertOklchToRgb(colorString);
-        if (colorString.includes("lab(")) return convertLabToRgb(colorString);
-        if (colorString.includes("lch(")) return convertLchToRgb(colorString);
-        return colorString;
-      };
-
-      // Replace all modern color formats with RGB
-      const temporarilyReplaceModernColors = (element) => {
+      const temporarilyReplaceLabColors = (element) => {
         const originalStyles = [];
 
         const processElement = (el) => {
@@ -469,44 +468,25 @@ export default function PigeonPedigreeChart() {
             let needsReplacement = false;
             let newStyle = style || "";
 
-            // Check inline style attribute for modern color formats
-            if (
-              style &&
-              (style.includes("oklch(") ||
-                style.includes("lab(") ||
-                style.includes("lch("))
-            ) {
+            if (style && style.includes("lab(")) {
               needsReplacement = true;
-              newStyle = style.replace(/(oklch|lab|lch)\([^)]+\)/g, (match) => {
-                return convertColorToRgb(match);
+              newStyle = style.replace(/lab\([^)]+\)/g, (match) => {
+                return convertLabToRgb(match);
               });
             }
 
-            // Check computed styles for modern color formats
             const colorProperties = [
               "color",
               "background-color",
               "border-color",
-              "border-top-color",
-              "border-right-color",
-              "border-bottom-color",
-              "border-left-color",
               "fill",
               "stroke",
-              "outline-color",
-              "text-decoration-color",
             ];
-
             colorProperties.forEach((prop) => {
               const value = computedStyle.getPropertyValue(prop);
-              if (
-                value &&
-                (value.includes("oklch(") ||
-                  value.includes("lab(") ||
-                  value.includes("lch("))
-              ) {
+              if (value && value.includes("lab(")) {
                 needsReplacement = true;
-                const convertedColor = convertColorToRgb(value);
+                const convertedColor = convertLabToRgb(value);
                 newStyle += `; ${prop}: ${convertedColor} !important`;
               }
             });
@@ -520,7 +500,6 @@ export default function PigeonPedigreeChart() {
               el.setAttribute("style", newStyle);
             }
 
-            // Process child elements
             Array.from(el.children).forEach(processElement);
           }
         };
@@ -529,8 +508,10 @@ export default function PigeonPedigreeChart() {
         return originalStyles;
       };
 
-      // Apply color replacements
-      const styleBackups = temporarilyReplaceModernColors(chartRef.current);
+      // Apply lab color replacements
+      const styleBackups = temporarilyReplaceLabColors(chartRef.current);
+
+      // Remove truncation
       const truncationBackups = [];
       const removeTruncation = (el) => {
         if (!el) return;
@@ -544,13 +525,11 @@ export default function PigeonPedigreeChart() {
             style: e.getAttribute("style"),
           };
           truncationBackups.push(original);
-          // remove classes that cause clipping
           e.classList.remove(
             "truncate",
             "overflow-hidden",
             "whitespace-nowrap"
           );
-          // also remove inline overflow styles that could clip text
           const oldStyle = e.getAttribute("style") || "";
           const newStyle = oldStyle
             .replace(/overflow:\s*hidden;?/g, "")
@@ -560,11 +539,117 @@ export default function PigeonPedigreeChart() {
           else e.removeAttribute("style");
         });
       };
-      removeTruncation(chartRef.current);
-      // Wait for DOM updates
-      await new Promise((resolve) => setTimeout(resolve, 150));
 
-      // Configure html2canvas
+      removeTruncation(chartRef.current);
+
+      // CRITICAL FIX: Ensure SVG edges are visible and properly positioned
+      const svgEdges = chartRef.current.querySelectorAll(
+        ".react-flow__edges, .react-flow__edge, svg.react-flow__edges"
+      );
+      const svgBackups = [];
+
+      svgEdges.forEach((svg) => {
+        const original = {
+          element: svg,
+          style: svg.getAttribute("style"),
+          visibility: svg.style.visibility,
+          display: svg.style.display,
+          opacity: svg.style.opacity,
+          zIndex: svg.style.zIndex,
+        };
+        svgBackups.push(original);
+
+        // Force visibility and proper positioning
+        svg.style.visibility = "visible !important";
+        svg.style.display = "block !important";
+        svg.style.opacity = "1 !important";
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.pointerEvents = "none";
+        svg.style.zIndex = "5";
+        svg.style.overflow = "visible";
+
+        if (svg.tagName && svg.tagName.toLowerCase() === "svg") {
+          svg.setAttribute("width", "100%");
+          svg.setAttribute("height", "100%");
+          svg.setAttribute("viewBox", "");
+          svg.removeAttribute("viewBox");
+        }
+
+        // Ensure all paths in edges have proper stroke
+        const paths = svg.querySelectorAll("path");
+        paths.forEach((path) => {
+          const stroke = path.getAttribute("stroke");
+          if (!stroke || stroke === "none" || stroke === "transparent") {
+            path.setAttribute("stroke", "#37B7C3");
+          }
+
+          const strokeWidth = path.getAttribute("stroke-width");
+          if (!strokeWidth || parseFloat(strokeWidth) < 1) {
+            path.setAttribute("stroke-width", "3");
+          }
+
+          path.setAttribute("fill", "none");
+          path.style.visibility = "visible";
+          path.style.display = "block";
+          path.style.opacity = "1";
+          path.style.strokeWidth = "3px";
+          path.style.stroke = "#37B7C3";
+        });
+
+        // Ensure all edge groups are visible
+        const gElements = svg.querySelectorAll("g");
+        gElements.forEach((g) => {
+          g.style.visibility = "visible";
+          g.style.display = "block";
+          g.style.opacity = "1";
+        });
+      });
+
+      // Force render all ReactFlow edge elements specifically
+      const allEdgeElements = chartRef.current.querySelectorAll(
+        '[class*="react-flow__edge"]'
+      );
+      allEdgeElements.forEach((edge) => {
+        edge.style.visibility = "visible";
+        edge.style.display = "block";
+        edge.style.opacity = "1";
+        edge.style.zIndex = "5";
+      });
+
+      // Target the specific problematic edges before capture
+      const problematicEdgeIds = [
+        "father_2_1-father_3_1",
+        "father_3_1-father_3_1_father",
+        "father_3_1-father_3_1_mother",
+      ];
+
+      problematicEdgeIds.forEach((edgeId) => {
+        const edgeElement = chartRef.current.querySelector(
+          `[data-id="${edgeId}"]`
+        );
+        if (edgeElement) {
+          edgeElement.style.visibility = "visible";
+          edgeElement.style.display = "block";
+          edgeElement.style.opacity = "1";
+          edgeElement.style.zIndex = "10";
+
+          const paths = edgeElement.querySelectorAll("path");
+          paths.forEach((path) => {
+            path.setAttribute("stroke", "#37B7C3");
+            path.setAttribute("stroke-width", "3");
+            path.style.stroke = "#37B7C3";
+            path.style.strokeWidth = "3px";
+          });
+        }
+      });
+
+      // Wait even longer for all elements to render properly, especially problematic edges
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
       const canvas = await html2canvas(chartRef.current, {
         scale: 2,
         useCORS: true,
@@ -572,16 +657,130 @@ export default function PigeonPedigreeChart() {
         backgroundColor: "#ffffff",
         width: chartRef.current.scrollWidth,
         height: chartRef.current.scrollHeight,
+        windowWidth: chartRef.current.scrollWidth,
+        windowHeight: chartRef.current.scrollHeight,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
         logging: false,
+        // Critical settings for SVG capture
+        foreignObjectRendering: false,
+        removeContainer: false,
         ignoreElements: (element) => {
+          // Don't ignore any elements, especially not SVG
           return (
             element.classList &&
             element.classList.contains("html2canvas-ignore")
           );
         },
+        onclone: (clonedDoc) => {
+          // Additional processing on cloned document
+          const clonedContainer =
+            clonedDoc.querySelector(
+              '[data-id="' + chartRef.current.getAttribute("data-id") + '"]'
+            ) || clonedDoc.body;
+
+          // Find and fix all edge elements in cloned document
+          const clonedEdges = clonedDoc.querySelectorAll(
+            '.react-flow__edges, .react-flow__edge, [class*="react-flow__edge"]'
+          );
+          clonedEdges.forEach((svg) => {
+            svg.style.visibility = "visible";
+            svg.style.display = "block";
+            svg.style.opacity = "1";
+            svg.style.position = "absolute";
+            svg.style.top = "0";
+            svg.style.left = "0";
+            svg.style.width = "100%";
+            svg.style.height = "100%";
+            svg.style.zIndex = "1";
+
+            if (svg.tagName.toLowerCase() === "svg") {
+              svg.setAttribute("width", "100%");
+              svg.setAttribute("height", "100%");
+            }
+
+            const paths = svg.querySelectorAll("path");
+            paths.forEach((path) => {
+              path.setAttribute("stroke", "#37B7C3");
+              path.setAttribute("stroke-width", "2");
+              path.setAttribute("fill", "none");
+              path.style.visibility = "visible";
+              path.style.display = "block";
+              path.style.opacity = "1";
+            });
+
+            const gElements = svg.querySelectorAll("g");
+            gElements.forEach((g) => {
+              g.style.visibility = "visible";
+              g.style.display = "block";
+              g.style.opacity = "1";
+            });
+          });
+
+          // Also target edges by their IDs - specifically the problematic ones
+          const specificEdgeIds = [
+            "father_2_1-father_3_1", // father_3_1 connection
+            "father_3_1-father_3_1_father", // father_4_1 connection
+            "father_3_1-father_3_1_mother", // mother_4_2 connection
+            "mother_3_1-mother_3_1_father",
+            "mother_3_1-mother_3_1_mother",
+          ];
+
+          specificEdgeIds.forEach((edgeId) => {
+            // Try multiple selectors to find the edge
+            let edge = clonedDoc.querySelector(`[data-id="${edgeId}"]`);
+            if (!edge) {
+              edge = clonedDoc.querySelector(`#${edgeId}`);
+            }
+            if (!edge) {
+              edge = clonedDoc.querySelector(
+                `.react-flow__edge[id="${edgeId}"]`
+              );
+            }
+
+            if (edge) {
+              edge.style.visibility = "visible !important";
+              edge.style.display = "block !important";
+              edge.style.opacity = "1 !important";
+              edge.style.zIndex = "10";
+
+              const paths = edge.querySelectorAll("path");
+              paths.forEach((path) => {
+                path.setAttribute("stroke", "#37B7C3");
+                path.setAttribute("stroke-width", "3");
+                path.setAttribute("fill", "none");
+                path.style.visibility = "visible";
+                path.style.display = "block";
+                path.style.opacity = "1";
+              });
+
+              const gElements = edge.querySelectorAll("g");
+              gElements.forEach((g) => {
+                g.style.visibility = "visible";
+                g.style.display = "block";
+                g.style.opacity = "1";
+              });
+            }
+          });
+
+          // Brute force: Find ALL edges and make them visible
+          const allPaths = clonedDoc.querySelectorAll(
+            'svg path[class*="react-flow__edge"]'
+          );
+          allPaths.forEach((path) => {
+            path.setAttribute("stroke", "#37B7C3");
+            path.setAttribute("stroke-width", "2");
+            path.setAttribute("fill", "none");
+            path.style.visibility = "visible";
+            path.style.display = "block";
+            path.style.opacity = "1";
+          });
+        },
       });
 
-      // Restore original styles
+      // Restore all styles
       styleBackups.forEach((backup) => {
         if (backup.hasStyle && backup.originalStyle) {
           backup.element.setAttribute("style", backup.originalStyle);
@@ -590,18 +789,39 @@ export default function PigeonPedigreeChart() {
         }
       });
 
+      truncationBackups.forEach((b) => {
+        b.element.className = "";
+        b.classList.forEach((c) => b.element.classList.add(c));
+        if (b.style) b.element.setAttribute("style", b.style);
+        else b.element.removeAttribute("style");
+      });
+
+      // Restore SVG elements
+      svgBackups.forEach((backup) => {
+        if (backup.style) {
+          backup.element.setAttribute("style", backup.style);
+        }
+      });
+
+      // Restore original heights
+      chartRef.current.style.height = originalHeight;
+      chartRef.current.style.minHeight = originalMinHeight;
+      if (reactFlowElement && reactFlowOriginalHeight) {
+        reactFlowElement.style.height = reactFlowOriginalHeight;
+      }
+
       const imgData = canvas.toDataURL("image/png", 1.0);
 
-      // Calculate PDF dimensions
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
+
       const maxWidth = imgWidth > imgHeight ? 1120 : 790;
       const maxHeight = imgWidth > imgHeight ? 790 : 1120;
+
       const scale = Math.min(maxWidth / imgWidth, maxHeight / imgHeight, 1);
       const finalWidth = imgWidth * scale;
       const finalHeight = imgHeight * scale;
 
-      // Create PDF
       const pdf = new jsPDF({
         orientation: imgWidth > imgHeight ? "landscape" : "portrait",
         unit: "px",
@@ -613,34 +833,16 @@ export default function PigeonPedigreeChart() {
 
       pdf.addImage(imgData, "PNG", xOffset, yOffset, finalWidth, finalHeight);
 
-      // Save PDF
       const currentDate = new Date().toISOString().split("T")[0];
-      const filename = `pigeon-pedigree-chart-${currentDate}.pdf`;
+      const filename =
+        filenameOverride || `pigeon-pedigree-chart-${currentDate}.pdf`;
+
       pdf.save(filename);
 
-      console.log("PDF export completed successfully");
+      return filename;
     } catch (error) {
-      console.error("Error exporting to PDF:", error);
-
-      // More specific error messages
-      if (
-        error.message &&
-        (error.message.includes("oklch") ||
-          error.message.includes("lab") ||
-          error.message.includes("lch"))
-      ) {
-        alert(
-          "Error: Unsupported color format detected. Please try refreshing the page and exporting again."
-        );
-      } else if (error.message && error.message.includes("canvas")) {
-        alert(
-          "Error: Unable to capture chart image. Please ensure the chart is fully loaded and try again."
-        );
-      } else {
-        alert("Error exporting to PDF. Please try again or refresh the page.");
-      }
+      throw error;
     } finally {
-      // Reset button state
       const exportButton = document.querySelector("[data-export-pdf]");
       if (exportButton) {
         exportButton.textContent = "Export as PDF";
@@ -648,6 +850,60 @@ export default function PigeonPedigreeChart() {
       }
     }
   }, []);
+
+  const exportToPDF = useCallback(async () => {
+    try {
+      await captureChartAndSave();
+      console.log("PDF export completed successfully");
+    } catch (error) {
+      console.error("Error exporting to PDF:", error);
+      alert("Error exporting to PDF. Please try again or refresh the page.");
+    }
+  }, [captureChartAndSave]);
+
+  const exportToPDFWithGenerations = useCallback(
+    async (genCount) => {
+      const maxGen = Math.max(0, genCount - 1);
+      const originalNodes = nodes;
+      const originalEdges = edges;
+
+      try {
+        // Filter nodes by generation
+        const filteredNodes = originalNodes.filter((n) => {
+          const gen = n?.data?.generation ?? 0;
+          return gen <= maxGen;
+        });
+
+        // Keep edges that connect visible nodes
+        const visibleIds = new Set(filteredNodes.map((n) => n.id));
+        const filteredEdges = originalEdges.filter(
+          (e) => visibleIds.has(e.source) && visibleIds.has(e.target)
+        );
+
+        // Apply filtered graph
+        setNodes(filteredNodes);
+        setEdges(filteredEdges);
+
+        // Wait for ReactFlow to re-render
+        await new Promise((resolve) => setTimeout(resolve, 220));
+
+        const currentDate = new Date().toISOString().split("T")[0];
+        const filename = `pigeon-pedigree-chart-${genCount}gen-${currentDate}.pdf`;
+
+        await captureChartAndSave(filename);
+
+        console.log(`PDF export for ${genCount} generations completed`);
+      } catch (error) {
+        console.error("Error exporting filtered generations:", error);
+        alert("Error exporting the selected generations. Please try again.");
+      } finally {
+        // Restore original nodes/edges regardless of success/failure
+        setNodes(originalNodes);
+        setEdges(originalEdges);
+      }
+    },
+    [nodes, edges, setNodes, setEdges, captureChartAndSave]
+  );
 
   const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
 
@@ -667,22 +923,41 @@ export default function PigeonPedigreeChart() {
             pairings.
           </p> */}
         </div>
+
         <div className="flex gap-5">
+          {/* Excel Export Button */}
           <Button
             onClick={exportToExcel}
-            className="bg-primary py-6 text-white hover:text-white flex items-center gap-2"
+            className="bg-primary text-white hover:text-white flex items-center gap-2"
           >
-            <Download className="w-4 h-4" />
+            <DownloadCloud className="h-4 w-4" />
             Export as Excel
           </Button>
-          <Button
-            onClick={exportToPDF}
-            data-export-pdf
-            className="bg-primary py-6 text-white hover:text-white flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Export as PDF
-          </Button>
+
+          {/* PDF Export Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="bg-primary text-white hover:text-white flex items-center gap-2">
+                <DownloadCloud className="h-4 w-4" />
+                Export as PDF
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={() => exportToPDFWithGenerations(4)}
+                className="cursor-pointer"
+              >
+                Export as PDF (4Gen)
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => exportToPDFWithGenerations(5)}
+                className="cursor-pointer"
+              >
+                Export as PDF (5Gen)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <div

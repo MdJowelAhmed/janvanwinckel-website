@@ -40,9 +40,9 @@ export default function Footer() {
 
             {/* Right Section - Navigation Links */}
             <div className="flex items-center h-full justify-center lg:mt-10  lg:flex-row gap-8 lg:gap-12">
-              <Link href="/" className="text-white hover:text-teal-200 text-sm">
+              {/* <Link href="/" className="text-white hover:text-teal-200 text-sm">
                 Home
-              </Link>
+              </Link> */}
               {/* <Link
                 href="/help"
                 className="text-white hover:text-teal-200 text-sm"

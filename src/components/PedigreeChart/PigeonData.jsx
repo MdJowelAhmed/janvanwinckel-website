@@ -16,14 +16,13 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
   const maxGeneration = role === "PAIDUSER" ? 4 : 3;
 
   // Helper function to format results
-const formatResults = (results) => {
-  if (!results || !Array.isArray(results) || results.length === 0) {
-    return null;
-  }
+  const formatResults = (results) => {
+    if (!results || !Array.isArray(results) || results.length === 0) {
+      return null;
+    }
 
-  return results.map(item => String(item).trim()).join("\n");
-};
-
+    return results.map((item) => String(item).trim()).join("\n");
+  };
 
   // Helper function to get gender from data
   const getGender = (genderData) => {
@@ -98,7 +97,7 @@ const formatResults = (results) => {
       birthYear: subject.birthYear?.toString(),
       color: "#FFFFE0",
       colorName: subject.color,
-      description: subject.notes || subject.shortInfo,
+      // description: subject.notes || subject.shortInfo,
       achievements: formatResults(subject.addresults),
       verified: getPigeonVerification(subject),
       breederVerified: getBreederStatus(subject.breeder),
@@ -126,8 +125,8 @@ const formatResults = (results) => {
         birthYear: subject.fatherRingId.birthYear?.toString(),
         color: "#ADD8E6",
         colorName: subject.fatherRingId.color,
-        description:
-          subject.fatherRingId.notes || subject.fatherRingId.shortInfo,
+        // description:
+        //   subject.fatherRingId.notes || subject.fatherRingId.shortInfo,
         achievements: formatResults(subject.fatherRingId.addresults),
         verified: getPigeonVerification(subject.fatherRingId),
         breederVerified: getBreederStatus(subject.fatherRingId.breeder),
@@ -155,7 +154,7 @@ const formatResults = (results) => {
     nodes.push({
       id: "mother_1",
       type: "pigeonNode",
-      position: { x: 320, y: window.screen?.height - 200 || 1000 },
+      position: { x: 320, y: 1350 },
       data: {
         name: subject.motherRingId.name,
         ringNumber: subject.motherRingId.ringNumber,
@@ -167,8 +166,8 @@ const formatResults = (results) => {
         birthYear: subject.motherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.motherRingId.color,
-        description:
-          subject.motherRingId.notes || subject.motherRingId.shortInfo,
+        // description:
+        //   subject.motherRingId.notes || subject.motherRingId.shortInfo,
         achievements: formatResults(subject.motherRingId.addresults),
         verified: getPigeonVerification(subject.motherRingId),
         breederVerified: getBreederStatus(subject.motherRingId.breeder),
@@ -187,14 +186,7 @@ const formatResults = (results) => {
       style: { stroke: "#37B7C3", strokeWidth: 3 },
     });
   } else {
-    nodes.push(
-      createEmptyNode(
-        "mother_1",
-        { x: 320, y: window.screen?.height - -130 || 1000 },
-        "Mother",
-        1
-      )
-    );
+    nodes.push(createEmptyNode("mother_1", { x: 320, y: 1210 }, "Mother", 1));
     edges.push({
       id: "subject-mother_1",
       source: "subject",
@@ -222,10 +214,10 @@ const formatResults = (results) => {
         birthYear: subject.fatherRingId.fatherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.fatherRingId.fatherRingId.color,
-        description:
-          subject.fatherRingId.fatherRingId.notes ||
-          subject.fatherRingId.fatherRingId.shortInfo ||
-          "Top racing cock.",
+        // description:
+        //   subject.fatherRingId.fatherRingId.notes ||
+        //   subject.fatherRingId.fatherRingId.shortInfo ||
+        //   "Top racing cock.",
         achievements: formatResults(
           subject.fatherRingId.fatherRingId.addresults
         ),
@@ -269,9 +261,9 @@ const formatResults = (results) => {
         birthYear: subject.fatherRingId.motherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.fatherRingId.motherRingId.color,
-        description:
-          subject.fatherRingId.motherRingId.notes ||
-          subject.fatherRingId.motherRingId.shortInfo,
+        // description:
+        //   subject.fatherRingId.motherRingId.notes ||
+        //   subject.fatherRingId.motherRingId.shortInfo,
         achievements:
           formatResults(subject.fatherRingId.motherRingId.addresults) ||
           "Top producer",
@@ -315,9 +307,9 @@ const formatResults = (results) => {
         birthYear: subject.motherRingId.fatherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.motherRingId.fatherRingId.color,
-        description:
-          subject.motherRingId.fatherRingId.notes ||
-          subject.motherRingId.fatherRingId.shortInfo,
+        // description:
+        //   subject.motherRingId.fatherRingId.notes ||
+        //   subject.motherRingId.fatherRingId.shortInfo,
         achievements:
           formatResults(subject.motherRingId.fatherRingId.addresults) ||
           "National ace",
@@ -361,10 +353,10 @@ const formatResults = (results) => {
         birthYear: subject.motherRingId.motherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.motherRingId.motherRingId.color,
-        description:
-          subject.motherRingId.motherRingId.notes ||
-          subject.motherRingId.motherRingId.shortInfo ||
-          "Foundation hen.",
+        // description:
+        //   subject.motherRingId.motherRingId.notes ||
+        //   subject.motherRingId.motherRingId.shortInfo ||
+        //   "Foundation hen.",
         achievements: formatResults(
           subject.motherRingId.motherRingId.addresults
         ),
@@ -419,7 +411,7 @@ const formatResults = (results) => {
             birthYear: parentPath.birthYear?.toString(),
             color: color,
             colorName: parentPath.color,
-            description: parentPath.notes || parentPath.shortInfo,
+            // description: parentPath.notes || parentPath.shortInfo,
             achievements: formatResults(parentPath.addresults),
             verified: getPigeonVerification(parentPath),
             breederVerified: getBreederStatus(parentPath.breeder),

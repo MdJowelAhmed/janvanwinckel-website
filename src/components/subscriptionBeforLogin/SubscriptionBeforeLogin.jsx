@@ -41,7 +41,7 @@ const SubscriptionBeforeLogin = () => {
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="mb-16 mt-24 px-4 md:px-8 lg:px-12">
+    <div className="mb-16 mt-10 lg:mt-16 px-4 md:px-8 lg:px-12">
       <div className=" mx-auto">
         {/* Header */}
         <div className="text-center mb-4">

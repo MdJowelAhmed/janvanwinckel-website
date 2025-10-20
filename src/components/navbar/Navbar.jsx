@@ -471,8 +471,8 @@ export default function Navbar() {
       <nav className="text-white fixed w-full top-0 left-0 shadow-lg z-50 bg-[#fff]">
         <div className="container mx-auto flex justify-between items-center h-20 px-4">
           {/* Logo */}
-          <Link
-            href="/"
+          <div
+            // href="/"
             className="flex items-center space-x-2 text-lg font-bold"
           >
             <Image
@@ -482,7 +482,7 @@ export default function Navbar() {
               height={100}
               className="w-16 h-16 object-cover"
             />
-          </Link>
+          </div>
 
           {/* Desktop Navigation */}
 
@@ -493,7 +493,7 @@ export default function Navbar() {
                 if (
                   (item.name === "Subscription" ||
                     item.name === "Add Pigeon") &&
-                  userData?.role === "PAIDUSER"
+                  userData?.role === "PAIDUSER" || userData?.role ==="SUPER_ADMIN"
                 ) {
                   return false;
                 }
@@ -516,7 +516,8 @@ export default function Navbar() {
               })
               .map((item) => {
                 const redirectPath =
-                  item.name === "Home" && userData?.role === "PAIDUSER"
+                  item.name === "Home" &&
+                  (userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN")
                     ? "/loft-overview"
                     : item.path;
 
