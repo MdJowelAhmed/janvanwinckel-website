@@ -54,7 +54,7 @@ export default function LoginUser() {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect based on role
-      if (userRole === "PAIDUSER") {
+      if (userRole === "PAIDUSER" || userRole === "SUPER_ADMIN") {
         console.log("Redirecting PAIDUSER to home page");
         router.push("/loft-overview");
       } else if (userRole === "USER") {
