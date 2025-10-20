@@ -7,15 +7,15 @@ import { Download } from "lucide-react";
 const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
   // Use your existing getImageUrl function
   const getImageUrl = (path) => {
-    if (!path) {
-      return "https://i.ibb.co/fYZx5zCP/Region-Gallery-Viewer.png";
-    }
+    // if (!path) {
+    //   return "https://i.ibb.co/fYZx5zCP/Region-Gallery-Viewer.png";
+    // }
 
     if (path.startsWith("http://") || path.startsWith("https://")) {
       return path;
     } else {
-      const baseUrl = "http://10.10.7.41:5001";
-      // const baseUrl = "https://ftp.thepigeonhub.com";
+      // const baseUrl = "http://10.10.7.41:5001";
+      const baseUrl = "https://ftp.thepigeonhub.com";
       return `${baseUrl}/${path}`;
     }
   };

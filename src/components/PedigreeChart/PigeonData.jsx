@@ -13,7 +13,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
   const edges = [];
 
   // Determine max generation based on role
-  const maxGeneration = role === "PAIDUSER" ? 4 : 3;
+  const maxGeneration = role === "PAIDUSER" || role === "SUPER_ADMIN" ? 4 : 3;
 
   // Helper function to format results
   const formatResults = (results) => {
