@@ -457,6 +457,50 @@ export default function PigeonPedigreeChart() {
         return `rgb(${r}, ${g}, ${blue})`;
       };
 
+      const convertOklchToRgb = (oklchString) => {
+        const oklchMatch = oklchString.match(/oklch\(\s*([^)]+)\s*\)/);
+        if (!oklchMatch) return oklchString;
+
+        const values = oklchMatch[1]
+          .split(/\s+/)
+          .map((v) => parseFloat(v.replace("%", "")));
+        const [l, c, h] = values;
+
+        // Convert OKLCH to OKLAB
+        const hRad = (h * Math.PI) / 180;
+        const a = c * Math.cos(hRad);
+        const b = c * Math.sin(hRad);
+
+        // Convert OKLAB to linear RGB
+        const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
+        const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
+        const s_ = l - 0.0894841775 * a - 1.291485548 * b;
+
+        const l3 = l_ * l_ * l_;
+        const m3 = m_ * m_ * m_;
+        const s3 = s_ * s_ * s_;
+
+        const r = +4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
+        const g = -1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
+        const blue = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.707614701 * s3;
+
+        // Convert linear RGB to sRGB
+        const toSrgb = (c) => {
+          const abs = Math.abs(c);
+          if (abs <= 0.0031308) return c * 12.92;
+          return (Math.sign(c) || 1) * (1.055 * Math.pow(abs, 1 / 2.4) - 0.055);
+        };
+
+        const rSrgb = Math.max(0, Math.min(255, Math.round(toSrgb(r) * 255)));
+        const gSrgb = Math.max(0, Math.min(255, Math.round(toSrgb(g) * 255)));
+        const bSrgb = Math.max(
+          0,
+          Math.min(255, Math.round(toSrgb(blue) * 255))
+        );
+
+        return `rgb(${rSrgb}, ${gSrgb}, ${bSrgb})`;
+      };
+
       const temporarilyReplaceLabColors = (element) => {
         const originalStyles = [];
 
@@ -468,11 +512,13 @@ export default function PigeonPedigreeChart() {
             let needsReplacement = false;
             let newStyle = style || "";
 
-            if (style && style.includes("lab(")) {
+            if (style && (style.includes("lab(") || style.includes("oklch("))) {
               needsReplacement = true;
-              newStyle = style.replace(/lab\([^)]+\)/g, (match) => {
-                return convertLabToRgb(match);
-              });
+              newStyle = style
+                .replace(/lab\([^)]+\)/g, (match) => convertLabToRgb(match))
+                .replace(/oklch\([^)]+\)/g, (match) =>
+                  convertOklchToRgb(match)
+                );
             }
 
             const colorProperties = [
@@ -484,9 +530,17 @@ export default function PigeonPedigreeChart() {
             ];
             colorProperties.forEach((prop) => {
               const value = computedStyle.getPropertyValue(prop);
-              if (value && value.includes("lab(")) {
+              if (
+                value &&
+                (value.includes("lab(") || value.includes("oklch("))
+              ) {
                 needsReplacement = true;
-                const convertedColor = convertLabToRgb(value);
+                let convertedColor = value;
+                if (value.includes("lab(")) {
+                  convertedColor = convertLabToRgb(value);
+                } else if (value.includes("oklch(")) {
+                  convertedColor = convertOklchToRgb(value);
+                }
                 newStyle += `; ${prop}: ${convertedColor} !important`;
               }
             });
