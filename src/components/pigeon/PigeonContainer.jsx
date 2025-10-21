@@ -223,12 +223,12 @@ const PigeonContainer = () => {
           <p className="text-gray-600 mt-1">Manage your pigeon collection</p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <Button
             onClick={handleAddPigeon}
             className="bg-accent-foreground hover:bg-accent-foreground text-white py-6"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            {/* <Plus className="w-4 h-4 mr-2" /> */}
             Add New Pigeon
           </Button>
 
@@ -237,7 +237,7 @@ const PigeonContainer = () => {
             onClick={handleExportPDF}
             className="bg-primary text-white hover:text-white py-6"
           >
-            <Upload className="w-4 h-4 mr-2" />
+            {/* <Upload className="w-4 h-4 mr-2" /> */}
             Export as PDF
           </Button>
           <Button
@@ -245,7 +245,7 @@ const PigeonContainer = () => {
             onClick={handleExportExcel}
             className="bg-primary text-white hover:text-white py-6"
           >
-            <Upload className="w-4 h-4 mr-2" />
+            {/* <Upload className="w-4 h-4 mr-2" /> */}
             Export as Excel
           </Button>
         </div>

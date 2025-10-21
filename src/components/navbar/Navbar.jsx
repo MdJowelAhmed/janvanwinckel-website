@@ -493,7 +493,8 @@ export default function Navbar() {
                 if (
                   (item.name === "Subscription" ||
                     item.name === "Add Pigeon") &&
-                 (userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN")
+                  (userData?.role === "PAIDUSER" ||
+                    userData?.role === "SUPER_ADMIN")
                 ) {
                   return false;
                 }
@@ -516,7 +517,9 @@ export default function Navbar() {
               })
               .map((item) => {
                 const redirectPath =
-                  item.name === "Home" && (userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN")
+                  item.name === "Home" &&
+                  (userData?.role === "PAIDUSER" ||
+                    userData?.role === "SUPER_ADMIN")
                     ? "/loft-overview"
                     : item.path;
 
@@ -770,17 +773,54 @@ export default function Navbar() {
           }`}
         >
           <ul className="p-4 text-center space-y-3">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <Link
-                  href={item.path}
-                  className="block hover:underline transition-colors duration-200"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
+            {navItems
+              .filter((item) => {
+                // If PAIDUSER → hide "Subscription" and "Add Pigeon"
+                if (
+                  (item.name === "Subscription" ||
+                    item.name === "Add Pigeon") &&
+                  (userData?.role === "PAIDUSER" ||
+                    userData?.role === "SUPER_ADMIN")
+                ) {
+                  return false;
+                }
+
+                // If USER → hide "Add Pigeon"
+                if (item.name === "Add Pigeon" && userData?.role === "USER") {
+                  return false;
+                }
+
+                // Hide "Loft Overview" or "Add Pigeon" if not logged in
+                if (
+                  (item.name === "Loft Overview" ||
+                    item.name === "Add Pigeon") &&
+                  !userData?._id
+                ) {
+                  return false;
+                }
+
+                return true;
+              })
+              .map((item) => {
+                const redirectPath =
+                  item.name === "Home" &&
+                  (userData?.role === "PAIDUSER" ||
+                    userData?.role === "SUPER_ADMIN")
+                    ? "/loft-overview"
+                    : item.path;
+
+                return (
+                  <li key={item.name}>
+                    <Link
+                      href={redirectPath}
+                      className="block hover:underline transition-colors duration-200"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
           </ul>
         </div>
       </nav>
