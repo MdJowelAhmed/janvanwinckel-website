@@ -154,7 +154,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
     nodes.push({
       id: "mother_1",
       type: "pigeonNode",
-      position: { x: 320, y: 1350 },
+      position: { x: 320, y: 1210 },
       data: {
         name: subject.motherRingId.name,
         ringNumber: subject.motherRingId.ringNumber,
