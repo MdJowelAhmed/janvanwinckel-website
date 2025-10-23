@@ -50,34 +50,29 @@ import { exportPedigreeToPDF } from "./pdfExport";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
-  console.log(data.achievements);
-  console.log("data.verified:", data.verified);
-  // console.log(data.colorName);
-  console.log("data?.iconic:", data?.iconic);
-  console.log("data?.breederVerified:", data?.breederVerified);
+  
+  // Check if this is the subject node (generation 0)
+  const isSubject = data.generation === 0;
+
   const getGenderIcon = (gender) => {
     if (gender === "Cock") return "♂";
     if (gender === "Hen") return "♀";
     if (gender === "Unspecified") return "⚪";
-    return "⚪"; // default fallback
-  };
-
-  const getGenderColor = (gender) => {
-    return gender === "male" ? "bg-blue-500" : "bg-pink-500";
+    return "⚪";
   };
 
   const getGenerationColor = (generation) => {
     switch (generation) {
       case 0:
-        return "border-black"; // Subject
+        return "border-black";
       case 1:
-        return "border-black"; // Parents (2)
+        return "border-black";
       case 2:
-        return "border-black"; // Grandparents (4)
+        return "border-black";
       case 3:
-        return "border-black"; // Great-grandparents (8)
+        return "border-black";
       case 4:
-        return "border-black"; // Great-great-grandparents (16)
+        return "border-black";
       default:
         return "border-black";
     }
@@ -86,17 +81,17 @@ const PigeonNode = ({ data }) => {
   const getCardSize = (generation) => {
     switch (generation) {
       case 0:
-        return "w-[270px] h-[700px]"; // Subject - largest
+        return "w-[270px] h-[680px]";
       case 1:
-        return "w-[270px] h-[700px]"; // Parents
+        return "w-[270px] h-[680px]";
       case 2:
-        return "w-[270px] h-[510px]"; // Grandparents
+        return "w-[270px] h-[508px]";
       case 3:
-        return "w-[270px] h-[250px]"; // Great-grandparents
+        return "w-[270px] h-[246px]";
       case 4:
-        return "w-[270px] h-[120px]"; // Great-great-grandparents - smallest
+        return "w-[270px] h-[114px]";
       default:
-        return "w-[270px] h-24";
+        return "w-[270px] h-[100px]";
     }
   };
 
@@ -104,16 +99,43 @@ const PigeonNode = ({ data }) => {
     <div
       style={{ backgroundColor: data.color }}
       className={`${getCardSize(data?.generation)} 
-        
         border-b-8 border-r-10 border-black
-          text-white rounded-none transition-all duration-300 px-2 py-2
-          ${getGenerationColor(data?.generation)} border`}
+        text-white rounded-none transition-all duration-300 px-2 py-2
+        ${getGenerationColor(data?.generation)} border`}
     >
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="w-3 h-3 !bg-slate-400"
-      />
+      {/* Conditional Handles based on generation */}
+      {isSubject ? (
+        // Subject node (Gen 0): Top and Bottom handles only
+        <>
+          <Handle
+            type="source"
+            position={Position.Top}
+            id="top"
+            className="w-3 h-3 !bg-slate-400"
+          />
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id="bottom"
+            className="w-3 h-3 !bg-slate-400"
+          />
+        </>
+      ) : (
+        // All other nodes: Left (target) and Right (source) handles
+        <>
+          <Handle
+            type="target"
+            position={Position.Left}
+            className="w-3 h-3 !bg-slate-400"
+          />
+          <Handle
+            type="source"
+            position={Position.Right}
+            className="w-3 h-3 !bg-slate-400"
+          />
+        </>
+      )}
+
       <div className="flex items-center justify-between">
         {/* Left Side - Country, Birth Year, Ring Number */}
         <div
@@ -236,22 +258,20 @@ const PigeonNode = ({ data }) => {
       <div className="">
         <div className="flex items-center justify-start gap-2 space-y-2">
           {data.name && (
-            <h3 className="font-bold text-black  truncate ">{data.name}</h3>
+            <h3 className="font-bold text-black truncate">{data.name}</h3>
           )}
         </div>
-        <div className="flex items-center justify-start gap-2 ">
-          {" "}
+        <div className="flex items-center justify-start gap-2">
           {data.owner && (
-            <div className="flex items-center gap-2 text-xl  italic text-black ">
-              {/* <User className="w-3 h-3" /> */}
-              <span className="truncate ">{data.owner}</span>
+            <div className="flex items-center gap-2 text-xl italic text-black">
+              <span className="truncate">{data.owner}</span>
             </div>
           )}
           {data?.breederVerified && (
-            <div className="flex items-center gap-2 text-xl  italic text-black ">
+            <div className="flex items-center gap-2 text-xl italic text-black">
               <img
                 src="/assests/Letter-B.png"
-                alt="Letter P"
+                alt="Letter B"
                 width={24}
                 height={24}
                 className="w-6 h-6"
@@ -269,7 +289,7 @@ const PigeonNode = ({ data }) => {
         )}
         {data.colorName && (
           <div className="">
-            <p className="text-sm text-slate-700"> {data.colorName}</p>
+            <p className="text-sm text-slate-700">{data.colorName}</p>
           </div>
         )}
         {data.achievements && (
@@ -277,7 +297,7 @@ const PigeonNode = ({ data }) => {
             <p className="text-xs text-black">Results:</p>
             <img
               src="/assests/Gold-tropy.png"
-              alt="Letter P"
+              alt="Trophy"
               width={24}
               height={24}
               className="w-6 h-6 mt-[2px]"
@@ -287,19 +307,7 @@ const PigeonNode = ({ data }) => {
             </p>
           </div>
         )}
-
-        {/* {data.position && (
-            <span variant="secondary" className="text-xs px-1 text-black">
-              {data.position}
-            </span>
-          )} */}
       </div>
-
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="w-3 h-3 !bg-slate-400"
-      />
     </div>
   );
 };
@@ -477,7 +485,7 @@ const exportToPDFWithGenerations = useCallback(async (genCount) => {
       </div>
       <div
         ref={chartRef}
-        className="w-full h-[1200px] xl:h-[1400px] 2xl:h-[1800px] bg-transparent flex justify-start items-center mt-0 rounded-3xl"
+        className="w-full h-[1200px] xl:h-[1400px] 2xl:h-[1600px] bg-transparent flex justify-start items-center mt-0 rounded-3xl"
       >
         {/* --- ReactFlow (now dynamic) --- */}
         <ReactFlow
@@ -506,7 +514,7 @@ const exportToPDFWithGenerations = useCallback(async (genCount) => {
         </ReactFlow>
       </div>
       <div className="relative">
-        <div className="absolute bottom-40 2xl:bottom-40 left-30 2xl:left-30 text-black">
+        <div className="absolute bottom-40 2xl:bottom-40 left-0 2xl:left-30 text-black">
           <p className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.breederName}</p>
          {pedigreeData?.data?.breeder?.country && (
           <p>Country: <span className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.country}</span></p>
