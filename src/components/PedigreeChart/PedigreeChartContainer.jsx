@@ -514,7 +514,7 @@ const exportToPDFWithGenerations = useCallback(async (genCount) => {
         </ReactFlow>
       </div>
       <div className="relative">
-        <div className="absolute bottom-40 2xl:bottom-40 left-0 2xl:left-30 text-black">
+        <div className="absolute bottom-40 2xl:bottom-40 left-15 2xl:left-30 text-black">
           <p className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.breederName}</p>
          {pedigreeData?.data?.breeder?.country && (
           <p>Country: <span className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.country}</span></p>
