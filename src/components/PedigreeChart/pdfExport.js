@@ -397,21 +397,27 @@ export const exportPedigreeToPDF = async (
     }
 
     // === CARD DIMENSIONS ===
-    const cardSpacing = 5;
+   const cardSpacing = generations === 4 ? 7 : generations === 5 ? 5 : 4;
 
-    const gen0 = { w: 35, h: 90 };
-    const gen1 = { w: 35, h: 88 };
+
+    const cardWidth = generations === 4 ? 40 : 35;
+
+
+    const gen0 = { w: cardWidth, h: 90 };
+    const gen1 = { w: cardWidth, h: 90 };
 
     const gen2Gap = 3;
-    const gen2 = { w: 35, h: 68.25 - (gen2Gap * 3) / 4 };
+    const gen2 = { w: cardWidth, h: 68.25 - (gen2Gap * 3) / 4 };
 
     const gen3Gap = 3;
-    const gen3 = { w: 35, h: 34.125 - (gen3Gap * 7) / 8 };
+    const gen3 = { w: cardWidth, h: 34.125 - (gen3Gap * 7) / 8 };
 
     const gen4Gap = 2;
-    const gen4 = { w: 35, h: 17.0625 - (gen4Gap * 15) / 16 };
+    const gen4 = { w: cardWidth, h: 17.0625 - (gen4Gap * 15) / 16 };
 
     const gen1Gap = 93;
+
+
 
     // Starting positions
     const totalGen1Height = gen1.h * 2 + gen1Gap;
@@ -560,7 +566,7 @@ export const exportPedigreeToPDF = async (
     }
 
     // === FOOTER: Breeder Info ===
-    const footerY = pageHeight - margin - 8;
+    const footerY = pageHeight - margin - 10;
     pdf.setFontSize(7);
     pdf.setFont("helvetica", "bold");
     pdf.setTextColor(0, 0, 0);
@@ -574,7 +580,7 @@ export const exportPedigreeToPDF = async (
 
     if (pedigreeData?.data?.breeder?.country) {
       pdf.text(
-        `Country: ${pedigreeData.data.breeder.country}`,
+        `Location: ${pedigreeData.data.breeder.country}`,
         margin,
         footerTextY
       );
