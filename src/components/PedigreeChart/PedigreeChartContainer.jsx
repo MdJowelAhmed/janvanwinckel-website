@@ -57,8 +57,8 @@ const PigeonNode = ({ data }) => {
   const getGenderIcon = (gender) => {
     if (gender === "Cock") return "♂";
     if (gender === "Hen") return "♀";
-    if (gender === "Unspecified") return "⚪";
-    return "⚪";
+    if (gender === "Unspecified") return "⛔";
+    return "⛔";
   };
 
   const getGenerationColor = (generation) => {
@@ -441,7 +441,7 @@ const exportToPDFWithGenerations = useCallback(async (genCount) => {
           {/* Excel Export Button */}
           <Button
             onClick={exportToExcel}
-            className="bg-primary text-white hover:text-white flex items-center gap-2"
+            className="bg-primary text-white py-6 rounded-sm hover:text-white flex items-center gap-2"
           >
             <DownloadCloud className="h-4 w-4" />
             Export as Excel
@@ -450,7 +450,7 @@ const exportToPDFWithGenerations = useCallback(async (genCount) => {
           {/* PDF Export Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="bg-primary text-white hover:text-white flex items-center gap-2">
+              <Button className="bg-primary text-white py-6 rounded-sm hover:text-white flex items-center gap-2">
                 <DownloadCloud className="h-4 w-4" />
                 Export as PDF
               </Button>
