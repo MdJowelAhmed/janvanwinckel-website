@@ -191,7 +191,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
       sourceHandle: "bottom", // ADDED: Specify source handle
     });
   } else {
-    nodes.push(createEmptyNode("mother_1", { x: 180, y: 1220 }, "Mother", 1)); // Changed position
+    nodes.push(createEmptyNode("mother_1", { x: 180, y: 1200 }, "Mother", 1)); // Changed position
     edges.push({
       id: "subject-mother_1",
       source: "subject",
