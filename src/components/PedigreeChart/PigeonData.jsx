@@ -139,7 +139,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
       },
     });
   } else {
-    nodes.push(createEmptyNode("father_1", { x: 0, y: -200 }, "Father", 1)); // Changed position
+    nodes.push(createEmptyNode("father_1", { x: 180, y: -200 }, "Father", 1)); // Changed position
   }
 
   edges.push({
