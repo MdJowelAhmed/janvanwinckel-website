@@ -308,7 +308,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       breeder: "", // Changed from breeder object to empty string
       color: "",
       pattern: "",
-      gender :"Unspecified",
+      gender :"N/A",
       status: "",
       location: "",
       notes: "",

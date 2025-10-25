@@ -181,7 +181,7 @@ const PigeonPhotosSlider = ({
                         alt={item.alt}
                         width={128}
                         height={128}
-                        className="w-full h-full object-cover pointer-events-none"
+                        className="h-20 w-20 xl:w-full xl:h-full object-cover pointer-events-none"
                         draggable={false}
                       />
                       <button

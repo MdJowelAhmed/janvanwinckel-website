@@ -458,7 +458,7 @@ const PigeonOverviewContainer = () => {
                             Breeder Rating
                           </th>
                           <th className="text-left p-3 font-semibold">
-                            Racer Rating
+                            Racing Rating
                           </th>
                           <th className="text-left p-3 font-semibold">
                             Father
@@ -494,13 +494,13 @@ const PigeonOverviewContainer = () => {
                               {sibling.breederRating || "N/A"}
                             </td>
                             <td className="p-3">
-                              {sibling.racerRating || "N/A"}
+                              {sibling.racingRating || "N/A"}
                             </td>
                             <td className="p-3">
-                              {sibling.father?.ringNumber || "N/A"}
+                              {sibling.fatherRingId?.ringNumber || "N/A"}
                             </td>
                             <td className="p-3">
-                              {sibling.mother?.ringNumber || "N/A"}
+                              {sibling.motherRingId?.ringNumber || "N/A"}
                             </td>
                             <td className="p-3">{sibling.gender || "N/A"}</td>
                             {/* <td className="p-3">
