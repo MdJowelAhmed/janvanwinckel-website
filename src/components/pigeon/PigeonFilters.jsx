@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { getNames } from "country-list";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   const [filters, setFilters] = useState({
@@ -41,7 +42,12 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
 
   // Generate last 100 years for dropdown
   const currentYear = new Date().getFullYear();
-  const allYears = Array.from({ length: 100 }, (_, i) => currentYear - i);
+
+  const allYears = Array.from(
+    { length: 100 + 3 },
+    (_, i) => currentYear + 2 - i
+  );
+
   const filteredYears = allYears.filter((year) =>
     year.toString().includes(yearSearch)
   );
@@ -56,7 +62,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
     const value = e.target.value;
     setYearSearch(value);
     setShowDropdown(true);
-    
+
     // If empty, clear the filter
     if (value === "") {
       handleFilterChange("birthYear", "all");
@@ -79,7 +85,10 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-8">
           {/* Search */}
           <div className="lg:col-span-2">
-            <Label htmlFor="search" className="text-white text-sm font-medium mb-2 block">
+            <Label
+              htmlFor="search"
+              className="text-white text-sm font-medium mb-2 block"
+            >
               Search
             </Label>
             <div className="relative">
@@ -96,7 +105,10 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
 
           {/* Country Filter */}
           <div className="relative">
-            <Label htmlFor="country" className="text-white text-sm font-medium mb-2 block">
+            <Label
+              htmlFor="country"
+              className="text-white text-sm font-medium mb-2 block"
+            >
               Country
             </Label>
             <Input
@@ -109,7 +121,9 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               placeholder="Search country..."
               className="w-full px-3 py-[25px] border border-slate-500 bg-transparent rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
               onFocus={() => setShowCountryDropdown(true)}
-              onBlur={() => setTimeout(() => setShowCountryDropdown(false), 200)}
+              onBlur={() =>
+                setTimeout(() => setShowCountryDropdown(false), 200)
+              }
             />
 
             {showCountryDropdown && (
@@ -143,18 +157,29 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
 
           {/* Gender Filter */}
           <div>
-            <Label htmlFor="gender" className="text-white text-sm font-medium mb-2 block">
+            <Label
+              htmlFor="gender"
+              className="text-white text-sm font-medium mb-2 block"
+            >
               Gender
             </Label>
-            <select
+
+            <Select
               value={filters.gender}
-              onChange={(e) => handleFilterChange("gender", e.target.value)}
-              className="border border-slate-500 bg-primary-foreground text-white focus:border-teal-400 w-full py-[14px] px-2 rounded-md"
+              onValueChange={(value) => handleFilterChange("gender", value)}
+              className="h-16  hover:bg-teal-60"
             >
-              <option value="all">All Genders</option>
-              <option value="Hen">Hen</option>
-              <option value="Cock">Cock</option>
-            </select>
+              <SelectTrigger className="w-full border border-slate-500 bg-primary-foreground  text-white focus:border-teal-400 py-[25px] px-2 rounded-md">
+                <SelectValue placeholder="Select Gender" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-primary-foreground text-white border border-slate-600  hover:bg-teal-60">
+                <SelectItem value="all">All Genders</SelectItem>
+                <SelectItem value="Hen">Hen</SelectItem>
+                <SelectItem value="Cock">Cock</SelectItem>
+                <SelectItem value="Unspecified">Unspecified</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Birth Year Filter */}

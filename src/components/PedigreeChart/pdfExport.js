@@ -109,28 +109,24 @@ export const exportPedigreeToPDF = async (
     };
 
     // Helper: Draw connection line from subject to parents
-    const drawConnectionFromSubject = (
-      subjectX,
-      subjectY,
-      targetX,
-      targetY,
-      isTop,
-      lineWidth = 0.3
-    ) => {
-      pdf.setDrawColor(55, 183, 195);
-      pdf.setLineWidth(lineWidth);
+   const drawConnectionFromSubject = (
+  subjectX,
+  subjectY,
+  targetX,
+  targetY,
+  isTop,
+  lineWidth = 0.3
+) => {
+  pdf.setDrawColor(55, 183, 195);
+  pdf.setLineWidth(lineWidth);
 
-      // Horizontal line from subject center
-      const startX = subjectX;
-      const startY = isTop ? subjectY : subjectY;
+  const verticalBreak = isTop ? subjectY - 5 : subjectY + 5;
 
-      // Create smooth step connection
-      const midX = (startX + targetX) / 2;
+  // Go straight down (or up) first, then turn horizontally
+  pdf.line(subjectX, subjectY, subjectX, verticalBreak);
+  pdf.line(subjectX, verticalBreak, targetX, targetY);
+};
 
-      pdf.line(startX, startY, midX, startY);
-      pdf.line(midX, startY, midX, targetY);
-      pdf.line(midX, targetY, targetX, targetY);
-    };
 
     // Helper: Draw simple smooth step connection line
     const drawSimpleConnection = (x1, y1, x2, y2, lineWidth = 0.1) => {

@@ -114,13 +114,6 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
       active: selectedStatus === 'sold'
     },
     { 
-      label: 'Building', 
-      count: stats.building, 
-      color: 'bg-teal-500',
-      status: 'building',
-      active: selectedStatus === 'building'
-    },
-    { 
       label: 'Deceased', 
       count: stats.deceased, 
       color: 'bg-orange-500',
@@ -138,7 +131,7 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
   return (
     <div className="bg-[#44505E] text-white rounded-t-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-4 lg:grid-cols-9 gap-4 md:gap-6">
+        <div className="grid grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6">
           {statItems.map((item, index) => (
             <div 
               key={index} 

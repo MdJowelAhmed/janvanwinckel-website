@@ -675,7 +675,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     type="text"
                     value={search}
                     onChange={handleSearch}
-                    placeholder="Enter or select your birth year"
+                    placeholder="Select Pigeon birth year"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     onFocus={() => setShowDropdown(true)}
                     onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
@@ -961,7 +961,7 @@ Bought for USD 50,000`}
                       {...register("gender")}
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
-                      <option value="">Select Gender</option>
+                      <option value="" disabled selected>Select Gender</option>
                       <option value="Hen">Hen</option>
                       <option value="Cock">Cock</option>
                       <option value="Unspecified">Unspecified</option>

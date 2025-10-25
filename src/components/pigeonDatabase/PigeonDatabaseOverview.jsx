@@ -115,13 +115,6 @@ const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
       active: selectedStatus === 'sold'
     },
     { 
-      label: 'Building', 
-      count: stats.building, 
-      color: 'bg-teal-500',
-      status: 'building',
-      active: selectedStatus === 'building'
-    },
-    { 
       label: 'Deceased', 
       count: stats.deceased, 
       color: 'bg-orange-500',
