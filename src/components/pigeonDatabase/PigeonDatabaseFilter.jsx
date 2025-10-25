@@ -46,7 +46,7 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
               <Search className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="search"
-                placeholder="Search by Pigeon's Name, Ring Number, Father, Mother"
+                placeholder="Search Pigeon Name, Father's Ring Number, Mother's Name"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="pl-10 py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"

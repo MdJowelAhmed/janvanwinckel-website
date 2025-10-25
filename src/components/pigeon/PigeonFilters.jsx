@@ -95,7 +95,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="search"
-                placeholder="Ring number, name..."
+                placeholder="Ring Number, Name"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="pl-10 py-6 border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"
@@ -118,7 +118,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                 setCountrySearch(e.target.value);
                 setShowCountryDropdown(true);
               }}
-              placeholder="Search country..."
+              placeholder="Type or Select Country"
               className="w-full px-3 py-[25px] border border-slate-500 bg-transparent rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
               onFocus={() => setShowCountryDropdown(true)}
               onBlur={() =>
@@ -192,7 +192,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               type="text"
               value={yearSearch}
               onChange={handleYearInputChange}
-              placeholder="Enter or select year"
+              placeholder="Type or Select Year"
               className="w-full px-3 py-[25px] border border-slate-500 bg-transparent rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
               onFocus={() => setShowDropdown(true)}
               onBlur={() => setTimeout(() => setShowDropdown(false), 150)}

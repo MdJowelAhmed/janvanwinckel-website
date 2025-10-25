@@ -131,7 +131,7 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
   return (
     <div className="bg-[#44505E] text-white rounded-t-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-4 lg:grid-cols-7 gap-4 md:gap-6">
+        <div className="flex flex-wrap gap-2 gap-x-8 lg:gap-x-12">
           {statItems.map((item, index) => (
             <div 
               key={index} 

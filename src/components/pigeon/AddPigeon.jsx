@@ -54,13 +54,13 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
     });
   console.log("singlePigeon", singlePigeon);
   const { data: breeder } = useGetBreederQuery();
-  
+
   const { data: fatherData } = useGetAllPigeonSearchQuery(fatherSearchTerm);
   const { data: motherData } = useGetAllPigeonSearchQuery(motherSearchTerm);
 
- const fatherList = (fatherData?.data || []).filter(
-  (item) => item.gender === "Cock"
-);
+  const fatherList = (fatherData?.data || []).filter(
+    (item) => item.gender === "Cock"
+  );
 
   const motherList = (motherData?.data || []).filter(
     (item) => item.gender === "Hen"
@@ -308,7 +308,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       breeder: "", // Changed from breeder object to empty string
       color: "",
       pattern: "",
-      gender :"N/A",
+      gender: "N/A",
       status: "",
       location: "",
       notes: "",
@@ -597,8 +597,8 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
       <div className="flex items-center gap-4 gap-x-10 mb-8">
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="text-4xl font-bold text-accent mb-4  text-center">
-            {isEditMode ? "Edit" : "Add"} a new pigeon to
-            <span className="text-accent-foreground"> your loft​</span>
+            {isEditMode ? "Edit" : "Add"} a New Pigeon to
+            <span className="text-accent-foreground"> Your Loft ​</span>
           </h1>
         </div>
       </div>
@@ -649,22 +649,23 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Choose a Country
+                    Country
                   </label>
-                  <select
-                    {...register("country")}
-                    defaultValue=""
-                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  <Select
+                    onValueChange={(value) => setValue("country", value)}
+                    defaultValue={watch("country") || ""}
                   >
-                    <option value="" disabled>
-                      -- Select a country --
-                    </option>
-                    {countries.map((country, index) => (
-                      <option key={index} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                      <SelectValue placeholder="Select Country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.map((country, index) => (
+                        <SelectItem key={index} value={country}>
+                          {country}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="relative w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -675,7 +676,7 @@ const AddPigeonContainer = ({ pigeonId = null }) => {
                     type="text"
                     value={search}
                     onChange={handleSearch}
-                    placeholder="Select Pigeon birth year"
+                    placeholder="Select Pigeon Birth Year"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     onFocus={() => setShowDropdown(true)}
                     onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
@@ -725,7 +726,7 @@ Bought for USD 50,000`}
                 <div className="flex flex-col gap-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Breeder
+                      Breeder Name
                     </label>
                     <div className="relative">
                       <input
@@ -742,11 +743,13 @@ Bought for USD 50,000`}
                           setTimeout(() => setShowBreederDropdown(false), 200)
                         }
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter' && breederSearchTerm) {
+                          if (e.key === "Enter" && breederSearchTerm) {
                             e.preventDefault();
                             // Check if there are no matches in the existing list
-                            const matches = breederList?.filter(breeder => 
-                              breeder.breederName.toLowerCase().includes(breederSearchTerm.toLowerCase())
+                            const matches = breederList?.filter((breeder) =>
+                              breeder.breederName
+                                .toLowerCase()
+                                .includes(breederSearchTerm.toLowerCase())
                             );
                             if (matches?.length === 0) {
                               // Use the typed value as a new breeder
@@ -755,14 +758,16 @@ Bought for USD 50,000`}
                             }
                           }
                         }}
-                        placeholder="Type breeder name or select from list"
+                        placeholder="Type or Select Breeder Name"
                         className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                       />
 
                       {/* Dropdown list for verified breeders */}
-                      {showBreederDropdown && breederList && breederList.length > 0 && (
+                      {showBreederDropdown &&
+                        breederList &&
+                        breederList.length > 0 && (
                           <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-40 overflow-y-auto shadow-md mt-1">
-                            {breederSearchTerm 
+                            {breederSearchTerm
                               ? breederList
                                   .filter((breeder) =>
                                     breeder.breederName
@@ -774,10 +779,15 @@ Bought for USD 50,000`}
                                       key={breeder._id || breeder.id}
                                       className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
                                       onClick={() => {
-                                        setBreederSearchTerm(breeder.breederName);
+                                        setBreederSearchTerm(
+                                          breeder.breederName
+                                        );
                                         setSelectedBreeder(breeder);
                                         setShowBreederDropdown(false);
-                                        setValue("breeder", breeder.breederName);
+                                        setValue(
+                                          "breeder",
+                                          breeder.breederName
+                                        );
                                       }}
                                     >
                                       {breeder.breederName}
@@ -796,19 +806,18 @@ Bought for USD 50,000`}
                                   >
                                     {breeder.breederName}
                                   </li>
-                                ))
-                            }
-                            {breederSearchTerm && 
+                                ))}
+                            {breederSearchTerm &&
                               breederList.filter((breeder) =>
                                 breeder.breederName
                                   .toLowerCase()
                                   .includes(breederSearchTerm.toLowerCase())
                               ).length === 0 && (
                                 <li className="px-3 py-2 text-gray-500">
-                                  No matches found. Press Enter to add "{breederSearchTerm}" as a new breeder.
+                                  No matches found. Press Enter to add "
+                                  {breederSearchTerm}" as a new breeder.
                                 </li>
-                              )
-                            }
+                              )}
                           </ul>
                         )}
 
@@ -827,24 +836,25 @@ Bought for USD 50,000`}
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Breeder Rating
                     </label>
-                    <select
-                      {...register("breederRating")}
-                      defaultValue=""
-                      placeholder="Select Breeder Rating"
-                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    <Select
+                      onValueChange={(value) =>
+                        setValue("breederRating", value)
+                      }
+                      defaultValue={watch("breederRating") || ""}
                     >
-                      <option value="" disabled selected>
-                        Select Breeder Rating
-                      </option>
-
-                      {Array.from({ length: 99 }, (_, i) => i + 1)
-                        .reverse() // Reverse the array to get 100 to 0
-                        .map((rating) => (
-                          <option key={rating} value={rating}>
-                            {rating}
-                          </option>
-                        ))}
-                    </select>
+                      <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <SelectValue placeholder="Select Breeder Rating" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 99 }, (_, i) => i + 1)
+                          .reverse()
+                          .map((rating) => (
+                            <SelectItem key={rating} value={rating.toString()}>
+                              {rating}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -957,34 +967,41 @@ Bought for USD 50,000`}
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Gender *
                     </label>
-                    <select
-                      {...register("gender")}
-                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    <Select
+                      onValueChange={(value) => setValue("gender", value)}
+                      defaultValue={watch("gender") || ""}
                     >
-                      <option value="" disabled selected>Select Gender</option>
-                      <option value="Hen">Hen</option>
-                      <option value="Cock">Cock</option>
-                      <option value="Unspecified">Unspecified</option>
-                    </select>
+                      <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Hen">Hen</SelectItem>
+                        <SelectItem value="Cock">Cock</SelectItem>
+                        <SelectItem value="Unspecified">Unspecified</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Status
                     </label>
-
-                    <select
-                      {...register("status")}
-                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    <Select
+                      onValueChange={(value) => setValue("status", value)}
+                      defaultValue={watch("status") || ""}
                     >
-                      <option value="">Select Status</option>
-                      <option value="Breeding">Breeding</option>
-                      <option value="Racing">Racing</option>
-                      <option value="Sold">Sold</option>
-                      <option value="Lost">Lost</option>
-                      <option value="Retired">Retired</option>
-                      <option value="Deceased">Deceased</option>
-                    </select>
+                      <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Breeding">Breeding</SelectItem>
+                        <SelectItem value="Racing">Racing</SelectItem>
+                        <SelectItem value="Sold">Sold</SelectItem>
+                        <SelectItem value="Lost">Lost</SelectItem>
+                        <SelectItem value="Retired">Retired</SelectItem>
+                        <SelectItem value="Deceased">Deceased</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="">
@@ -1035,24 +1052,28 @@ Bought for USD 50,000`}
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Racing Rating
                     </label>
-                    <select
-                      {...register("racingRating", { valueAsNumber: true })}
-                      defaultValue=""
-                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    >
-                      {/* Placeholder option */}
-                      <option value="" disabled>
-                        Select Racing Rating
-                      </option>
 
-                      {Array.from({ length: 99 }, (_, i) => i + 1)
-                        .reverse() // Reverse the array to get 100 to 1
-                        .map((rating) => (
-                          <option key={rating} value={rating}>
-                            {rating}
-                          </option>
-                        ))}
-                    </select>
+                    <Select
+                      onValueChange={(value) =>
+                        setValue("racingRating", Number(value))
+                      } 
+                      defaultValue=""
+                    >
+                      <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                        <SelectValue placeholder="Select Racing Rating" />
+                      </SelectTrigger>
+
+                      <SelectContent className="bg-white text-gray-800 border border-gray-200 rounded-md shadow-lg">
+                       
+                        {Array.from({ length: 99 }, (_, i) => i + 1)
+                          .reverse()
+                          .map((rating) => (
+                            <SelectItem key={rating} value={String(rating)}>
+                              {rating}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -1232,7 +1253,7 @@ Bought for USD 50,000`}
 
             <div className="mt-10">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Race result
+                Pigeon Results
               </label>
               <textarea
                 {...register("addresults")}

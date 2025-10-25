@@ -402,7 +402,7 @@ export default function ProfileDashboardComponents() {
               <div className="text-accent">
                 <User2 size={40} />
               </div>
-              <h3 className="font-medium text-accent"> User Name </h3>
+              <h3 className="font-medium text-accent">Name </h3>
             </div>
             <h2 className="text-2xl font-bold text-gray-800">
               {userData?.name
@@ -445,7 +445,7 @@ export default function ProfileDashboardComponents() {
               <div className="text-accent">
                 <Phone size={40} />
               </div>
-              <h3 className="font-medium text-accent">Contact</h3>
+              <h3 className="font-medium text-accent">Phone</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
               {userData?.contact || "N/A"}
@@ -467,7 +467,9 @@ export default function ProfileDashboardComponents() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+     {
+      userData?.subscription?.package && (
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {userData?.subscription?.package && (
           <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="">
@@ -501,7 +503,9 @@ export default function ProfileDashboardComponents() {
           </Card>
         )}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      )
+     }
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-">
         {userData?.subscription?.startDate && (
           <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="">

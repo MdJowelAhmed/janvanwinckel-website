@@ -38,7 +38,12 @@ import { getImageUrl } from "../share/imageUrl";
 import { getCode } from "country-list";
 import { toast } from "sonner";
 import Swal from "sweetalert2";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 const PigeonTable = ({
   data,
@@ -88,13 +93,27 @@ const PigeonTable = ({
         confirmButtonColor: "#37B7C3",
       });
     } catch (error) {
-      console.error("Error adding pigeon to My Loft Overview:", error);
-      Swal.fire({
-        title: "Failed!",
-        text: error?.data?.message || "Failed to add pigeon. Please try again.",
-        icon: "error",
-        confirmButtonColor: "#d33",
-      });
+  console.error("Error adding pigeon to My Loft Overview:", error);
+
+  if (error?.status === 403) {
+    Swal.fire({
+      title: "Subscription Required",
+      text: "Please subscribe first to access this feature.",
+      icon: "warning",
+      showConfirmButton: false,
+      timer: 3000, // Auto close after 3 seconds
+      timerProgressBar: true,
+    });
+  } else {
+    Swal.fire({
+      title: "Failed!",
+      text: error?.data?.message || "Failed to add pigeon. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
+  }
+
+
     }
   };
 
@@ -197,7 +216,7 @@ const PigeonTable = ({
                   <TableHead className="text-white">Breeder</TableHead>
                   <TableHead className="text-white">Ring Number</TableHead>
                   <TableHead className="text-white">Birth Year</TableHead>
-                  <TableHead className="text-white">Quality Breeder</TableHead>
+                  <TableHead className="text-white">Breeder Rating</TableHead>
                   {/* <TableHead className="text-white">Quality Racer</TableHead> */}
                   <TableHead className="text-white">Racing Rating</TableHead>
                   <TableHead className="text-white">Verified</TableHead>
