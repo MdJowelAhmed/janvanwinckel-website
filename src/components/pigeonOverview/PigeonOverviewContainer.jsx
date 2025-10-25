@@ -106,7 +106,10 @@ const PigeonOverviewContainer = () => {
   return (
     <div className="min-h-screen md:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto space-y-6 ">
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-between">
+          <h2 className="text-2xl font-bold text-gray-800">
+            {pigeon?.name || ""} Overview 
+          </h2>
           <PigeonPdfExport pigeon={pigeon} siblings={siblings} />
         </div>
         {/* Header Section */}
@@ -153,9 +156,9 @@ const PigeonOverviewContainer = () => {
                   ) : (
                     <div className="w-full h-full rounded-md bg-gray-200 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center mx-auto mb-2">
-                          <span className="text-xs text-gray-500">No Img</span>
-                        </div>
+                        {/* <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center mx-auto mb-2">
+                          <span className="text-xs text-gray-500">No Image</span>
+                        </div> */}
                         <span className="text-sm text-gray-500">
                           No Image Available
                         </span>
@@ -535,7 +538,7 @@ const PigeonOverviewContainer = () => {
             {pigeon?.addresults && Array.isArray(pigeon.addresults) && (
               <div className="mt-4 px-6">
                 <label className="block text-sm lg:text-xl font-bold text-accent mb-2">
-                  Race result
+                  Pigeon Results
                 </label>
                 <div className="text-gray-700 space-y-1">
                   {pigeon.addresults.map((result, index) => (

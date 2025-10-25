@@ -6,7 +6,10 @@ import PigeonTable from "./PigeonTable";
 import { Button } from "@/components/ui/button";
 import { Plus, FileDown, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useGetMyPigeonPackagesQuery, useGetPigeonPackagesQuery } from "@/redux/featured/pigeon/pigeonApi";
+import {
+  useGetMyPigeonPackagesQuery,
+  useGetPigeonPackagesQuery,
+} from "@/redux/featured/pigeon/pigeonApi";
 import { Badge } from "@/components/ui/badge";
 
 const PigeonContainer = () => {
@@ -84,14 +87,14 @@ const PigeonContainer = () => {
       import("jspdf").then((jsPDFModule) => {
         const jsPDF = jsPDFModule.default;
         import("jspdf-autotable").then((autoTableModule) => {
-          const autoTable = autoTableModule.default; 
+          const autoTable = autoTableModule.default;
           try {
             const doc = new jsPDF();
 
             // Add title
-            doc.setFontSize(18);
+            doc.setFontSize(16);
             doc.text("Pigeon Data Export", 14, 22);
-            doc.setFontSize(11);
+            doc.setFontSize(8);
             doc.setTextColor(100);
 
             // Get table data
@@ -100,7 +103,10 @@ const PigeonContainer = () => {
               "Country",
               "Breeder",
               "Ring Number",
-              "Bird Year",
+              "Birth Year",
+              "Breeder Rating",
+              "Racing Rating",
+              "Color",
               "Status",
               "Gender",
             ];
@@ -114,6 +120,10 @@ const PigeonContainer = () => {
                 pigeon.breeder?.breederName || "-",
                 pigeon.ringNumber || "-",
                 pigeon.birthYear || "-",
+
+                pigeon.breederRating || "-",
+                pigeon.racingRating || "-",
+                pigeon.color || "-",
                 pigeon.status || "-",
                 pigeon.gender || "-",
               ]);
@@ -127,15 +137,19 @@ const PigeonContainer = () => {
               headStyles: {
                 fillColor: [58, 178, 127],
                 textColor: [255, 255, 255],
+                fontSize: 8, 
               },
               alternateRowStyles: {
                 fillColor: [240, 240, 240],
+              },
+              styles: {
+                fontSize: 7,
               },
             });
 
             // Add date
             const date = new Date();
-            doc.setFontSize(10);
+            doc.setFontSize(8);
             doc.text(
               `Generated on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`,
               14,
@@ -173,11 +187,11 @@ const PigeonContainer = () => {
                 Country: pigeon.country || "-",
                 Breeder: pigeon.breeder?.breederName || "-",
                 "Ring Number": pigeon.ringNumber || "-",
-                "Bird Year": pigeon.birthYear || "-",
-                "Quality Breeder": pigeon.breederRating || "-",
-                "Quality Racer": pigeon.racerRating || "-",
+                "Birth Year": pigeon.birthYear || "-",
+                "Breeder Rating": pigeon.breederRating || "-",
+                // "Racer Rating": pigeon.racerRating || "-",
                 "Racing Rating": pigeon.racingRating || "-",
-                Pattern: pigeon.pattern || "-",
+                // Pattern: pigeon.pattern || "-",
                 Status: pigeon.status || "-",
                 Gender: pigeon.gender || "-",
                 Color: pigeon.color || "-",

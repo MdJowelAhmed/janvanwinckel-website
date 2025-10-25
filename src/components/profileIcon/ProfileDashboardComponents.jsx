@@ -458,7 +458,7 @@ export default function ProfileDashboardComponents() {
               <div className="text-accent">
                 <BirdIcon size={40} />
               </div>
-              <h3 className="font-medium text-accent">Total Pigeon</h3>
+              <h3 className="font-medium text-accent">Total Pigeons</h3>
             </div>
             <p className="text-lg font-bold mt-4 text-gray-800">
               {userData?.totalPigeons || "N/A"}

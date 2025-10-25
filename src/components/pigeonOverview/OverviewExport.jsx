@@ -24,17 +24,17 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
   const getBase64FromUrl = async (url) => {
     try {
       const imageUrl = getImageUrl(url);
-      
+
       const response = await fetch(imageUrl, {
-        mode: 'cors',
-        cache: 'no-cache'
+        mode: "cors",
+        cache: "no-cache",
       });
-      
+
       if (!response.ok) {
         console.error(`Failed to load image: ${response.status}`);
         return null;
       }
-      
+
       const blob = await response.blob();
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -71,13 +71,13 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         // Cyan background (#37B7C3)
         pdf.setFillColor(55, 183, 195);
         pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 8, "F");
-        
+
         // White text
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(12);
         pdf.setFont("helvetica", "bold");
         pdf.text(title, margin + 2, yPos);
-        
+
         // Reset text color to black
         pdf.setTextColor(0, 0, 0);
       };
@@ -102,9 +102,10 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       yPosition += 15;
 
       // Get image
-      const imageSource = pigeon?.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigreePhoto;
+      const imageSource =
+        pigeon?.pigeonPhoto || pigeon?.eyePhoto || pigeon?.pedigreePhoto;
       let base64Image = null;
-      
+
       if (imageSource) {
         try {
           base64Image = await getBase64FromUrl(imageSource);
@@ -116,31 +117,49 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       // LEFT SIDE: Image | RIGHT SIDE: Basic Information
       const leftColumnX = margin;
       const rightColumnX = margin + 85;
-      const imageSize = 70;
+      const imageSize = 60;
       const contentStartY = yPosition;
 
       // LEFT: Add Image with border
       if (base64Image) {
         pdf.setDrawColor(200, 200, 200);
         pdf.setLineWidth(0.5);
-        pdf.rect(leftColumnX - 1, contentStartY - 1, imageSize + 2, imageSize + 2);
-        pdf.addImage(base64Image, "JPEG", leftColumnX, contentStartY, imageSize, imageSize);
+        pdf.rect(
+          leftColumnX - 1,
+          contentStartY - 1,
+          imageSize + 2,
+          imageSize + 2
+        );
+        pdf.addImage(
+          base64Image,
+          "JPEG",
+          leftColumnX,
+          contentStartY,
+          imageSize,
+          imageSize
+        );
       } else {
         // Placeholder if no image
         pdf.setFillColor(240, 240, 240);
         pdf.rect(leftColumnX, contentStartY, imageSize, imageSize, "F");
         pdf.setFontSize(10);
         pdf.setTextColor(150, 150, 150);
-        pdf.text("No Image", leftColumnX + imageSize / 2, contentStartY + imageSize / 2, {
-          align: "center",
-        });
+        pdf.text(
+          "No Image",
+          leftColumnX + imageSize / 2,
+          contentStartY + imageSize / 2,
+          {
+            align: "center",
+          }
+        );
         pdf.setTextColor(0, 0, 0);
       }
 
       // RIGHT: Basic Information Section
       let rightY = contentStartY;
+      // RIGHT: Basic Information Section
 
-      // Basic Information Content (without header)
+      // Declare infoItems here
       const infoItems = [
         { label: "Name", value: String(pigeon?.name || "N/A"), bold: true },
         { label: "Ring Number", value: String(pigeon?.ringNumber || "N/A") },
@@ -151,17 +170,38 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         { label: "Status", value: String(pigeon?.status || "Racing") },
       ];
 
+      // Basic Information Content (without header)
+      // Add section header
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(12);
+      pdf.text("Basic Information", rightColumnX, rightY);
+      rightY += 10; // space after section title
+
+      // Info items
       pdf.setFontSize(9);
       infoItems.forEach((item) => {
         pdf.setFont("helvetica", "normal");
-        pdf.text(`${item.label}: `, rightColumnX, rightY);
-        
-        const labelWidth = pdf.getTextWidth(`${item.label}: `);
+        const label = `${item.label}: `;
+        pdf.text(label, rightColumnX, rightY);
+
+        const labelWidth = pdf.getTextWidth(label);
         pdf.setFont("helvetica", item.bold ? "bold" : "normal");
         pdf.text(item.value, rightColumnX + labelWidth, rightY);
-        
-        rightY += 6;
+
+        rightY += 8; // Increased vertical spacing (default was 6)
       });
+
+      // pdf.setFontSize(9);
+      // infoItems.forEach((item) => {
+      //   pdf.setFont("helvetica", "normal");
+      //   pdf.text(`${item.label}: `, rightColumnX, rightY);
+
+      //   const labelWidth = pdf.getTextWidth(`${item.label}: `);
+      //   pdf.setFont("helvetica", item.bold ? "bold" : "normal");
+      //   pdf.text(item.value, rightColumnX + labelWidth, rightY);
+
+      //   rightY += 6;
+      // });
 
       // Move yPosition after the image/info section
       yPosition = Math.max(contentStartY + imageSize + 15, rightY + 10);
@@ -174,18 +214,18 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       pdf.setFontSize(9);
       pdf.setFont("helvetica", "normal");
       pdf.text(
-        `Father: ${String(pigeon?.fatherRingId?.name || "N/A")} (${
-          String(pigeon?.fatherRingId?.ringNumber || "N/A")
-        })`,
+        `Father: ${String(pigeon?.fatherRingId?.name || "N/A")} (${String(
+          pigeon?.fatherRingId?.ringNumber || "N/A"
+        )})`,
         margin,
         yPosition
       );
       yPosition += 6;
-      
+
       pdf.text(
-        `Mother: ${String(pigeon?.motherRingId?.name || "N/A")} (${
-          String(pigeon?.motherRingId?.ringNumber || "N/A")
-        })`,
+        `Mother: ${String(pigeon?.motherRingId?.name || "N/A")} (${String(
+          pigeon?.motherRingId?.ringNumber || "N/A"
+        )})`,
         margin,
         yPosition
       );
@@ -197,11 +237,23 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       yPosition += 10;
 
       const additionalInfo = [
-        { label: "Breeder", value: String(pigeon?.breeder?.breederName || "N/A") },
-        { label: "Breeder Loft Name", value: String(pigeon?.breeder?.loftName || "N/A") },
+        {
+          label: "Breeder",
+          value: String(pigeon?.breeder?.breederName || "N/A"),
+        },
+        {
+          label: "Breeder Loft Name",
+          value: String(pigeon?.breeder?.loftName || "N/A"),
+        },
         { label: "Location", value: String(pigeon?.location || "N/A") },
-        { label: "Father Ring Number", value: String(pigeon?.fatherRingId?.ringNumber || "N/A") },
-        { label: "Mother Ring Number", value: String(pigeon?.motherRingId?.ringNumber || "N/A") },
+        {
+          label: "Father Ring Number",
+          value: String(pigeon?.fatherRingId?.ringNumber || "N/A"),
+        },
+        {
+          label: "Mother Ring Number",
+          value: String(pigeon?.motherRingId?.ringNumber || "N/A"),
+        },
         { label: "Country", value: String(pigeon?.country || "N/A") },
         { label: "Status", value: String(pigeon?.status || "N/A") },
       ];
@@ -211,11 +263,11 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         checkPageBreak(6);
         pdf.setFont("helvetica", "normal");
         pdf.text(`${item.label}: `, margin, yPosition);
-        
+
         const labelWidth = pdf.getTextWidth(`${item.label}: `);
         pdf.setFont("helvetica", "bold");
         pdf.text(item.value, margin + labelWidth, yPosition);
-        
+
         yPosition += 6;
       });
 
@@ -226,19 +278,19 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         pdf.setFont("helvetica", "bold");
         pdf.text("Your Story:", margin, yPosition);
         yPosition += 6;
-        
+
         const storyLines = pdf.splitTextToSize(
           pigeon.shortInfo,
           pageWidth - 2 * margin
         );
-        
+
         pdf.setFont("helvetica", "normal");
         storyLines.forEach((line) => {
           checkPageBreak(5);
           pdf.text(line, margin, yPosition);
           yPosition += 5;
         });
-        
+
         yPosition += 5;
       }
       if (pigeon?.notes) {
@@ -247,31 +299,31 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         pdf.setFont("helvetica", "bold");
         pdf.text("Notes:", margin, yPosition);
         yPosition += 6;
-        
+
         const notesLines = pdf.splitTextToSize(
           pigeon.notes,
           pageWidth - 2 * margin
         );
-        
+
         pdf.setFont("helvetica", "normal");
         notesLines.forEach((line) => {
           checkPageBreak(5);
           pdf.text(line, margin, yPosition);
           yPosition += 5;
         });
-        
+
         yPosition += 5;
       }
 
       // Siblings Information - Table format
       if (siblings && siblings.length > 0) {
         checkPageBreak(60);
-        
+
         addSectionHeader("Siblings Information", yPosition);
         yPosition += 10;
 
         // Table setup
-         const colWidths = {
+        const colWidths = {
           name: 28,
           type: 26,
           ring: 22,
@@ -346,32 +398,56 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
           xPos += colWidths.name;
           pdf.text(truncate(sibling.type, colWidths.type), xPos + 1, rowY);
           xPos += colWidths.type;
-          pdf.text(truncate(sibling.ringNumber, colWidths.ring), xPos + 1, rowY);
+          pdf.text(
+            truncate(sibling.ringNumber, colWidths.ring),
+            xPos + 1,
+            rowY
+          );
           xPos += colWidths.ring;
           pdf.text(truncate(sibling.birthYear, colWidths.year), xPos + 1, rowY);
           xPos += colWidths.year;
-          pdf.text(truncate(sibling.breederRating, colWidths.breeder), xPos + 1, rowY);
+          pdf.text(
+            truncate(sibling.breederRating, colWidths.breeder),
+            xPos + 1,
+            rowY
+          );
           xPos += colWidths.breeder;
-          pdf.text(truncate(sibling.racingRating, colWidths.racer), xPos + 1, rowY);
+          pdf.text(
+            truncate(sibling.racingRating, colWidths.racer),
+            xPos + 1,
+            rowY
+          );
           xPos += colWidths.racer;
-          pdf.text(truncate(sibling.fatherRingId?.ringNumber, colWidths.father), xPos + 1, rowY);
+          pdf.text(
+            truncate(sibling.fatherRingId?.ringNumber, colWidths.father),
+            xPos + 1,
+            rowY
+          );
           xPos += colWidths.father;
-          pdf.text(truncate(sibling.motherRingId?.ringNumber, colWidths.mother), xPos + 1, rowY);
+          pdf.text(
+            truncate(sibling.motherRingId?.ringNumber, colWidths.mother),
+            xPos + 1,
+            rowY
+          );
           xPos += colWidths.mother;
           pdf.text(truncate(sibling.gender, colWidths.gender), xPos + 1, rowY);
 
           yPosition += 8;
         });
-        
+
         yPosition += 5;
       }
 
       // Race Results Section
-      if (pigeon?.addresults && Array.isArray(pigeon.addresults) && pigeon.addresults.length > 0) {
+      if (
+        pigeon?.addresults &&
+        Array.isArray(pigeon.addresults) &&
+        pigeon.addresults.length > 0
+      ) {
         checkPageBreak(20);
         addSectionHeader("Race Results", yPosition);
         yPosition += 10;
-        
+
         pigeon.addresults.forEach((result, index) => {
           checkPageBreak(6);
           pdf.setFontSize(9);
@@ -382,9 +458,9 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       }
 
       // Save PDF
-      const fileName = `Pigeon_${pigeon?.ringNumber || "Report"}_${moment().format(
-        "YYYYMMDD"
-      )}.pdf`;
+      const fileName = `Pigeon_${
+        pigeon?.ringNumber || "Report"
+      }_${moment().format("YYYYMMDD")}.pdf`;
       pdf.save(fileName);
     } catch (error) {
       console.error("Error generating PDF:", error);
