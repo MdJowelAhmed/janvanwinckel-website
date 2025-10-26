@@ -188,7 +188,7 @@ const PigeonPhotosSlider = ({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          removeSpecificPhoto(item.setter);
+                          removeSpecificPhoto(item.setter, item.type);
                         }}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                       >

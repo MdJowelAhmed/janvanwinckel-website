@@ -53,6 +53,16 @@ const PigeonOverviewContainer = () => {
   const { data: siblingsData, isLoading: siblingsLoading } =
     useGetAllSiblingsQuery(id);
 
+  // Show loading spinner when data is being fetched
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] p-12">
+        <div className="w-16 h-16 border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-gray-500 font-medium">Loading pigeon details...</p>
+      </div>
+    );
+  }
+
   console.log("siblingsData", siblingsData);
   const siblings = siblingsData?.data?.siblings || [];
   console.log("siblings", siblings);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -55,18 +55,51 @@ const PigeonTable = ({
   const router = useRouter();
   const [deletePigeon] = useDeletePigeonMutation();
   const [pigeonAddMyLoftOverview] = usePigeonAddMyLoftOverviewMutation();
+  
+  // Grab scroll functionality
+  const tableContainerRef = useRef(null);
+  const [isGrabbing, setIsGrabbing] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
-  // const handleAddMyLoftOverview = async (pigeonId) => {
-  //   try {
-  //     const payload = { pigeonId }; // backend expected format
-  //     await pigeonAddMyLoftOverview(payload).unwrap();
+  const handleMouseDown = (e) => {
+    if (!tableContainerRef.current) return;
+    setIsGrabbing(true);
+    setStartX(e.pageX - tableContainerRef.current.offsetLeft);
+    setScrollLeft(tableContainerRef.current.scrollLeft);
+  };
 
-  //     toast.success("Pigeon added to My Loft Overview successfully!");
-  //   } catch (error) {
-  //     console.error("Error adding pigeon to My Loft Overview:", error);
-  //     toast.error(error?.data?.message || "Failed to add pigeon. Please try again.");
-  //   }
-  // };
+  const handleMouseMove = (e) => {
+    if (!isGrabbing || !tableContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - tableContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    tableContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsGrabbing(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsGrabbing(false);
+  };
+
+  useEffect(() => {
+    const container = tableContainerRef.current;
+    if (!container) return;
+
+    // Prevent text selection while dragging
+    if (isGrabbing) {
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      document.body.style.userSelect = '';
+    };
+  }, [isGrabbing]);
 
   const handleAddMyLoftOverview = async (pigeonId) => {
     const result = await Swal.fire({
@@ -74,7 +107,7 @@ const PigeonTable = ({
       text: "Do you want to add this pigeon to My Loft Overview?",
       icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "#37B7C3", // teal-600
+      confirmButtonColor: "#37B7C3",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, add it!",
       cancelButtonText: "Cancel",
@@ -93,27 +126,25 @@ const PigeonTable = ({
         confirmButtonColor: "#37B7C3",
       });
     } catch (error) {
-  console.error("Error adding pigeon to My Loft Overview:", error);
+      console.error("Error adding pigeon to My Loft Overview:", error);
 
-  if (error?.status === 403) {
-    Swal.fire({
-      title: "Subscription Required",
-      text: "Please subscribe first to access this feature.",
-      icon: "warning",
-      showConfirmButton: false,
-      timer: 3000, // Auto close after 3 seconds
-      timerProgressBar: true,
-    });
-  } else {
-    Swal.fire({
-      title: "Failed!",
-      text: error?.data?.message || "Failed to add pigeon. Please try again.",
-      icon: "error",
-      confirmButtonColor: "#d33",
-    });
-  }
-
-
+      if (error?.status === 403) {
+        Swal.fire({
+          title: "Subscription Required",
+          text: "Please subscribe first to access this feature.",
+          icon: "warning",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          title: "Failed!",
+          text: error?.data?.message || "Failed to add pigeon. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
+      }
     }
   };
 
@@ -127,9 +158,6 @@ const PigeonTable = ({
         <CardContent className="p-8">
           <div className="text-center">
             <p className="text-gray-500 text-lg">No pigeons found</p>
-            {/* <p className="text-gray-400 text-sm mt-1">
-              Try adjusting your filters
-            </p> */}
           </div>
         </CardContent>
       </Card>
@@ -139,27 +167,8 @@ const PigeonTable = ({
   const pigeons = data.data.data;
   const pagination = data.data.pagination;
 
-  // const getStatusColor = (status) => {
-  //   switch (status?.toLowerCase()) {
-  //     case "active":
-  //       return "bg-green-100 text-green-800";
-  //     case "racing":
-  //       return "bg-blue-100 text-blue-800";
-  //     case "breeding":
-  //       return "bg-purple-100 text-purple-800";
-  //     case "sold":
-  //       return "bg-yellow-100 text-yellow-800";
-  //     case "lost":
-  //       return "bg-red-100 text-red-800";
-  //     case "deceased":
-  //       return "bg-gray-100 text-gray-800";
-  //     default:
-  //       return "bg-gray-100 text-gray-800";
-  //   }
-  // };
-
   const getRatingStars = (rating) => {
-    const stars = Math.floor(rating / 20); // Convert to 5-star scale
+    const stars = Math.floor(rating / 20);
     return "★".repeat(stars) + "☆".repeat(5 - stars);
   };
 
@@ -191,7 +200,6 @@ const PigeonTable = ({
     ) {
       try {
         await deletePigeon(pigeonId).unwrap();
-        // Optionally show success message
       } catch (error) {
         console.error("Failed to delete pigeon:", error);
         alert("Failed to delete pigeon. Please try again.");
@@ -200,16 +208,30 @@ const PigeonTable = ({
   };
 
   return (
-    <div className="space-y-4 ">
-      <idv>
+    <div className="space-y-4">
+      <div>
         <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg mb-4">
+          <div
+            ref={tableContainerRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            className="overflow-x-auto rounded-lg mb-4"
+            style={{
+              cursor: isGrabbing ? 'grabbing' : 'grab',
+              scrollbarWidth: 'none', // Firefox
+              msOverflowStyle: 'none', // IE and Edge
+            }}
+          >
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
+              }
+            `}</style>
             <Table>
               <TableHeader className="bg-background py-6">
                 <TableRow className="bg-foreground py-5">
-                  {/* <TableHead className="text-white w-12 ">
-                    <Checkbox className="border-slate-400" />
-                  </TableHead> */}
                   <TableHead className="text-white">Image</TableHead>
                   <TableHead className="text-white">Name</TableHead>
                   <TableHead className="text-white">Country</TableHead>
@@ -217,7 +239,6 @@ const PigeonTable = ({
                   <TableHead className="text-white">Ring Number</TableHead>
                   <TableHead className="text-white">Birth Year</TableHead>
                   <TableHead className="text-white">Breeder Rating</TableHead>
-                  {/* <TableHead className="text-white">Quality Racer</TableHead> */}
                   <TableHead className="text-white">Racing Rating</TableHead>
                   <TableHead className="text-white">Verified</TableHead>
                   <TableHead className="text-white">Status</TableHead>
@@ -234,10 +255,6 @@ const PigeonTable = ({
                     key={pigeon._id}
                     className="bg-background hover:bg-foreground text-white"
                   >
-                    {/* <TableCell>
-                      <Checkbox />
-                    </TableCell> */}
-
                     <TableCell>
                       <Avatar className="w-10 h-10">
                         <AvatarImage
@@ -310,21 +327,6 @@ const PigeonTable = ({
                     <TableCell className=" text-center">
                       {pigeon.breederRating}
                     </TableCell>
-                    {/* <TableCell>{pigeon.racherRating}</TableCell> */}
-
-                    {/* <TableCell>
-                      <div className="text-sm">
-                        <div>Sire: {pigeon.fatherRingId?.name || 'N/A'}</div>
-                        <div className="text-gray-500">Ring: {pigeon.fatherRingId?.ringNumber || 'N/A'}</div>
-                      </div>
-                    </TableCell> */}
-
-                    {/* <TableCell>
-                      <div className="text-sm">
-                        <div>Dam: {pigeon.motherRingId?.name || 'N/A'}</div>
-                        <div className="text-gray-500">Ring: {pigeon.motherRingId?.ringNumber || 'N/A'}</div>
-                      </div>
-                    </TableCell> */}
 
                     <TableCell className=" text-center">
                       {pigeon.racingRating || pigeon.racerRating || 0}
@@ -368,13 +370,6 @@ const PigeonTable = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          {/* <DropdownMenuItem
-                            onClick={() => onEdit(pigeon._id)}
-                            className="cursor-pointer"
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit Pigeon
-                          </DropdownMenuItem> */}
                           <DropdownMenuItem
                             onClick={() => handleView(pigeon._id)}
                             className="cursor-pointer"
@@ -389,13 +384,6 @@ const PigeonTable = ({
                             <GitBranch className="h-4 w-4 mr-2" />
                             View Pedigree
                           </DropdownMenuItem>
-                          {/* <DropdownMenuItem
-                            onClick={() => handleDelete(pigeon._id)}
-                            className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Pigeon
-                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -405,7 +393,7 @@ const PigeonTable = ({
             </Table>
           </div>
         </CardContent>
-      </idv>
+      </div>
 
       {/* Pagination */}
       {pagination && (

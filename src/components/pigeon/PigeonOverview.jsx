@@ -13,7 +13,7 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
       breeding: 0, 
       lost: 0, 
       sold: 0, 
-      building: 0, 
+      retired: 0, 
       deceased: 0 
     }
 
@@ -24,7 +24,7 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
       breeding: 0,
       lost: 0,
       sold: 0,
-      building: 0,
+      retired: 0,
       deceased: 0
     }
 
@@ -47,8 +47,8 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
           case 'sold':
             stats.sold++
             break
-          case 'building':
-            stats.building++
+          case 'retired':
+            stats.retired++
             break
           case 'deceased':
             stats.deceased++
@@ -89,36 +89,43 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
       label: 'Racing', 
       count: stats.racing, 
       color: 'bg-blue-500',
-      status: 'racing',
-      active: selectedStatus === 'racing'
+      status: 'Racing',
+      active: selectedStatus === 'Racing'
     },
     { 
       label: 'Breeding', 
       count: stats.breeding, 
       color: 'bg-green-500',
-      status: 'breeding',
-      active: selectedStatus === 'breeding'
+      status: 'Breeding',
+      active: selectedStatus === 'Breeding'
     },
     { 
       label: 'Lost', 
       count: stats.lost, 
       color: 'bg-red-500',
-      status: 'lost',
-      active: selectedStatus === 'lost'
+      status: 'Lost',
+      active: selectedStatus === 'Lost'
     },
     { 
       label: 'Sold', 
       count: stats.sold, 
       color: 'bg-purple-500',
-      status: 'sold',
-      active: selectedStatus === 'sold'
+      status: 'Sold',
+      active: selectedStatus === 'Sold'
+    },
+    { 
+      label: 'Retired', 
+      count: stats.retired, 
+      color: 'bg-purple-500',
+      status: 'Retired',
+      active: selectedStatus === 'Retired'
     },
     { 
       label: 'Deceased', 
       count: stats.deceased, 
       color: 'bg-orange-500',
-      status: 'deceased',
-      active: selectedStatus === 'deceased'
+      status: 'Deceased',
+      active: selectedStatus === 'Deceased'
     }
   ]
 

@@ -161,7 +161,7 @@ const PigeonTable = ({
 
   return (
     <div className="space-y-4 ">
-      <idv>
+      <div>
         <CardContent className="p-0">
           <div className="overflow-x-auto rounded-lg mb-4">
             <Table>
@@ -354,7 +354,7 @@ const PigeonTable = ({
             </Table>
           </div>
         </CardContent>
-      </idv>
+      </div>
 
       {/* Pagination */}
       {pagination && (
