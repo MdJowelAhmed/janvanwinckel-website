@@ -8,21 +8,21 @@ export default function Footer() {
   return (
     <div className="flex flex-col border-t  ">
       {/*  */}
-      <footer className="bg-primary py-8 px-4 md:px-8 lg:px-12">
+      <footer className="bg-primary py- px-4 md:px-8 lg:px-12">
         {/* <div className="text-center  max-w-lg mx-auto font-semibold text-3xl text-white mb-6">
           <h2>Learn how to grow 💪audience fast in Pigeon Hub</h2>
         </div>
         <Separator /> */}
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-8 mt-6">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-8 mt-6">
             {/* Left Section - Company Info */}
 
             <div className=" max-w-md">
               <div>
                 <Image
                   src="/assests/logo.png"
-                  width={100}
-                  height={100}
+                  width={60}
+                  height={60}
                   alt="Logo"
                   className="mb-6"
                 />
@@ -39,7 +39,7 @@ export default function Footer() {
             </div>
 
             {/* Right Section - Navigation Links */}
-            <div className="flex items-center h-full justify-center lg:mt-10  lg:flex-row gap-8 lg:gap-12">
+            <div className="flex items-center h-full justify-center    lg:flex-row gap-8 lg:gap-12">
               {/* <Link href="/" className="text-white hover:text-teal-200 text-sm">
                 Home
               </Link> */}
@@ -49,6 +49,13 @@ export default function Footer() {
               >
                 Help
               </Link> */}
+
+              <Link
+                href="/terms"
+                className="text-white hover:text-teal-200 text-sm"
+              >
+                Terms & Conditions
+              </Link>
 
               <Link
                 href="/about-us"

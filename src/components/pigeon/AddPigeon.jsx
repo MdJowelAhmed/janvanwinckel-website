@@ -25,11 +25,15 @@ import {
   useGetSinglePigeonQuery,
   useGetAllPigeonSearchQuery,
 } from "@/redux/featured/pigeon/pigeonApi";
-import { useGetBreederQuery } from "@/redux/featured/pigeon/breederApi";
+import {
+  useGetAllPigeonNameQuery,
+  useGetBreederQuery,
+} from "@/redux/featured/pigeon/breederApi";
 import Image from "next/image";
 import { getImageUrl } from "../share/imageUrl";
 import { getNames } from "country-list";
 import PigeonPhotosSlider from "./addPigeon/PigeonPhotoSlider";
+import { Controller } from "react-hook-form";
 
 const AddPigeonContainer = ({ pigeonId }) => {
   const params = useParams();
@@ -37,12 +41,14 @@ const AddPigeonContainer = ({ pigeonId }) => {
   const editId = pigeonId || searchParams.get("edit") || params?.id;
   const isEditMode = !!editId;
   const countries = getNames();
-  const router=useRouter()
+  const router = useRouter();
   const isRemovingPhotoRef = useRef(false);
   const [fatherSearchTerm, setFatherSearchTerm] = useState("");
   const [motherSearchTerm, setMotherSearchTerm] = useState("");
   const [selectedFatherId, setSelectedFatherId] = useState("");
   const [selectedMotherId, setSelectedMotherId] = useState("");
+  const { data: allPigeonName } = useGetAllPigeonNameQuery();
+  console.log("allPigeonName", allPigeonName);
   console.log("selectedFatherId", selectedFatherId);
   console.log("selectedMotherId", selectedMotherId);
 
@@ -79,6 +85,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedPattern, setSelectedPattern] = useState("");
   const [showPatterns, setShowPatterns] = useState(false);
+  const [submitAction, setSubmitAction] = useState("save");
 
   const colorPatternMap = {
     Blue: ["Barless", "Bar", "Check", "T-Check", "White Flight"],
@@ -147,27 +154,39 @@ const AddPigeonContainer = ({ pigeonId }) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select a valid image file");
+    // === Determine if PDF is allowed ===
+    const isPdfAllowed =
+      photoType === "pedigreePhoto" || photoType === "dnaPhoto";
+
+    // === Validate file type ===
+    const isImage = file.type.startsWith("image/");
+    const isPdf = file.type === "application/pdf";
+
+    if (!(isImage || (isPdfAllowed && isPdf))) {
+      toast.error("Please select a valid image or PDF file");
       return;
     }
 
-    // Validate file size (e.g., 5MB max)
+    // === Validate file size (max 10MB) ===
     if (file.size > 10 * 1024 * 1024) {
       toast.error("File size should be less than 10MB");
       return;
     }
 
+    // === Read file ===
     const reader = new FileReader();
+
     reader.onload = (e) => {
       setPhotoState({
         id: Date.now(),
         file,
         url: e.target.result,
         type: photoType,
+        isPdf, // store file type info for later use
       });
     };
+
+    // === For PDF, read as DataURL so it can still be previewed or recognized ===
     reader.readAsDataURL(file);
   };
 
@@ -175,14 +194,14 @@ const AddPigeonContainer = ({ pigeonId }) => {
   const removeSpecificPhoto = async (setPhotoState, photoType) => {
     // Clear the state immediately without waiting for API
     setPhotoState(null);
-    
+
     // Only make API call if in edit mode
     if (isEditMode && editId) {
       try {
         // Create a minimal FormData with just the field to clear
         const formDataToSend = new FormData();
         formDataToSend.append(photoType, "");
-        
+
         // Add minimal required fields to prevent validation errors
         formDataToSend.append("ringNumber", getValues("ringNumber") || "");
         formDataToSend.append("name", getValues("name") || "");
@@ -190,20 +209,32 @@ const AddPigeonContainer = ({ pigeonId }) => {
 
         // Call the update API silently in the background
         await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
-        
+
         // Show minimal success notification
-        toast.success("Image removed", { 
+        toast.success("Image removed", {
           duration: 2000,
           position: "bottom-right",
-          style: { background: "#10B981", color: "white" }
+          style: { background: "#10B981", color: "white" },
         });
       } catch (error) {
         // Silent error handling - don't disrupt the user
         console.error(`Error removing ${photoType}:`, error);
       }
     }
-  }
-  
+  };
+
+  const validatePigeonName = (inputName) => {
+    // Get all existing pigeon names from API
+    const existingNames = allPigeonName?.data || [];
+
+    // Normalize the input name (lowercase and trim)
+    const normalizedInput = inputName?.trim().toLowerCase();
+    const isDuplicate = existingNames.some(
+      (pigeon) => pigeon.name?.trim().toLowerCase() === normalizedInput
+    );
+
+    return isDuplicate;
+  };
 
   // Add a new race result entry
   const addRaceResult = () => {
@@ -288,15 +319,17 @@ const AddPigeonContainer = ({ pigeonId }) => {
     setValue,
     watch,
     reset,
+    control,
     formState: { errors },
   } = useForm({
+    mode: "onBlur",
     defaultValues: {
       ringNumber: "",
       name: "",
       country: "",
       birthYear: "",
       shortInfo: "",
-      breeder: "", // Changed from breeder object to empty string
+      breeder: "",
       color: "",
       pattern: "",
       gender: "N/A",
@@ -348,14 +381,14 @@ const AddPigeonContainer = ({ pigeonId }) => {
       if (pigeon.fatherRingId) {
         setFatherRingNumber(pigeon.fatherRingId.ringNumber);
         setFatherSearchTerm(pigeon.fatherRingId.ringNumber);
-        setSelectedFatherId(pigeon.fatherRingId.ringNumber); 
+        setSelectedFatherId(pigeon.fatherRingId.ringNumber);
         setSelectedFather(pigeon.fatherRingId);
       }
 
       if (pigeon.motherRingId) {
         setMotherRingNumber(pigeon.motherRingId.ringNumber);
         setMotherSearchTerm(pigeon.motherRingId.ringNumber);
-        setSelectedMotherId(pigeon.motherRingId.ringNumber); // ✅ _id
+        setSelectedMotherId(pigeon.motherRingId.ringNumber);
         setSelectedMother(pigeon.motherRingId);
       }
 
@@ -363,7 +396,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
       if (pigeon.breeder) {
         const breederName =
           typeof pigeon.breeder === "object"
-            ? pigeon.breeder.breederName
+            ? pigeon.breeder.loftName
             : pigeon.breeder;
         setBreederSearchTerm(breederName);
         if (typeof pigeon.breeder === "object") {
@@ -380,7 +413,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
         shortInfo: pigeon.shortInfo || "",
         breeder:
           typeof pigeon?.breeder === "object"
-            ? pigeon?.breeder?.breederName
+            ? pigeon?.breeder?.loftName
             : pigeon?.breeder || "",
         color: pigeon.color || "",
         gender: pigeon.gender || "N/A",
@@ -390,8 +423,8 @@ const AddPigeonContainer = ({ pigeonId }) => {
         racingRating: pigeon.racingRating || 0,
         racherRating: pigeon.racherRating || "",
         breederRating: pigeon.breederRating || 0,
-        fatherRingId: pigeon.fatherRingId?.ringNumber || "", // ✅ _id
-        motherRingId: pigeon.motherRingId?.ringNumber || "", // ✅ _id
+        fatherRingId: pigeon.fatherRingId?.ringNumber || "",
+        motherRingId: pigeon.motherRingId?.ringNumber || "",
         verified: pigeon.verified || false,
         iconic: pigeon.iconic || false,
         addresults: Array.isArray(pigeon.addresults)
@@ -414,8 +447,15 @@ const AddPigeonContainer = ({ pigeonId }) => {
       if (pigeon.eyePhoto) setEyePhoto({ url: pigeon.eyePhoto });
       if (pigeon.ownershipPhoto)
         setOwnershipPhoto({ url: pigeon.ownershipPhoto });
-      if (pigeon.pedigreePhoto) setPedigreePhoto({ url: pigeon.pedigreePhoto });
-      if (pigeon.DNAPhoto) setDNAPhoto({ url: pigeon.DNAPhoto });
+     if (pigeon.pedigreePhoto) {
+  const isPdf = pigeon.pedigreePhoto.endsWith(".pdf");
+  setPedigreePhoto({ url: pigeon.pedigreePhoto, isPdf });
+}
+
+if (pigeon.DNAPhoto) {
+  const isPdf = pigeon.DNAPhoto.endsWith(".pdf");
+  setDNAPhoto({ url: pigeon.DNAPhoto, isPdf });
+}
 
       // Load race results
       if (pigeon.results && Array.isArray(pigeon.results)) {
@@ -435,6 +475,11 @@ const AddPigeonContainer = ({ pigeonId }) => {
   }, [isEditMode, singlePigeon, reset]);
 
   const onSubmit = async (data) => {
+    if (submitAction === "cancel") {
+      router.push("/loft-overview");
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
 
@@ -475,13 +520,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
         dataObject.results = formattedResults;
       }
 
-      // Handle specific photos
-      // Create mode: Only send if there's a new file
-      // Edit mode:
-      //   - Send file if new
-      //   - Send "" ONLY if photo existed before AND now deleted
-      //   - Send nothing if unchanged OR never had photo
-
+      // Photo handling logic (same as before)
       if (pigeonPhoto?.file) {
         formDataToSend.append("pigeonPhoto", pigeonPhoto.file);
       } else if (
@@ -490,10 +529,8 @@ const AddPigeonContainer = ({ pigeonId }) => {
         singlePigeon?.data?.pigeonPhoto &&
         singlePigeon.data.pigeonPhoto !== ""
       ) {
-        // Had photo before, now deleted
         formDataToSend.append("pigeonPhoto", "");
       }
-      // Otherwise: send nothing (unchanged or never had photo)
 
       if (eyePhoto?.file) {
         formDataToSend.append("eyePhoto", eyePhoto.file);
@@ -539,7 +576,6 @@ const AddPigeonContainer = ({ pigeonId }) => {
         formDataToSend.append("DNAPhoto", "");
       }
 
-      // Handle general photos
       if (isEditMode) {
         const newImages = photos.filter((photo) => photo.file);
         newImages.forEach((photo) => {
@@ -555,35 +591,68 @@ const AddPigeonContainer = ({ pigeonId }) => {
 
       formDataToSend.append("data", JSON.stringify(dataObject));
 
-      // Debug logging - Correct way to view FormData
-      console.log("=== Photo States ===");
-      console.log("pigeonPhoto:", pigeonPhoto);
-      console.log("eyePhoto:", eyePhoto);
-      console.log("ownershipPhoto:", ownershipPhoto);
-      console.log("pedigreePhoto:", pedigreePhoto);
-      console.log("DNAPhoto:", DNAPhoto);
-      console.log("Original photos from singlePigeon:", {
-        pigeonPhoto: singlePigeon?.data?.pigeonPhoto,
-        eyePhoto: singlePigeon?.data?.eyePhoto,
-        ownershipPhoto: singlePigeon?.data?.ownershipPhoto,
-        pedigreePhoto: singlePigeon?.data?.pedigreePhoto,
-        DNAPhoto: singlePigeon?.data?.DNAPhoto,
-      });
-
-      console.log("=== FormData Contents ===");
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0] + ":", pair[1]);
-      }
-
       if (isEditMode) {
         await updatePigeon({ id: editId, data: formDataToSend }).unwrap();
         toast.success("Pigeon updated successfully!");
+        router.push("/loft-overview");
       } else {
         await createPigeon(formDataToSend).unwrap();
         toast.success("Pigeon added successfully!");
-      }
 
-      router.push("/loft-overview");
+        if (submitAction === "saveAndAdd") {
+          reset({
+            ringNumber: "",
+            name: "",
+            country: "",
+            birthYear: "",
+            shortInfo: "",
+            breeder: "",
+            color: "",
+            gender: "N/A",
+            status: "",
+            location: "",
+            notes: "",
+            racingRating: 0,
+            racherRating: "",
+            breederRating: 0,
+            fatherRingId: "",
+            motherRingId: "",
+            verified: false,
+            iconic: false,
+            addresults: "",
+            iconicScore: 0,
+          });
+
+          setPigeonPhoto(null);
+          setEyePhoto(null);
+          setOwnershipPhoto(null);
+          setPedigreePhoto(null);
+          setDNAPhoto(null);
+          setPhotos([]);
+          setRaceResults([]);
+
+          setFatherSearchTerm("");
+          setMotherSearchTerm("");
+          setSelectedFatherId("");
+          setSelectedMotherId("");
+          setSelectedFather(null);
+          setSelectedMother(null);
+          setFatherRingNumber("");
+          setMotherRingNumber("");
+
+          setBreederSearchTerm("");
+          setSelectedBreeder(null);
+
+          setSelectedColor("");
+          setSelectedPattern("");
+          setShowPatterns(false);
+
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          // Normal save - redirect to list
+          router.push("/loft-overview");
+        }
+      }
     } catch (errorMessages) {
       console.error("Submit error:", errorMessages);
       toast.error(
@@ -638,7 +707,29 @@ const AddPigeonContainer = ({ pigeonId }) => {
                   </label>
                   <input
                     type="text"
-                    {...register("name", { required: "Name is required" })}
+                    {...register("name", {
+                      required: "Name is required",
+                      validate: {
+                        checkDuplicate: (value) => {
+                          if (
+                            isEditMode &&
+                            singlePigeon?.data?.name?.trim().toLowerCase() ===
+                              value?.trim().toLowerCase()
+                          ) {
+                            // Allow same name in edit mode if it's the pigeon's original name
+                            return true;
+                          }
+
+                          const isDuplicate = validatePigeonName(value);
+
+                          if (isDuplicate) {
+                            return "This pigeon is already registered in our database. To add it to your loft database, go to the Pigeon Database and press the '+' button.";
+                          }
+
+                          return true;
+                        },
+                      },
+                    })}
                     placeholder="Name"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
@@ -651,39 +742,56 @@ const AddPigeonContainer = ({ pigeonId }) => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Country
+                    Country <span className="text-red-500">*</span>
                   </label>
-                  <Select
-                    key={watch("country")} // Forces re-render when value changes
-                    value={watch("country") || ""} // Use value prop
-                    onValueChange={(value) => setValue("country", value)}
-                  >
-                    <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg">
-                      <SelectValue placeholder="Select Country" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {countries.map((country, index) => (
-                        <SelectItem key={index} value={country}>
-                          {country}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                  <Controller
+                    name="country"
+                    control={control}
+                    rules={{ required: "Country is required" }}
+                    render={({ field }) => (
+                      <Select
+                        key={field.value} // Forces re-render when value changes
+                        value={field.value || ""}
+                        onValueChange={(value) => field.onChange(value)}
+                      >
+                        <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg">
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countries.map((country, index) => (
+                            <SelectItem key={index} value={country}>
+                              {country}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+
+                  {errors.country && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.country.message}
+                    </p>
+                  )}
                 </div>
+
                 <div className="relative w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Birth Year
+                    Birth Year <span className="text-red-500">*</span>
                   </label>
 
                   <input
                     type="text"
-                    value={watch("birthYear") || ""} // Use form value
+                    {...register("birthYear", {
+                      required: "Birth year is required",
+                    })}
+                    value={watch("birthYear") || ""}
                     onChange={(e) => {
                       const value = e.target.value;
-                      setValue("birthYear", value); // Update form directly
+                      setValue("birthYear", value);
                       setShowDropdown(true);
 
-                      // Filter years
                       const filtered = allYears.filter((year) =>
                         year.toString().includes(value)
                       );
@@ -694,6 +802,12 @@ const AddPigeonContainer = ({ pigeonId }) => {
                     onFocus={() => setShowDropdown(true)}
                     onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                   />
+
+                  {errors.birthYear && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.birthYear.message}
+                    </p>
+                  )}
 
                   {showDropdown && (
                     <ul className="absolute z-10 w-full bg-white border rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
@@ -736,92 +850,102 @@ Bought for USD 50,000`}
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                   />
                 </div>
-                <div className="flex flex-col gap-5">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Breeder Name
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={breederSearchTerm}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setBreederSearchTerm(value);
-                          setValue("breeder", value);
-                          setShowBreederDropdown(true);
-                          setSelectedBreeder(null);
-                        }}
-                        onFocus={() => setShowBreederDropdown(true)}
-                        onBlur={() =>
-                          setTimeout(() => setShowBreederDropdown(false), 200)
-                        }
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && breederSearchTerm) {
-                            e.preventDefault();
-                            const matches = breederList?.filter((breeder) =>
-                              breeder.breederName
-                                .toLowerCase()
-                                .includes(breederSearchTerm.toLowerCase())
-                            );
-                            if (matches?.length === 0) {
-                              setValue("breeder", breederSearchTerm);
-                              setShowBreederDropdown(false);
-                            }
+
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Pigeon Results
+                  </label>
+                  <textarea
+                    {...register("addresults")}
+                    placeholder={`For example:
+1st/828p Quiévrain 108km
+4th/3265p Melun 287km
+6th/3418p HotSpot 6 Dubai OLR`}
+                    className="w-full px-3 h-[150px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1  lg:grid-cols-2 gap-x-10">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Breeder Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={breederSearchTerm}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setBreederSearchTerm(value);
+                        setValue("breeder", value);
+                        setShowBreederDropdown(true);
+                        setSelectedBreeder(null);
+                      }}
+                      onFocus={() => setShowBreederDropdown(true)}
+                      onBlur={() =>
+                        setTimeout(() => setShowBreederDropdown(false), 200)
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && breederSearchTerm) {
+                          e.preventDefault();
+                          const matches = breederList?.filter((breeder) =>
+                            breeder.loftName
+                              .toLowerCase()
+                              .includes(breederSearchTerm.toLowerCase())
+                          );
+                          if (matches?.length === 0) {
+                            setValue("breeder", breederSearchTerm);
+                            setShowBreederDropdown(false);
                           }
-                        }}
-                        placeholder="Type or Select Breeder Name"
-                        className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                      />
+                        }
+                      }}
+                      placeholder="Type or Select Breeder Name"
+                      className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
 
-                      <input type="hidden" {...register("breeder")} />
+                    <input type="hidden" {...register("breeder")} />
 
-                      {/* Dropdown list for verified breeders */}
-                      {showBreederDropdown &&
-                        breederList &&
-                        breederList.length > 0 && (
-                          <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-40 overflow-y-auto shadow-md mt-1">
-                            {breederSearchTerm
-                              ? breederList
-                                  .filter((breeder) =>
-                                    breeder.breederName
-                                      .toLowerCase()
-                                      .includes(breederSearchTerm.toLowerCase())
-                                  )
-                                  .map((breeder) => (
-                                    <li
-                                      key={breeder._id || breeder.id}
-                                      className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
-                                      onClick={() => {
-                                        setBreederSearchTerm(
-                                          breeder.breederName
-                                        );
-                                        setSelectedBreeder(breeder);
-                                        setShowBreederDropdown(false);
-                                        setValue(
-                                          "breeder",
-                                          breeder.breederName
-                                        );
-                                      }}
-                                    >
-                                      {breeder.breederName}
-                                    </li>
-                                  ))
-                              : breederList.map((breeder) => (
+                    {/* Dropdown list for verified breeders */}
+                    {showBreederDropdown &&
+                      breederList &&
+                      breederList.length > 0 && (
+                        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg max-h-40 overflow-y-auto shadow-md mt-1">
+                          {breederSearchTerm
+                            ? breederList
+                                .filter((breeder) =>
+                                  breeder.loftName
+                                    .toLowerCase()
+                                    .includes(breederSearchTerm.toLowerCase())
+                                )
+                                .map((breeder) => (
                                   <li
                                     key={breeder._id || breeder.id}
                                     className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
                                     onClick={() => {
-                                      setBreederSearchTerm(breeder.breederName);
+                                      setBreederSearchTerm(breeder.loftName);
                                       setSelectedBreeder(breeder);
                                       setShowBreederDropdown(false);
-                                      setValue("breeder", breeder.breederName);
+                                      setValue("breeder", breeder.loftName);
                                     }}
                                   >
-                                    {breeder.breederName}
+                                    {breeder.loftName}
                                   </li>
-                                ))}
-                            {/* {breederSearchTerm &&
+                                ))
+                            : breederList.map((breeder) => (
+                                <li
+                                  key={breeder._id || breeder.id}
+                                  className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
+                                  onClick={() => {
+                                    setBreederSearchTerm(breeder.loftName);
+                                    setSelectedBreeder(breeder);
+                                    setShowBreederDropdown(false);
+                                    setValue("breeder", breeder.loftName);
+                                  }}
+                                >
+                                  {breeder.loftName}
+                                </li>
+                              ))}
+                          {/* {breederSearchTerm &&
                               breederList.filter((breeder) =>
                                 breeder.breederName
                                   .toLowerCase()
@@ -831,39 +955,37 @@ Bought for USD 50,000`}
                                   No matches found
                                 </li>
                               )} */}
-                          </ul>
-                        )}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Breeder Rating
-                    </label>
-                    <Select
-                      defaultValue={watch("breederRating") || ""}
-                      key={watch("breederRating")} // Add key
-                      value={watch("breederRating")?.toString() || ""} // Convert to string
-                      onValueChange={(value) =>
-                        setValue("breederRating", Number(value))
-                      }
-                    >
-                      <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
-                        <SelectValue placeholder="Select Breeder Rating" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 99 }, (_, i) => i + 1)
-                          .reverse()
-                          .map((rating) => (
-                            <SelectItem key={rating} value={rating.toString()}>
-                              {rating}
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
+                        </ul>
+                      )}
                   </div>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Breeder Rating
+                  </label>
+                  <Select
+                    defaultValue={watch("breederRating") || ""}
+                    key={watch("breederRating")} // Add key
+                    value={watch("breederRating")?.toString() || ""} // Convert to string
+                    onValueChange={(value) =>
+                      setValue("breederRating", Number(value))
+                    }
+                  >
+                    <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                      <SelectValue placeholder="Select Breeder Rating" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 99 }, (_, i) => i + 1)
+                        .reverse()
+                        .map((rating) => (
+                          <SelectItem key={rating} value={rating.toString()}>
+                            {rating}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-
               {/* Physical Characteristics */}
               <div className="">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
@@ -1229,39 +1351,49 @@ Bought for USD 50,000`}
               removeSpecificPhoto={removeSpecificPhoto}
               getImageUrl={getImageUrl}
             />
-
-            <div className="mt-10">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Pigeon Results
-              </label>
-              <textarea
-                {...register("addresults")}
-                placeholder={`For example:
-1st/828p Quiévrain 108km
-4th/3265p Melun 287km
-6th/3418p HotSpot 6 Dubai OLR`}
-                className="w-full px-3 h-60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-            </div>
           </div>
-     
         </div>
 
-        {/* Submit Button */}
-        <div className="mt-8 flex justify-center">
+        {/* Submit Buttons */}
+        <div className="mt-8 flex justify-end gap-4">
+          {/* Cancel Button */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/loft-overview")}
+            className="lg:px-8 py-6 text-white bg-red-700 hover:bg-red-500 hover:text-white"
+          >
+            Cancel
+          </Button>
+
+          {/* Save Button */}
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-1/3 px-12 py-6 text-white"
+            onClick={() => setSubmitAction("save")}
+            className="lg:px-8 py-6 text-white bg-accent hover:bg-accent/80"
           >
-            {isLoading
+            {isLoading && submitAction === "save"
               ? isEditMode
                 ? "Updating..."
-                : "Adding..."
+                : "Saving..."
               : isEditMode
               ? "Update Pigeon"
-              : "Add New Pigeon"}
+              : "Save New Pigeon"}
           </Button>
+
+          {!isEditMode && (
+            <Button
+              type="submit"
+              disabled={isLoading}
+              onClick={() => setSubmitAction("saveAndAdd")}
+              className="lg:px-8 py-6 text-white bg-accent-foreground hover:bg-accent-foreground/80"
+            >
+              {isLoading && submitAction === "saveAndAdd"
+                ? "Saving..."
+                : "Save & Add Another"}
+            </Button>
+          )}
         </div>
       </form>
     </div>

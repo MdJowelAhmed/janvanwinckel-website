@@ -50,15 +50,28 @@ import { exportPedigreeToPDF } from "./pdfExport";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
-  
+
   // Check if this is the subject node (generation 0)
   const isSubject = data.generation === 0;
 
+  // const getGenderIcon = (gender) => {
+  //   if (gender === "Cock") return "♂";
+  //   if (gender === "Hen") return "♀";
+  //   if (gender === "Unspecified") return "⛔";
+  //   return "⛔";
+  // };
+
   const getGenderIcon = (gender) => {
-    if (gender === "Cock") return "♂";
-    if (gender === "Hen") return "♀";
-    if (gender === "Unspecified") return "⛔";
-    return "⛔";
+    switch (gender) {
+      case "Cock":
+        return "/assests/cock.png";
+      case "Hen":
+        return "/assests/hen.jpg";
+      case "Unspecified":
+        return "/assests/unspecific.png";
+      default:
+        return "/assests/unspecific.png";
+    }
   };
 
   const getGenerationColor = (generation) => {
@@ -190,7 +203,7 @@ const PigeonNode = ({ data }) => {
 
           {data.ringNumber && (
             <span
-              className="font-bold text-[#C33739]"
+              className=" text-[#C33739]"
               style={{
                 lineHeight: "24px",
                 display: "inline-block",
@@ -208,17 +221,19 @@ const PigeonNode = ({ data }) => {
           style={{ alignItems: "center", height: "24px" }}
         >
           {data.gender && (
-            <span
-              className="text-black text-xl"
+            <img
+              src={getGenderIcon(data.gender)}
+              alt={data.gender}
+              width="20"
+              height="20"
+              className="w-5 h-5"
               style={{
+                width: "20px",
+                height: "20px",
                 verticalAlign: "middle",
-                lineHeight: "24px",
                 display: "inline-block",
-                height: "24px",
               }}
-            >
-              {getGenderIcon(data.gender)}
-            </span>
+            />
           )}
 
           {data.verified && (
@@ -282,29 +297,29 @@ const PigeonNode = ({ data }) => {
 
         {data.description && (
           <div className="">
-            <p className="text-sm text-slate-700">
+            <h2 className=" text-slate-700">
               {data?.description?.slice(0, 650)}
-            </p>
+            </h2>
           </div>
         )}
         {data.colorName && (
           <div className="">
-            <p className="text-sm text-slate-700">{data.colorName}</p>
+            <h2 className=" text-slate-700">{data.colorName}</h2>
           </div>
         )}
         {data.achievements && (
           <div className="flex items-start gap-1">
-            <p className="text-xs text-black">Results:</p>
-            <img
+            {/* <p className="text-xs text-black">Results:</p> */}
+            {/* <img
               src="/assests/Gold-tropy.png"
               alt="Trophy"
               width={24}
               height={24}
               className="w-6 h-6 mt-[2px]"
-            />
-            <p className="text-xs text-black whitespace-pre-line">
+            /> */}
+            <h2 className=" text-black whitespace-pre-line">
               {data.achievements}
-            </p>
+            </h2>
           </div>
         )}
       </div>
@@ -400,23 +415,24 @@ export default function PigeonPedigreeChart() {
   }, [nodes]);
 
   // PDF Export Function
-const exportToPDF = useCallback(async () => {
-  try {
-    await exportPedigreeToPDF(nodes, edges, pedigreeData);
-  } catch (error) {
-    alert("Error exporting PDF. Please try again.");
-  }
-}, [nodes, edges, pedigreeData]);
+  const exportToPDF = useCallback(async () => {
+    try {
+      await exportPedigreeToPDF(nodes, edges, pedigreeData);
+    } catch (error) {
+      alert("Error exporting PDF. Please try again.");
+    }
+  }, [nodes, edges, pedigreeData]);
 
-const exportToPDFWithGenerations = useCallback(async (genCount) => {
-  try {
-    await exportPedigreeToPDF(nodes, edges, pedigreeData, genCount);
-  } catch (error) {
-    alert("Error exporting the selected generations. Please try again.");
-  }
-}, [nodes, edges, pedigreeData]);
-
-
+  const exportToPDFWithGenerations = useCallback(
+    async (genCount) => {
+      try {
+        await exportPedigreeToPDF(nodes, edges, pedigreeData, genCount);
+      } catch (error) {
+        alert("Error exporting the selected generations. Please try again.");
+      }
+    },
+    [nodes, edges, pedigreeData]
+  );
 
   const defaultViewport = { x: 0, y: 0, zoom: 0.8 };
 
@@ -515,15 +531,26 @@ const exportToPDFWithGenerations = useCallback(async (genCount) => {
       </div>
       <div className="relative">
         <div className="absolute bottom-40 2xl:bottom-40 left-15 2xl:left-30 text-black">
-          <p className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.breederName}</p>
-         {pedigreeData?.data?.breeder?.country && (
-          <p>Country: <span className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.country}</span></p>
-         )}
-         {pedigreeData?.data?.breeder?.phone && (
-          <p>Phone: <span className="text-accent-foreground font-bold">{pedigreeData?.data?.breeder?.phone}</span></p>
-         )}
+          <p className="text-accent-foreground font-bold">
+            {pedigreeData?.data?.breeder?.breederName}
+          </p>
+          {pedigreeData?.data?.breeder?.country && (
+            <p>
+              Country:{" "}
+              <span className="text-accent-foreground font-bold">
+                {pedigreeData?.data?.breeder?.country}
+              </span>
+            </p>
+          )}
+          {pedigreeData?.data?.breeder?.phone && (
+            <p>
+              Phone:{" "}
+              <span className="text-accent-foreground font-bold">
+                {pedigreeData?.data?.breeder?.phone}
+              </span>
+            </p>
+          )}
         </div>
-   
       </div>
       <div className="w-full flex justify-center">
         <h2 className="text-accent-foreground font-bold  mb-10">

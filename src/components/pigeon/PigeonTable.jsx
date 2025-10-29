@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Trash2,
   GitBranch,
+  Download,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,6 +50,51 @@ const PigeonTable = ({
   const { data: userData } = useMyProfileQuery();
   const userId = userData?._id;
 
+  // Grab scroll functionality
+  const tableContainerRef = useRef(null);
+  const [isGrabbing, setIsGrabbing] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e) => {
+    if (!tableContainerRef.current) return;
+    setIsGrabbing(true);
+    setStartX(e.pageX - tableContainerRef.current.offsetLeft);
+    setScrollLeft(tableContainerRef.current.scrollLeft);
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isGrabbing || !tableContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - tableContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    tableContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsGrabbing(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsGrabbing(false);
+  };
+
+  useEffect(() => {
+    if (isGrabbing) {
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'grabbing';
+    } else {
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    }
+
+    return () => {
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    };
+  }, [isGrabbing]);
+
   if (isLoading) {
     return <TableSkeleton />;
   }
@@ -61,9 +107,6 @@ const PigeonTable = ({
         <CardContent className="p-8">
           <div className="text-center">
             <p className="text-gray-500 text-lg">No pigeons found</p>
-            {/* <p className="text-gray-400 text-sm mt-1">
-              Try adjusting your filters
-            </p> */}
           </div>
         </CardContent>
       </Card>
@@ -73,27 +116,8 @@ const PigeonTable = ({
   const pigeons = data.data.data;
   const pagination = data.data.pagination;
 
-  // const getStatusColor = (status) => {
-  //   switch (status?.toLowerCase()) {
-  //     case "active":
-  //       return "bg-green-100 text-green-800";
-  //     case "racing":
-  //       return "bg-blue-100 text-blue-800";
-  //     case "breeding":
-  //       return "bg-purple-100 text-purple-800";
-  //     case "sold":
-  //       return "bg-yellow-100 text-yellow-800";
-  //     case "lost":
-  //       return "bg-red-100 text-red-800";
-  //     case "deceased":
-  //       return "bg-gray-100 text-gray-800";
-  //     default:
-  //       return "bg-gray-100 text-gray-800";
-  //   }
-  // };
-
   const getRatingStars = (rating) => {
-    const stars = Math.floor(rating / 20); // Convert to 5-star scale
+    const stars = Math.floor(rating / 20);
     return "★".repeat(stars) + "☆".repeat(5 - stars);
   };
 
@@ -149,27 +173,54 @@ const PigeonTable = ({
     }
   };
 
-  // const handleDelete = async (pigeonId) => {
-  //   try {
-  //     await deletePigeon(pigeonId).unwrap();
-  //     toast.success("Pigeon deleted successfully!");
-  //   } catch (error) {
-  //     console.error("Failed to delete pigeon:", error);
-  //     toast.error("Failed to delete pigeon. Please try again.");
-  //   }
-  // };
+  const handleDownload = (fileUrl, fileName) => {
+    if (!fileUrl) return;
+    
+    const fullUrl = getImageUrl(fileUrl);
+    const link = document.createElement('a');
+    link.href = fullUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const getFileName = (url, prefix) => {
+    if (!url) return '';
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    return `${prefix}_${filename}`;
+  };
 
   return (
-    <div className="space-y-4 ">
+    <div className="space-y-4">
       <div>
         <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg mb-4">
+          <div
+            ref={tableContainerRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+            className="overflow-x-auto rounded-lg mb-4"
+            style={{
+              cursor: isGrabbing ? 'grabbing' : 'grab',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch',
+            }}
+          >
+            <style>{`
+              div.overflow-x-auto::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+              }
+            `}</style>
             <Table>
               <TableHeader className="bg-background py-6">
                 <TableRow className="bg-foreground py-5">
-                  {/* <TableHead className="text-white w-12 ">
-                    <Checkbox className="border-slate-400" />
-                  </TableHead> */}
                   <TableHead className="text-white">Image</TableHead>
                   <TableHead className="text-white">Name</TableHead>
                   <TableHead className="text-white">Country</TableHead>
@@ -177,12 +228,9 @@ const PigeonTable = ({
                   <TableHead className="text-white">Ring Number</TableHead>
                   <TableHead className="text-white">Birth Year</TableHead>
                   <TableHead className="text-white">Breeder Rating</TableHead>
-                  {/* <TableHead className="text-white">Quality Racer</TableHead> */}
                   <TableHead className="text-white">Racing Rating</TableHead>
-                  {/* <TableHead className="text-white">Pattern</TableHead> */}
                   <TableHead className="text-white">Status</TableHead>
                   <TableHead className="text-white">Gender</TableHead>
-                  {/* <TableHead className="text-white">Rating</TableHead> */}
                   <TableHead className="text-white">Color</TableHead>
                   <TableHead className="text-white">Location</TableHead>
                   <TableHead className="text-white w-20">Actions</TableHead>
@@ -194,10 +242,6 @@ const PigeonTable = ({
                     key={pigeon._id}
                     className="bg-background hover:bg-foreground text-white"
                   >
-                    {/* <TableCell>
-                      <Checkbox />
-                    </TableCell> */}
-
                     <TableCell>
                       <Avatar className="w-10 h-10">
                         <AvatarImage
@@ -218,7 +262,7 @@ const PigeonTable = ({
                       </Avatar>
                     </TableCell>
 
-                    <TableCell className="font-medium text-[#3AB27F]">
+                    <TableCell  onClick={() => handlePedigree(pigeon._id)} className="font-medium cursor-pointer text-[#3AB27F]">
                       {pigeon.name}
                     </TableCell>
                     <TableCell>
@@ -255,27 +299,10 @@ const PigeonTable = ({
                       {pigeon.birthYear}
                     </TableCell>
                     <TableCell>{pigeon.breederRating}</TableCell>
-                    {/* <TableCell>{pigeon.racherRating}</TableCell> */}
-
-                    {/* <TableCell>
-                      <div className="text-sm">
-                        <div>Sire: {pigeon.fatherRingId?.name || 'N/A'}</div>
-                        <div className="text-gray-500">Ring: {pigeon.fatherRingId?.ringNumber || 'N/A'}</div>
-                      </div>
-                    </TableCell> */}
-
-                    {/* <TableCell>
-                      <div className="text-sm">
-                        <div>Dam: {pigeon.motherRingId?.name || 'N/A'}</div>
-                        <div className="text-gray-500">Ring: {pigeon.motherRingId?.ringNumber || 'N/A'}</div>
-                      </div>
-                    </TableCell> */}
 
                     <TableCell className="">
                       {pigeon.racingRating || pigeon.racerRating || 0}
                     </TableCell>
-
-                    {/* <TableCell>{pigeon.pattern}</TableCell> */}
 
                     <TableCell className="text-[#3AB27F]">
                       {pigeon.status}
@@ -284,12 +311,6 @@ const PigeonTable = ({
                     <TableCell className="text-[#3AB27F]">
                       {pigeon.gender}
                     </TableCell>
-
-                    {/* <TableCell>
-                      <div className="text-yellow-500">
-                        {getRatingStars(pigeon.breederRating || pigeon.racherRating || 0)}
-                      </div>
-                    </TableCell> */}
 
                     <TableCell>{pigeon.color}</TableCell>
 
@@ -311,7 +332,6 @@ const PigeonTable = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          {/* Only show Edit button if logged-in user owns this pigeon */}
                           {pigeon?.user?._id === userId && (
                             <DropdownMenuItem
                               onClick={() => onEdit(pigeon._id)}
@@ -338,6 +358,56 @@ const PigeonTable = ({
                             View Pedigree
                           </DropdownMenuItem>
 
+                          {pigeon.pigeonPhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.pigeonPhoto, getFileName(pigeon.pigeonPhoto, 'pigeon_photo'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Pigeon Photo
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.eyePhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.eyePhoto, getFileName(pigeon.eyePhoto, 'eye_photo'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Eye Photo
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.ownershipPhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.ownershipPhoto, getFileName(pigeon.ownershipPhoto, 'ownership_photo'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Ownership
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.pedigreePhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.pedigreePhoto, getFileName(pigeon.pedigreePhoto, 'pedigree'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Pedigree Photo/PDF
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.DNAPhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.DNAPhoto, getFileName(pigeon.DNAPhoto, 'dna'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              DNA Photo/PDF
+                            </DropdownMenuItem>
+                          )}
+
                           <DropdownMenuItem
                             onClick={() => handleDelete(pigeon._id)}
                             className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -357,13 +427,9 @@ const PigeonTable = ({
       </div>
 
       {/* Pagination */}
-      {pagination && (
-        <div className="flex items-center justify-between px-4 py-3 bg-white  rounded-lg">
-          <div className="flex items-center text-sm text-white">
-            Showing {(currentPage - 1) * pagination.limit + 1} to{" "}
-            {Math.min(currentPage * pagination.limit, pagination.total)} of{" "}
-            {pagination.total} entries
-          </div>
+      {/* {pagination && (
+        <div className="flex items-center justify-end px-4 py-3 bg-white  rounded-lg">
+     
 
           <div className="flex items-center gap-2">
             <Button
@@ -409,7 +475,7 @@ const PigeonTable = ({
             </Button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

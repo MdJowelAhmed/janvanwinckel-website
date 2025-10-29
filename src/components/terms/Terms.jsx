@@ -9,7 +9,7 @@ export default function Terms() {
   return (
     <div className="flex  justify-center items-center my-12">
       <Card className="w-full px-4   text-black ">
-        <CardHeader className=" border-b border-[#2E2E2EF5]">
+        <CardHeader className=" border-b border-[#2E2E2EF5] text-2xl font-bold">
           <CardTitle>Terms & Conditions</CardTitle>
         </CardHeader>
         <CardContent>

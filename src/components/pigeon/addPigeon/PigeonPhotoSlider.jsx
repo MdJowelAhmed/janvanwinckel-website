@@ -1,23 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
+import React, { useState, useRef, useEffect } from "react";
+import { Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
-const PigeonPhotosSlider = ({ 
-  pigeonPhoto, 
+const PigeonPhotosSlider = ({
+  pigeonPhoto,
   setPigeonPhoto,
-  eyePhoto, 
+  eyePhoto,
   setEyePhoto,
-  ownershipPhoto, 
+  ownershipPhoto,
   setOwnershipPhoto,
-  pedigreePhoto, 
+  pedigreePhoto,
   setPedigreePhoto,
-  DNAPhoto, 
+  DNAPhoto,
   setDNAPhoto,
   handleSpecificPhotoUpload,
   removeSpecificPhoto,
-  getImageUrl 
+  getImageUrl,
 }) => {
-  
   const scrollContainerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -32,42 +31,43 @@ const PigeonPhotosSlider = ({
       setter: setPigeonPhoto,
       type: "pigeonPhoto",
       label: "Upload Pigeon Photo",
-      alt: "Pigeon photo"
+      alt: "Pigeon photo",
     },
     {
       photo: eyePhoto,
       setter: setEyePhoto,
       type: "eyePhoto",
       label: "Upload Eye Photo",
-      alt: "Eye photo"
+      alt: "Eye photo",
     },
     {
       photo: ownershipPhoto,
       setter: setOwnershipPhoto,
       type: "ownershipPhoto",
       label: "Upload Ownership Card",
-      alt: "Ownership card"
+      alt: "Ownership card",
     },
     {
       photo: pedigreePhoto,
       setter: setPedigreePhoto,
       type: "pedigreePhoto",
-      label: "Upload Pedigree Photo",
-      alt: "Pedigree photo"
+      label: "Upload Pedigree Photo/PDF",
+      alt: "Pedigree photo",
     },
     {
       photo: DNAPhoto,
       setter: setDNAPhoto,
       type: "dnaPhoto",
-      label: "Upload DNA Photo",
-      alt: "DNA photo"
-    }
+      label: "Upload DNA Photo/PDF",
+      alt: "DNA photo",
+    },
   ];
 
   // Check scroll position
   const checkScrollButtons = () => {
     if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
     }
@@ -77,11 +77,13 @@ const PigeonPhotosSlider = ({
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = 280; // Width of one item + gap
-      const newScrollLeft = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      
+      const newScrollLeft =
+        scrollContainerRef.current.scrollLeft +
+        (direction === "left" ? -scrollAmount : scrollAmount);
+
       scrollContainerRef.current.scrollTo({
         left: newScrollLeft,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -91,7 +93,7 @@ const PigeonPhotosSlider = ({
     setIsDragging(true);
     setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
     setScrollLeft(scrollContainerRef.current.scrollLeft);
-    scrollContainerRef.current.style.cursor = 'grabbing';
+    scrollContainerRef.current.style.cursor = "grabbing";
   };
 
   const handleMouseMove = (e) => {
@@ -105,14 +107,14 @@ const PigeonPhotosSlider = ({
   const handleMouseUp = () => {
     setIsDragging(false);
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.style.cursor = 'grab';
+      scrollContainerRef.current.style.cursor = "grab";
     }
   };
 
   const handleMouseLeave = () => {
     setIsDragging(false);
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.style.cursor = 'grab';
+      scrollContainerRef.current.style.cursor = "grab";
     }
   };
 
@@ -120,8 +122,8 @@ const PigeonPhotosSlider = ({
     checkScrollButtons();
     const container = scrollContainerRef.current;
     if (container) {
-      container.addEventListener('scroll', checkScrollButtons);
-      return () => container.removeEventListener('scroll', checkScrollButtons);
+      container.addEventListener("scroll", checkScrollButtons);
+      return () => container.removeEventListener("scroll", checkScrollButtons);
     }
   }, []);
 
@@ -129,7 +131,8 @@ const PigeonPhotosSlider = ({
     <div className="bg-white rounded-lg p-6 shadow-sm">
       <h2 className="text-lg font-semibold mb-2">Pigeon Photos</h2>
       <p className="text-xs text-destructive mb-4">
-        Please upload images of your pigeon. Accepted formats: JPEG, PNG, JPG. Maximum file size: 10MB.
+        Please upload images of your pigeon. Accepted formats: JPEG, PNG, JPG.
+        Maximum file size: 10MB.
       </p>
 
       <div className="relative">
@@ -137,9 +140,9 @@ const PigeonPhotosSlider = ({
         {canScrollLeft && (
           <button
             type="button"
-            onClick={() => scroll('left')}
+            onClick={() => scroll("left")}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
-            style={{ marginLeft: '-12px' }}
+            style={{ marginLeft: "-12px" }}
           >
             <ChevronLeft className="w-5 h-5 text-gray-600" />
           </button>
@@ -149,9 +152,9 @@ const PigeonPhotosSlider = ({
         {canScrollRight && (
           <button
             type="button"
-            onClick={() => scroll('right')}
+            onClick={() => scroll("right")}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
-            style={{ marginRight: '-12px' }}
+            style={{ marginRight: "-12px" }}
           >
             <ChevronRight className="w-5 h-5 text-gray-600" />
           </button>
@@ -162,28 +165,56 @@ const PigeonPhotosSlider = ({
           ref={scrollContainerRef}
           className="overflow-x-auto scrollbar-hide cursor-grab select-none"
           style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="flex gap-4" style={{ width: 'max-content' }}>
+          <div className="flex gap-4" style={{ width: "max-content" }}>
             {photoData.map((item, index) => (
               <div key={index} className="flex-shrink-0 w-32">
                 <div className="relative">
                   {item.photo ? (
-                    <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group">
-                      <Image
-                        src={item.photo.file ? item.photo.url : getImageUrl(item.photo.url)}
-                        alt={item.alt}
-                        width={128}
-                        height={128}
-                        className="h-20 w-20 xl:w-full xl:h-full object-cover pointer-events-none"
-                        draggable={false}
-                      />
+                    <div className="relative aspect-square border-2 border-gray-200 rounded-lg overflow-hidden group flex flex-col items-center justify-center bg-gray-50">
+                      {item.photo.isPdf ? (
+                        <>
+                          <div className="flex flex-col items-center justify-center p-3">
+                            {/* PDF Icon */}
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                              className="w-10 h-10 text-red-500 mb-2"
+                            >
+                              <path d="M4 0h5.5L14 4.5V16H4V0zM9.5 1.5V5H13L9.5 1.5zM5 9v2h1V9H5zm2.5 0v2H9V9H7.5zM10 9v2h1V9h-1z" />
+                            </svg>
+                            {/* File name */}
+                            <p className="text-xs text-gray-700 text-center break-words px-2">
+                              {item.photo.file
+                                ? item.photo.file.name
+                                : "PDF File"}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <Image
+                          src={
+                            item.photo.file
+                              ? item.photo.url
+                              : getImageUrl(item.photo.url)
+                          }
+                          alt={item.alt}
+                          width={128}
+                          height={128}
+                          className="h-20 w-20 xl:w-full xl:h-full object-cover pointer-events-none"
+                          draggable={false}
+                        />
+                      )}
+
+                      {/* Remove Button */}
                       <button
                         type="button"
                         onClick={(e) => {
@@ -199,8 +230,15 @@ const PigeonPhotosSlider = ({
                     <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-teal-400 transition-colors bg-gray-50">
                       <input
                         type="file"
-                        accept="image/*"
-                        onChange={(e) => handleSpecificPhotoUpload(e, item.type, item.setter)}
+                        accept={
+                          item.type === "pedigreePhoto" ||
+                          item.type === "dnaPhoto"
+                            ? "image/*,application/pdf"
+                            : "image/*"
+                        }
+                        onChange={(e) =>
+                          handleSpecificPhotoUpload(e, item.type, item.setter)
+                        }
                         className="hidden"
                       />
                       <Plus className="w-6 h-6 text-gray-400 mb-1" />

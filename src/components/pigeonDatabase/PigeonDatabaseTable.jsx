@@ -20,6 +20,7 @@ import {
   Trash2,
   GitBranch,
   Plus,
+  Download,  
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,7 +56,7 @@ const PigeonTable = ({
   const router = useRouter();
   const [deletePigeon] = useDeletePigeonMutation();
   const [pigeonAddMyLoftOverview] = usePigeonAddMyLoftOverviewMutation();
-  
+
   // Grab scroll functionality
   const tableContainerRef = useRef(null);
   const [isGrabbing, setIsGrabbing] = useState(false);
@@ -91,15 +92,35 @@ const PigeonTable = ({
 
     // Prevent text selection while dragging
     if (isGrabbing) {
-      document.body.style.userSelect = 'none';
+      document.body.style.userSelect = "none";
     } else {
-      document.body.style.userSelect = '';
+      document.body.style.userSelect = "";
     }
 
     return () => {
-      document.body.style.userSelect = '';
+      document.body.style.userSelect = "";
     };
   }, [isGrabbing]);
+
+  const handleDownload = (fileUrl, fileName) => {
+    if (!fileUrl) return;
+    
+    const fullUrl = getImageUrl(fileUrl);
+    const link = document.createElement('a');
+    link.href = fullUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const getFileName = (url, prefix) => {
+    if (!url) return '';
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    return `${prefix}_${filename}`;
+  };
 
   const handleAddMyLoftOverview = async (pigeonId) => {
     const result = await Swal.fire({
@@ -140,7 +161,8 @@ const PigeonTable = ({
       } else {
         Swal.fire({
           title: "Failed!",
-          text: error?.data?.message || "Failed to add pigeon. Please try again.",
+          text:
+            error?.data?.message || "Failed to add pigeon. Please try again.",
           icon: "error",
           confirmButtonColor: "#d33",
         });
@@ -219,16 +241,20 @@ const PigeonTable = ({
             onMouseLeave={handleMouseLeave}
             className="overflow-x-auto rounded-lg mb-4"
             style={{
-              cursor: isGrabbing ? 'grabbing' : 'grab',
-              scrollbarWidth: 'none', // Firefox
-              msOverflowStyle: 'none', // IE and Edge
+              cursor: isGrabbing ? "grabbing" : "grab",
+              scrollbarWidth: "none", // Firefox
+              msOverflowStyle: "none", // IE and Edge
             }}
           >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                display: none; /* Chrome, Safari, Opera */
-              }
-            `}</style>
+            <style>
+              {`
+      div.overflow-x-auto::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+    `}
+            </style>
             <Table>
               <TableHeader className="bg-background py-6">
                 <TableRow className="bg-foreground py-5">
@@ -377,13 +403,65 @@ const PigeonTable = ({
                             <Eye className="h-4 w-4 mr-2" />
                             View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem
+                         <DropdownMenuItem
                             onClick={() => handlePedigree(pigeon._id)}
                             className="cursor-pointer"
                           >
                             <GitBranch className="h-4 w-4 mr-2" />
                             View Pedigree
                           </DropdownMenuItem>
+
+                          
+                          
+                          {pigeon.pigeonPhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.pigeonPhoto, getFileName(pigeon.pigeonPhoto, 'pigeon_photo'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Pigeon Photo
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.eyePhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.eyePhoto, getFileName(pigeon.eyePhoto, 'eye_photo'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Eye Photo
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.ownershipPhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.ownershipPhoto, getFileName(pigeon.ownershipPhoto, 'ownership_photo'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Ownership
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.pedigreePhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.pedigreePhoto, getFileName(pigeon.pedigreePhoto, 'pedigree'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download Pedigree
+                            </DropdownMenuItem>
+                          )}
+
+                          {pigeon.DNAPhoto && (
+                            <DropdownMenuItem
+                              onClick={() => handleDownload(pigeon.DNAPhoto, getFileName(pigeon.DNAPhoto, 'dna'))}
+                              className="cursor-pointer"
+                            >
+                              <Download className="h-4 w-4 mr-2" />
+                              Download DNA
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -396,13 +474,9 @@ const PigeonTable = ({
       </div>
 
       {/* Pagination */}
-      {pagination && (
-        <div className="flex items-center justify-between px-4 py-3 bg-white  rounded-lg">
-          <div className="flex items-center text-sm text-white">
-            Showing {(currentPage - 1) * pagination.limit + 1} to{" "}
-            {Math.min(currentPage * pagination.limit, pagination.total)} of{" "}
-            {pagination.total} entries
-          </div>
+      {/* {pagination && (
+        <div className="flex items-center justify-end px-4 py-3 bg-white  rounded-lg">
+  
 
           <div className="flex items-center gap-2">
             <Button
@@ -448,7 +522,7 @@ const PigeonTable = ({
             </Button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

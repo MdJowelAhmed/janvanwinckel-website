@@ -110,7 +110,7 @@ const onSubmit = async (data) => {
             <div>
               <label htmlFor="userName" className="block text-sm mb-2 text-white">
 
-                User Name*
+                Name*
               </label>
               <Input
                 id="userName"

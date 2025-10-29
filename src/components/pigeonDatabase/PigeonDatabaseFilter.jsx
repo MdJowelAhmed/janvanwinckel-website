@@ -40,13 +40,15 @@ const PigeonDatabaseFilter = ({ onFilterChange, onSearch, searchTerm }) => {
           {/* Search */}
           <div className="lg:col-span-6">
             <Label htmlFor="search" className="text-white/50 text-sm font-normal  mb-2 block">
-            Search Pigeon 
+           Search for a pigeon​
             </Label>
             <div className="relative">
               <Search className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 id="search"
-                placeholder="Search Pigeon Name, Father's Ring Number, Mother's Name"
+                placeholder="Search by name, ring number,
+parents’ names, or other
+pigeon details.​"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 className="pl-10 py-6 w-full border-slate-500 text-white placeholder:text-gray-400 focus:border-teal-400"

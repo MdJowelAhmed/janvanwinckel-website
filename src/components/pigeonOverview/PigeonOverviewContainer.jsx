@@ -7,81 +7,109 @@ import { Separator } from "@/components/ui/separator";
 import {
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   Award,
-  MapPin,
-  Calendar,
-  User,
-  Palette,
-  Activity,
-  Heart,
-  Baby,
   ChevronLeft,
   ChevronRight,
+  Download,
+  FileText,
 } from "lucide-react";
 import { useGetSinglePigeonQuery } from "@/redux/featured/pigeon/pigeonApi";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getImageUrl } from "../share/imageUrl";
 import Image from "next/image";
 import Spinner from "@/app/(commonLayout)/Spinner";
 import moment from "moment";
 import { useGetAllSiblingsQuery } from "@/redux/featured/pigeon/breederApi";
-import { FaEdit, FaRegEye } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 import PigeonPdfExport from "./OverviewExport";
 
 const PigeonOverviewContainer = () => {
   const { id } = useParams();
-  console.log(id);
   const [showSiblings, setShowSiblings] = useState(true);
   const [showRaceResults, setShowRaceResults] = useState(true);
   const [showPigeonModal, setShowPigeonModal] = useState(false);
   const [selectedPigeon, setSelectedPigeon] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { data: userData } = useMyProfileQuery();
-  console.log(userData);
+  const router = useRouter();
+
   const userRole = userData?.role;
-  console.log(userRole);
+
   const { data, isLoading } = useGetSinglePigeonQuery(id);
   const { data: siblingsData, isLoading: siblingsLoading } =
     useGetAllSiblingsQuery(id);
 
-  // Show loading spinner when data is being fetched
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] p-12">
-        <div className="w-16 h-16 border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-gray-500 font-medium">Loading pigeon details...</p>
-      </div>
-    );
-  }
-
-  console.log("siblingsData", siblingsData);
   const siblings = siblingsData?.data?.siblings || [];
-  console.log("siblings", siblings);
-
   const pigeon = data?.data;
-  console.log("pigeon", pigeon);
 
-  // Get all available images
+  // Get all available images (excluding PDFs)
+  // const getAvailableImages = () => {
+  //   const images = [];
+  //   if (pigeon?.pigeonPhoto) images.push(pigeon.pigeonPhoto);
+  //   if (pigeon?.eyePhoto) images.push(pigeon.eyePhoto);
+  //   if (pigeon?.ownershipPhoto) images.push(pigeon.ownershipPhoto);
+  //   return images;
+  // };
+
   const getAvailableImages = () => {
     const images = [];
-    if (pigeon?.pigeonPhoto) images.push(pigeon.pigeonPhoto);
-    if (pigeon?.eyePhoto) images.push(pigeon.eyePhoto);
-    if (pigeon?.pedigree) images.push(pigeon.pedigreePhoto);
-    if (pigeon?.DNAPhoto) images.push(pigeon.DNAPhoto);
-    if (pigeon?.ownershipPhoto) images.push(pigeon.ownershipPhoto);
+    if (pigeon?.pigeonPhoto)
+      images.push({
+        type: "image",
+        url: pigeon.pigeonPhoto,
+        name: "Pigeon Photo",
+      });
+    if (pigeon?.eyePhoto)
+      images.push({ type: "image", url: pigeon.eyePhoto, name: "Eye Photo" });
+    if (pigeon?.ownershipPhoto)
+      images.push({
+        type: "image",
+        url: pigeon.ownershipPhoto,
+        name: "Ownership Photo",
+      });
+
+    // Add PDFs
+    if (
+      pigeon?.pedigreePhoto &&
+      pigeon.pedigreePhoto.toLowerCase().endsWith(".pdf")
+    ) {
+      images.push({
+        type: "pdf",
+        url: pigeon.pedigreePhoto,
+        name: "Pedigree Document",
+      });
+    }
+    if (pigeon?.DNAPhoto && pigeon.DNAPhoto.toLowerCase().endsWith(".pdf")) {
+      images.push({ type: "pdf", url: pigeon.DNAPhoto, name: "DNA Document" });
+    }
+
     return images;
   };
 
   const availableImages = pigeon ? getAvailableImages() : [];
+  // Get all available PDFs
+  const getAvailablePDFs = () => {
+    const pdfs = [];
+    if (
+      pigeon?.pedigreePhoto &&
+      pigeon.pedigreePhoto.toLowerCase().endsWith(".pdf")
+    ) {
+      pdfs.push({ url: pigeon.pedigreePhoto, name: "Pedigree Document" });
+    }
+    if (pigeon?.DNAPhoto && pigeon.DNAPhoto.toLowerCase().endsWith(".pdf")) {
+      pdfs.push({ url: pigeon.DNAPhoto, name: "DNA Document" });
+    }
+    return pdfs;
+  };
+
+  // const availableImages = pigeon ? getAvailableImages() : [];
+  const availablePDFs = pigeon ? getAvailablePDFs() : [];
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) =>
@@ -99,12 +127,20 @@ const PigeonOverviewContainer = () => {
     setCurrentImageIndex(index);
   };
 
-  // Fix 1: Return spinner properly
+  const handleDownloadPDF = (pdfUrl, fileName) => {
+    const link = document.createElement("a");
+    link.href = getImageUrl(pdfUrl);
+    link.download = fileName;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (isLoading) {
     return <Spinner />;
   }
 
-  // Fix 2: Handle case when pigeon data is not available
   if (!pigeon) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -118,10 +154,11 @@ const PigeonOverviewContainer = () => {
       <div className="max-w-6xl mx-auto space-y-6 ">
         <div className="w-full flex justify-between">
           <h2 className="text-2xl font-bold text-gray-800">
-            {pigeon?.name || ""} Overview 
+            {pigeon?.name || ""} Overview
           </h2>
           <PigeonPdfExport pigeon={pigeon} siblings={siblings} />
         </div>
+
         {/* Header Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Pigeon Image with Carousel */}
@@ -131,19 +168,41 @@ const PigeonOverviewContainer = () => {
                 <div className="w-full h-full mx-auto rounded-md relative overflow-hidden">
                   {availableImages.length > 0 ? (
                     <>
-                      {/* Main Image */}
-                      <Image
-                        src={getImageUrl(availableImages[currentImageIndex])}
-                        alt={pigeon?.name || "Pigeon"}
-                        height={400}
-                        width={400}
-                        className="w-full h-full object-cover rounded-md"
-                      />
+                      {/* Main Image or PDF */}
+                      {availableImages[currentImageIndex].type === "image" ? (
+                        <Image
+                          src={getImageUrl(
+                            availableImages[currentImageIndex].url
+                          )}
+                          alt={availableImages[currentImageIndex].name}
+                          height={400}
+                          width={400}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      ) : (
+                        <div
+                          onClick={() =>
+                            handleDownloadPDF(
+                              availableImages[currentImageIndex].url,
+                              `${availableImages[currentImageIndex].name}.pdf`
+                            )
+                          }
+                          className="w-full h-full bg-gradient-to-br from-red-50 to-red-100 flex flex-col items-center justify-center cursor-pointer hover:from-red-100 hover:to-red-200 transition-all rounded-md"
+                        >
+                          <FileText className="w-24 h-24 text-red-600 mb-4" />
+                          <p className="font-semibold text-gray-800 text-lg">
+                            {availableImages[currentImageIndex].name}
+                          </p>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Click to download PDF
+                          </p>
+                          <Download className="w-6 h-6 text-red-600 mt-3" />
+                        </div>
+                      )}
 
-                      {/* Navigation Arrows */}
+                      {/* Navigation Arrows - same as before */}
                       {availableImages.length > 1 && (
                         <>
-                          {/* Left Arrow */}
                           <button
                             onClick={handlePrevImage}
                             className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
@@ -152,7 +211,6 @@ const PigeonOverviewContainer = () => {
                             <ChevronLeft className="w-5 h-5" />
                           </button>
 
-                          {/* Right Arrow */}
                           <button
                             onClick={handleNextImage}
                             className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
@@ -166,9 +224,6 @@ const PigeonOverviewContainer = () => {
                   ) : (
                     <div className="w-full h-full rounded-md bg-gray-200 flex items-center justify-center">
                       <div className="text-center">
-                        {/* <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center mx-auto mb-2">
-                          <span className="text-xs text-gray-500">No Image</span>
-                        </div> */}
                         <span className="text-sm text-gray-500">
                           No Image Available
                         </span>
@@ -194,6 +249,40 @@ const PigeonOverviewContainer = () => {
                   </div>
                 )}
               </div>
+
+              {/* PDF Documents Section */}
+              {/* {availablePDFs.length > 0 && (
+                <div className="mt-6 space-y-3">
+                  <h3 className="text-lg font-semibold text-accent flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Documents
+                  </h3>
+                  {availablePDFs.map((pdf, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-card rounded-lg border border-border hover:bg-accent/10 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-red-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-accent-foreground">{pdf.name}</p>
+                          <p className="text-xs text-muted-foreground">PDF Document</p>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleDownloadPDF(pdf.url, `${pdf.name}.pdf`)}
+                        className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                        size="sm"
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        Download
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )} */}
             </div>
           </div>
 
@@ -205,7 +294,6 @@ const PigeonOverviewContainer = () => {
                   <Award className="w-5 h-5" />
                   Basic Information
                 </CardTitle>
-                {/* <FaEdit className="w-4 h-4 text-gray-400" /> */}
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
@@ -264,6 +352,7 @@ const PigeonOverviewContainer = () => {
         </div>
 
         {/* Father and Mother Information */}
+        {/* Father and Mother Information */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
@@ -273,19 +362,62 @@ const PigeonOverviewContainer = () => {
             </CardHeader>
             <CardContent>
               {pigeon?.fatherRingId ? (
-                <div>
-                  <p className="text-gray-500 italic">
-                    Father:{" "}
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600">
+                    Ring Number:{" "}
                     <strong className="text-accent-foreground">
                       {pigeon?.fatherRingId?.ringNumber || "N/A"}
                     </strong>
                   </p>
-                  <p className="text-gray-500 italic">
-                    Father Name:{" "}
+                  <p className="text-sm text-gray-600">
+                    Name:{" "}
                     <strong className="text-accent-foreground">
                       {pigeon?.fatherRingId?.name || "N/A"}
                     </strong>
                   </p>
+                  <p className="text-sm text-gray-600">
+                    Birth Year:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.fatherRingId?.birthYear || "N/A"}
+                    </strong>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Country:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.fatherRingId?.country || "N/A"}
+                    </strong>
+                  </p>
+                  {pigeon?.fatherRingId?.breeder && (
+                    <p className="text-sm text-gray-600">
+                      Breeder:{" "}
+                      <strong className="text-accent-foreground">
+                        {pigeon?.fatherRingId?.breeder?.breederName || "N/A"}
+                      </strong>
+                    </p>
+                  )}
+                  {pigeon?.fatherRingId?.shortInfo && (
+                    <p className="text-sm text-gray-600">
+                      Story:{" "}
+                      <strong className="text-accent-foreground">
+                        {pigeon?.fatherRingId?.shortInfo}
+                      </strong>
+                    </p>
+                  )}
+                  {pigeon?.fatherRingId?.addresults &&
+                    pigeon?.fatherRingId?.addresults.length > 0 && (
+                      <div className="text-sm text-gray-600">
+                        <p className="font-semibold text-accent-foreground mb-1">
+                          Results:
+                        </p>
+                        <div className="space-y-1">
+                          {pigeon.fatherRingId.addresults.map(
+                            (result, index) => (
+                              <p key={index}>{result}</p>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
                 </div>
               ) : (
                 <p className="text-gray-500 italic">
@@ -303,19 +435,62 @@ const PigeonOverviewContainer = () => {
             </CardHeader>
             <CardContent>
               {pigeon?.motherRingId ? (
-                <div>
-                  <p className="text-gray-500 italic">
-                    Mother:{" "}
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600">
+                    Ring Number:{" "}
                     <strong className="text-accent-foreground">
                       {pigeon?.motherRingId?.ringNumber || "N/A"}
                     </strong>
                   </p>
-                  <p className="text-gray-500 italic">
-                    Mother Name:{" "}
+                  <p className="text-sm text-gray-600">
+                    Name:{" "}
                     <strong className="text-accent-foreground">
                       {pigeon?.motherRingId?.name || "N/A"}
                     </strong>
                   </p>
+                  <p className="text-sm text-gray-600">
+                    Birth Year:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.motherRingId?.birthYear || "N/A"}
+                    </strong>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Country:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.motherRingId?.country || "N/A"}
+                    </strong>
+                  </p>
+                  {pigeon?.motherRingId?.breeder && (
+                    <p className="text-sm text-gray-600">
+                      Breeder:{" "}
+                      <strong className="text-accent-foreground">
+                        {pigeon?.motherRingId?.breeder?.breederName || "N/A"}
+                      </strong>
+                    </p>
+                  )}
+                  {pigeon?.motherRingId?.shortInfo && (
+                    <p className="text-sm text-gray-600">
+                      Story:{" "}
+                      <strong className="text-accent-foreground">
+                        {pigeon?.motherRingId?.shortInfo}
+                      </strong>
+                    </p>
+                  )}
+                  {pigeon?.motherRingId?.addresults &&
+                    pigeon?.motherRingId?.addresults.length > 0 && (
+                      <div className="text-sm text-gray-600">
+                        <p className="font-semibold text-accent-foreground mb-1">
+                          Results:
+                        </p>
+                        <div className="space-y-1">
+                          {pigeon.motherRingId.addresults.map(
+                            (result, index) => (
+                              <p key={index}>{result}</p>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
                 </div>
               ) : (
                 <p className="text-gray-500 italic">
@@ -332,7 +507,6 @@ const PigeonOverviewContainer = () => {
             <CardTitle className="text-xl font-bold text-accent">
               Additional Information
             </CardTitle>
-            {/* <FaEdit className="w-4 h-4 text-gray-400" /> */}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
@@ -430,9 +604,7 @@ const PigeonOverviewContainer = () => {
         {userRole === "PAIDUSER" && (
           <Card>
             <CardHeader>
-              {/* Fix 3: Use proper button component */}
               <button
-                variant="ghost"
                 className="w-full justify-between p-0 h-auto"
                 onClick={() => setShowSiblings(!showSiblings)}
               >
@@ -482,9 +654,6 @@ const PigeonOverviewContainer = () => {
                           <th className="text-left p-3 font-semibold">
                             Gender
                           </th>
-                          {/* <th className="text-left p-3 font-semibold">
-                            Action
-                          </th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -496,7 +665,17 @@ const PigeonOverviewContainer = () => {
                             <td className="p-3 font-medium">
                               {sibling.name || "N/A"}
                             </td>
-                            <td className="p-3">{sibling.type || "N/A"}</td>
+
+                            <td
+                              onClick={() =>
+                                sibling._id &&
+                                router.push(`/pedigree-chart/${sibling._id}`)
+                              }
+                              className="p-3 text-[#3AB27F] cursor-pointer hover:underline hover:text-[#2E8B57] transition-colors"
+                            >
+                              {sibling.type || "N/A"}
+                            </td>
+
                             <td className="p-3">
                               {sibling.ringNumber || "N/A"}
                             </td>
@@ -516,17 +695,6 @@ const PigeonOverviewContainer = () => {
                               {sibling.motherRingId?.ringNumber || "N/A"}
                             </td>
                             <td className="p-3">{sibling.gender || "N/A"}</td>
-                            {/* <td className="p-3">
-                              <Button
-                                className="text-white rounded-md"
-                                onClick={() => {
-                                  setSelectedPigeon(sibling);
-                                  setShowPigeonModal(true);
-                                }}
-                              >
-                                <FaRegEye />
-                              </Button>
-                            </td> */}
                           </tr>
                         ))}
                       </tbody>
@@ -542,7 +710,7 @@ const PigeonOverviewContainer = () => {
           </Card>
         )}
 
-        {/* Race Results  */}
+        {/* Race Results */}
         <Card>
           <div>
             {pigeon?.addresults && Array.isArray(pigeon.addresults) && (
@@ -559,88 +727,6 @@ const PigeonOverviewContainer = () => {
             )}
           </div>
         </Card>
-
-        {/* Race Results */}
-        {/* <Card>
-          <CardHeader>
-            <button
-              variant="ghost"
-              className="w-full justify-between p-0 h-auto"
-              onClick={() => setShowRaceResults(!showRaceResults)}
-            >
-              <div className="flex justify-between items-center w-full">
-                <CardTitle className="text-xl font-bold text-accent flex items-center gap-2">
-                  <Award className="w-5 h-5" />
-                  Race Result
-                </CardTitle>
-                {showRaceResults ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </div>
-            </button>
-          </CardHeader>
-          {showRaceResults && (
-            <CardContent>
-              {pigeon?.results && pigeon.results.length > 0 ? (
-                <>
-                  <div className="overflow-x-auto rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-foreground text-white">
-                        <tr>
-                          <th className="text-left p-3 font-semibold">Name</th>
-                          <th className="text-left p-3 font-semibold">Date</th>
-                          <th className="text-left p-3 font-semibold">
-                            Distance
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Total Birds
-                          </th>
-                          <th className="text-left p-3 font-semibold">Place</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pigeon.results.map((race, index) => (
-                          <tr
-                            key={race._id || index}
-                            className="bg-background text-white"
-                          >
-                            <td className="p-3 font-medium">
-                              {race.name || "N/A"}
-                            </td>
-                            <td className="p-3">
-                              {race.date
-                                ? moment(race.date).format("DD MMM YYYY")
-                                : "N/A"}
-                            </td>
-                            <td className="p-3">{race.distance || "N/A"}</td>
-                            <td className="p-3">{race.total || "N/A"}</td>
-                            <td className="p-3">{race.place || "N/A"}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>Additional Notes:</strong>
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      {pigeon?.raceNotes ||
-                        "The Blue Thunder pigeon is a blue-gray bird with dark bars, known for its calm nature and strong racing performance. It's popular among experienced breeders and racing enthusiasts."}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <p className="text-gray-500 italic text-center p-4">
-                  No race results found
-                </p>
-              )}
-            </CardContent>
-          )}
-        </Card> */}
       </div>
 
       {/* Pigeon Details Modal */}
@@ -657,7 +743,6 @@ const PigeonOverviewContainer = () => {
 
           {selectedPigeon && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Pigeon Image */}
               <div className="flex flex-col items-center">
                 <div className="w-full aspect-square rounded-md overflow-hidden mb-4">
                   {selectedPigeon?.photos?.[0] ? (
@@ -682,7 +767,6 @@ const PigeonOverviewContainer = () => {
                 </p>
               </div>
 
-              {/* Pigeon Details */}
               <div className="space-y-4 text-white">
                 <div className="grid grid-cols-2 gap-4">
                   <div>

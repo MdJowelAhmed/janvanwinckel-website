@@ -465,6 +465,10 @@ export default function Navbar() {
       href: "/policy",
     },
   ];
+   const logoLink =
+    userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN"
+      ? "/loft-overview"
+      : "/";
 
   return (
     <>
@@ -472,7 +476,7 @@ export default function Navbar() {
         <div className="container mx-auto flex justify-between items-center h-20 px-4">
           {/* Logo */}
           <Link
-            href="/"
+            href={logoLink}
             className="flex items-center space-x-2 text-lg font-bold"
           >
             <Image
