@@ -194,7 +194,7 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
 
       // Parents Information Section (Two Columns: Father Left, Mother Right)
       checkPageBreak(60);
-      
+
       const parentsStartY = yPosition;
       const leftParentX = margin;
       const rightParentX = pageWidth / 2 + 5;
@@ -206,11 +206,30 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
 
       const fatherInfo = [
         { label: "Name", value: String(pigeon?.fatherRingId?.name || "N/A") },
-        { label: "Ring Number", value: String(pigeon?.fatherRingId?.ringNumber || "N/A") },
-        { label: "Birth Year", value: String(pigeon?.fatherRingId?.birthYear || "N/A") },
-        { label: "Country", value: String(pigeon?.fatherRingId?.country || "N/A") },
-        { label: "Gender", value: String(pigeon?.fatherRingId?.gender || "N/A") },
-        { label: "Breeder", value: String(pigeon?.fatherRingId?.breeder?.breederName || pigeon?.fatherRingId?.breeder?.loftName || "N/A") },
+        {
+          label: "Ring Number",
+          value: String(pigeon?.fatherRingId?.ringNumber || "N/A"),
+        },
+        {
+          label: "Birth Year",
+          value: String(pigeon?.fatherRingId?.birthYear || "N/A"),
+        },
+        {
+          label: "Country",
+          value: String(pigeon?.fatherRingId?.country || "N/A"),
+        },
+        {
+          label: "Gender",
+          value: String(pigeon?.fatherRingId?.gender || "N/A"),
+        },
+        {
+          label: "Breeder",
+          value: String(
+            pigeon?.fatherRingId?.breeder?.breederName ||
+              pigeon?.fatherRingId?.breeder?.loftName ||
+              "N/A"
+          ),
+        },
       ];
 
       pdf.setFontSize(8);
@@ -218,12 +237,15 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         pdf.setFont("helvetica", "normal");
         const label = `${item.label}: `;
         pdf.text(label, leftParentX, fatherY);
-        
+
         const labelWidth = pdf.getTextWidth(label);
         pdf.setFont("helvetica", "bold");
-        const valueLines = pdf.splitTextToSize(item.value, columnWidth - labelWidth - 2);
+        const valueLines = pdf.splitTextToSize(
+          item.value,
+          columnWidth - labelWidth - 2
+        );
         pdf.text(valueLines[0], leftParentX + labelWidth, fatherY);
-        
+
         fatherY += 7;
       });
 
@@ -250,30 +272,30 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       }
 
       // Father Results Section
-      if (
-        pigeon?.fatherRingId?.addresults &&
-        Array.isArray(pigeon.fatherRingId.addresults) &&
-        pigeon.fatherRingId.addresults.length > 0
-      ) {
-        fatherY += 3;
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(8);
-        pdf.text("Results:", leftParentX, fatherY);
-        fatherY += 5;
+      // if (
+      //   pigeon?.fatherRingId?.addresults &&
+      //   Array.isArray(pigeon.fatherRingId.addresults) &&
+      //   pigeon.fatherRingId.addresults.length > 0
+      // ) {
+      //   fatherY += 3;
+      //   pdf.setFont("helvetica", "bold");
+      //   pdf.setFontSize(8);
+      //   pdf.text("Results:", leftParentX, fatherY);
+      //   fatherY += 5;
 
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(7);
-        pigeon.fatherRingId.addresults.forEach((result, index) => {
-          const resultLines = pdf.splitTextToSize(
-            `${index + 1}. ${result}`,
-            columnWidth - 2
-          );
-          resultLines.forEach((line) => {
-            pdf.text(line, leftParentX, fatherY);
-            fatherY += 4;
-          });
-        });
-      }
+      //   pdf.setFont("helvetica", "normal");
+      //   pdf.setFontSize(7);
+      //   pigeon.fatherRingId.addresults.forEach((result, index) => {
+      //     const resultLines = pdf.splitTextToSize(
+      //       `${index + 1}. ${result}`,
+      //       columnWidth - 2
+      //     );
+      //     resultLines.forEach((line) => {
+      //       pdf.text(line, leftParentX, fatherY);
+      //       fatherY += 4;
+      //     });
+      //   });
+      // }
 
       // Mother Section (Right)
       pdf.setFillColor(55, 183, 195);
@@ -283,16 +305,35 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
       pdf.setFont("helvetica", "bold");
       pdf.text("Mother Information", rightParentX + 2, parentsStartY);
       pdf.setTextColor(0, 0, 0);
-      
+
       let motherY = parentsStartY + 10;
 
       const motherInfo = [
         { label: "Name", value: String(pigeon?.motherRingId?.name || "N/A") },
-        { label: "Ring Number", value: String(pigeon?.motherRingId?.ringNumber || "N/A") },
-        { label: "Birth Year", value: String(pigeon?.motherRingId?.birthYear || "N/A") },
-        { label: "Country", value: String(pigeon?.motherRingId?.country || "N/A") },
-        { label: "Gender", value: String(pigeon?.motherRingId?.gender || "N/A") },
-        { label: "Breeder", value: String(pigeon?.motherRingId?.breeder?.breederName || pigeon?.motherRingId?.breeder?.loftName || "N/A") },
+        {
+          label: "Ring Number",
+          value: String(pigeon?.motherRingId?.ringNumber || "N/A"),
+        },
+        {
+          label: "Birth Year",
+          value: String(pigeon?.motherRingId?.birthYear || "N/A"),
+        },
+        {
+          label: "Country",
+          value: String(pigeon?.motherRingId?.country || "N/A"),
+        },
+        {
+          label: "Gender",
+          value: String(pigeon?.motherRingId?.gender || "N/A"),
+        },
+        {
+          label: "Breeder",
+          value: String(
+            pigeon?.motherRingId?.breeder?.breederName ||
+              pigeon?.motherRingId?.breeder?.loftName ||
+              "N/A"
+          ),
+        },
       ];
 
       pdf.setFontSize(8);
@@ -300,12 +341,15 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         pdf.setFont("helvetica", "normal");
         const label = `${item.label}: `;
         pdf.text(label, rightParentX, motherY);
-        
+
         const labelWidth = pdf.getTextWidth(label);
         pdf.setFont("helvetica", "bold");
-        const valueLines = pdf.splitTextToSize(item.value, columnWidth - labelWidth - 2);
+        const valueLines = pdf.splitTextToSize(
+          item.value,
+          columnWidth - labelWidth - 2
+        );
         pdf.text(valueLines[0], rightParentX + labelWidth, motherY);
-        
+
         motherY += 7;
       });
 
@@ -331,6 +375,9 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
         motherY += 3;
       }
 
+      // Helper function to clean result text
+      const cleanResult = (text) => text.replace(/^\d+[\.\)]\s*/, "").trim();
+
       // Mother Results Section
       if (
         pigeon?.motherRingId?.addresults &&
@@ -345,14 +392,36 @@ const PigeonPdfExport = ({ pigeon, siblings = [] }) => {
 
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(7);
-        pigeon.motherRingId.addresults.forEach((result, index) => {
-          const resultLines = pdf.splitTextToSize(
-            `${index + 1}. ${result}`,
-            columnWidth - 2
-          );
+        pigeon.motherRingId.addresults.forEach((result) => {
+          const cleanText = cleanResult(result);
+          const resultLines = pdf.splitTextToSize(cleanText, columnWidth - 2);
           resultLines.forEach((line) => {
             pdf.text(line, rightParentX, motherY);
             motherY += 4;
+          });
+        });
+      }
+
+      // Father Results Section
+      if (
+        pigeon?.fatherRingId?.addresults &&
+        Array.isArray(pigeon.fatherRingId.addresults) &&
+        pigeon.fatherRingId.addresults.length > 0
+      ) {
+        fatherY += 3;
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(8);
+        pdf.text("Results:", leftParentX, fatherY);
+        fatherY += 5;
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(7);
+        pigeon.fatherRingId.addresults.forEach((result) => {
+          const cleanText = cleanResult(result);
+          const resultLines = pdf.splitTextToSize(cleanText, columnWidth - 2);
+          resultLines.forEach((line) => {
+            pdf.text(line, leftParentX, fatherY);
+            fatherY += 4;
           });
         });
       }

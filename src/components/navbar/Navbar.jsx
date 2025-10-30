@@ -504,7 +504,13 @@ export default function Navbar() {
                 }
 
                 // If USER → hide "Add Pigeon"
-                if (item.name === "Add Pigeon" && userData?.role === "USER") {
+                if (
+                  (item.name === "Add Pigeon" ||
+                    item.name === "Loft Overview" ||
+                    item.name === "Pigeon Database" ||
+                    item.name === "Home") &&
+                  userData?.role === "USER"
+                ) {
                   return false;
                 }
 

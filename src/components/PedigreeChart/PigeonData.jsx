@@ -38,7 +38,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
   // Helper function to get breeder name
   const getBreederInfo = (breeder) => {
     if (typeof breeder === "object" && breeder) {
-      const name = breeder.breederName;
+      const name = breeder?.loftName;
       return name;
     }
     return breeder;
@@ -415,7 +415,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
             birthYear: parentPath.birthYear?.toString(),
             color: color,
             colorName: parentPath.color,
-            description: parentPath.notes || parentPath.shortInfo,
+            // description: parentPath.notes || parentPath.shortInfo,
             achievements: formatResults(parentPath.addresults),
             verified: getPigeonVerification(parentPath),
             breederVerified: getBreederStatus(parentPath.breeder),

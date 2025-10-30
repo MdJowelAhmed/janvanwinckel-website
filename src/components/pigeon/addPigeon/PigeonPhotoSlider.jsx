@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, X, ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import Image from "next/image";
 
 const PigeonPhotosSlider = ({
@@ -183,14 +183,15 @@ const PigeonPhotosSlider = ({
                         <>
                           <div className="flex flex-col items-center justify-center p-3">
                             {/* PDF Icon */}
-                            <svg
+                            <FileText className="w-10 h-10 text-red-500 mb-2" />
+                            {/* <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="currentColor"
                               viewBox="0 0 16 16"
                               className="w-10 h-10 text-red-500 mb-2"
                             >
                               <path d="M4 0h5.5L14 4.5V16H4V0zM9.5 1.5V5H13L9.5 1.5zM5 9v2h1V9H5zm2.5 0v2H9V9H7.5zM10 9v2h1V9h-1z" />
-                            </svg>
+                            </svg> */}
                             {/* File name */}
                             <p className="text-xs text-gray-700 text-center break-words px-2">
                               {item.photo.file

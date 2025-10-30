@@ -47,9 +47,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { exportPedigreeToPDF } from "./pdfExport";
+import { getImageUrl } from "../share/imageUrl";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
+ 
 
   // Check if this is the subject node (generation 0)
   const isSubject = data.generation === 0;
@@ -297,14 +299,14 @@ const PigeonNode = ({ data }) => {
 
         {data.description && (
           <div className="">
-            <h2 className=" text-slate-700">
+            <h2 className="text-black ">
               {data?.description?.slice(0, 650)}
             </h2>
           </div>
         )}
         {data.colorName && (
           <div className="">
-            <h2 className=" text-slate-700">{data.colorName}</h2>
+            <h2 className=" text-black">{data.colorName}</h2>
           </div>
         )}
         {data.achievements && (
@@ -317,7 +319,7 @@ const PigeonNode = ({ data }) => {
               height={24}
               className="w-6 h-6 mt-[2px]"
             /> */}
-            <h2 className=" text-black whitespace-pre-line">
+            <h2 className=" text-black whitespace-pre-line ">
               {data.achievements}
             </h2>
           </div>
@@ -492,7 +494,7 @@ export default function PigeonPedigreeChart() {
 
       <div className="relative">
         <Image
-          src="/assests/logo.png"
+          src={getImageUrl(profileData?.profile)}
           alt="The Pigeon Hub Logo"
           width={100}
           height={50}
@@ -530,23 +532,23 @@ export default function PigeonPedigreeChart() {
         </ReactFlow>
       </div>
       <div className="relative">
-        <div className="absolute bottom-40 2xl:bottom-40 left-15 2xl:left-30 text-black">
+        <div className="absolute bottom-40 2xl:bottom-40 left-8 2xl:left-30 text-black">
           <p className="text-accent-foreground font-bold">
-            {pedigreeData?.data?.breeder?.breederName}
+            {profileData?.name}
           </p>
-          {pedigreeData?.data?.breeder?.country && (
+          {profileData?.contact && (
             <p>
-              Country:{" "}
-              <span className="text-accent-foreground font-bold">
-                {pedigreeData?.data?.breeder?.country}
+             
+              <span className="text-accent-foreground font-bold text-[12px]">
+                {profileData?.contact}
               </span>
             </p>
           )}
-          {pedigreeData?.data?.breeder?.phone && (
+          {profileData?.email && (
             <p>
-              Phone:{" "}
-              <span className="text-accent-foreground font-bold">
-                {pedigreeData?.data?.breeder?.phone}
+            
+              <span className="text-accent-foreground font-bold text-[12px]">
+                {profileData?.email}
               </span>
             </p>
           )}

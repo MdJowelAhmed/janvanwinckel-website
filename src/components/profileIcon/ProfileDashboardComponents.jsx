@@ -39,10 +39,11 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import PhoneInput, { isValidPhoneNumber } from "react-phone-number-input";
 import { getImageUrl } from "../share/imageUrl";
-import { toast } from "react-hot-toast"; // Make sure you have this import
+// import { toast } from "react-hot-toast"; // Make sure you have this import
 import moment from "moment";
 import { HiOutlineStatusOffline, HiOutlineStatusOnline } from "react-icons/hi";
 import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 export default function ProfileDashboardComponents() {
   const [imageFile, setImageFile] = useState(null);
@@ -120,52 +121,62 @@ export default function ProfileDashboardComponents() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if phone is valid before submitting
-    // if (formData.contact && !isValidPhoneNumber(formData.contact)) {
-    //   setPhoneError(
-    //     "Please enter a valid phone number for the selected country"
-    //   );
-    //   return;
-    // }
-
     try {
       const formDataToSend = new FormData();
 
       formDataToSend.append("name", formData.name);
-      // formDataToSend.append("userName", formData.userName);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("contact", formData.contact);
 
       // Append image if selected
       if (imageFile) {
         formDataToSend.append("image", imageFile);
-        console.log("Appending image to FormData:", imageFile); // Debug log
+        console.log("Appending image to FormData:", imageFile);
       }
 
-      console.log("Sending FormData:", formDataToSend); // Debug log
+      console.log("Sending FormData:", formDataToSend);
 
       const response = await updateProfile({ data: formDataToSend }).unwrap();
       console.log(response);
+
       if (response.success) {
         toast.success("Profile updated successfully!");
         if (response.token) {
           localStorage.setItem("accessToken", response.token);
         }
-        // Refetch profile data to update UI immediately
         refetch();
         setOpen(false);
-        // Reset image file state
         setImageFile(null);
       } else {
         toast.error(response.message || "Failed to update profile!");
       }
     } catch (error) {
-      console.error("Update profile error:", error); // Debug log
-      toast.error(
-        error.data?.message ||
-          error.message ||
-          "An error occurred while updating the profile"
-      );
+      console.error("Update profile error:", error);
+
+      // Better error message extraction
+      let errorMessage = "An error occurred while updating the profile";
+
+      // Check different error structures
+      if (error?.data?.message) {
+        // RTK Query error format (most common)
+        errorMessage = error.data.message;
+      } else if (
+        error?.data?.errorMessages &&
+        Array.isArray(error.data.errorMessages) &&
+        error.data.errorMessages.length > 0
+      ) {
+        // If errorMessages array exists, get the first error message
+        errorMessage = error.data.errorMessages[0].message;
+      } else if (error?.message) {
+        // Generic error message
+        errorMessage = error.message;
+      } else if (error?.error) {
+        // Sometimes wrapped under error.error
+        errorMessage = error.error;
+      }
+
+      // Show user-friendly error toast
+      toast.error(errorMessage);
     }
   };
 
@@ -467,44 +478,44 @@ export default function ProfileDashboardComponents() {
         </Card>
       </div>
 
-     {
-      userData?.subscription?.package && (
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {userData?.subscription?.package && (
-          <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="text-accent">
-                  <MdOutlineSubscriptions size={40} />
+      {userData?.subscription?.package && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {userData?.subscription?.package && (
+            <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="text-accent">
+                    <MdOutlineSubscriptions size={40} />
+                  </div>
+                  <h3 className="font-medium text-accent">
+                    Subscription Package
+                  </h3>
                 </div>
-                <h3 className="font-medium text-accent">
-                  Subscription Package
-                </h3>
-              </div>
-              <p className="text-lg font-bold mt-4 text-gray-800">
-                {userData?.subscription?.package || "N/A"}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-        {userData?.subscription?.status && (
-          <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="text-accent">
-                  <HiOutlineStatusOnline size={40} />
+                <p className="text-lg font-bold mt-4 text-gray-800">
+                  {userData?.subscription?.package || "N/A"}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+          {userData?.subscription?.status && (
+            <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="text-accent">
+                    <HiOutlineStatusOnline size={40} />
+                  </div>
+                  <h3 className="font-medium text-accent">
+                    Subscription Status
+                  </h3>
                 </div>
-                <h3 className="font-medium text-accent">Subscription Status</h3>
-              </div>
-              <p className="text-lg font-bold mt-4 text-gray-800">
-                {userData?.subscription?.status}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-      )
-     }
+                <p className="text-lg font-bold mt-4 text-gray-800">
+                  {userData?.subscription?.status}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-">
         {userData?.subscription?.startDate && (
           <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">

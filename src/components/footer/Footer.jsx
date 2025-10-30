@@ -14,7 +14,7 @@ export default function Footer() {
         </div>
         <Separator /> */}
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-8 mt-6">
+          <div className="flex flex-col lg:flex-row justify-between items-center gap-8 my-4">
             {/* Left Section - Company Info */}
 
             <div className=" max-w-md">
@@ -24,7 +24,7 @@ export default function Footer() {
                   width={60}
                   height={60}
                   alt="Logo"
-                  className="mb-6"
+                  className=""
                 />
               </div>
               {/* <p className="text-white text-sm leading-relaxed">

@@ -41,21 +41,21 @@ const SubscriptionBeforeLogin = () => {
   if (isLoading) return <Spinner />;
 
   return (
-    <div className="mb-16 mt-10 lg:mt-16 px-4 md:px-8 lg:px-12">
+    <div className="mb-6 xl:mb-16 mt-6 xl:mt-10 px-4 md:px-8 lg:px-12">
       <div className=" mx-auto">
         {/* Header */}
-        <div className="text-center mb-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb- text-accent ">
+        <div className="text-center mb-1 xl:mb-4">
+          <h1 className="text-xl md:text-2xl xl:text-3xl font-bold mb- text-accent ">
           Choose Your Subscription Plan
             {/* <span className="text-accent-foreground">Prices</span> */}
           </h1>
           <p className="text-destructive text-2xl max-w-2xl mx-auto leading-relaxed">
-         thepigeonhub.com
+         ThePigeonHub.Com
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 mx-auto">
+        <div className="grid md:grid-cols-3 gap-4 lg:gap-6 xl:gap-8 mx-auto">
           {/* Static Free Plan */}
 
           {/* Dynamic Packages from API */}
@@ -63,15 +63,15 @@ const SubscriptionBeforeLogin = () => {
             packages.map((packageItem, index) => (
               <div
                 key={packageItem._id || index}
-                className="bg-[#088395] rounded-md p-8 shadow-xl hover:shadow-2xl hover:bg-accent transition-all duration-300 text-white relative overflow-hidden flex flex-col"
+                className="bg-[#088395] rounded-md p-4 lg:p-4 xl:p-8 shadow-xl hover:shadow-2xl hover:bg-accent transition-all duration-300 text-white relative overflow-hidden flex flex-col"
               >
                 <div className="flex-grow">
                   <div className="relative z-10 text-center">
-                    <h3 className="text-2xl font-bold mb-1">
+                    <h3 className="text-xl xl:text-2xl font-bold xl:mb-1">
                       {packageItem.title}
                     </h3>
                     <div className="flex items-baseline justify-center mb-0">
-                      <span className="text-3xl font-bold">
+                      <span className="text-xl xl:text-2xl font-bold">
                         ${packageItem.price}
                       </span>
                       <span className="text-teal-200 ml-2">
@@ -79,13 +79,13 @@ const SubscriptionBeforeLogin = () => {
                       </span>
                     </div>
 
-                    <div className="h-12 flex items-center justify-center">
+                    <div className="h-8 flex items-center justify-center">
                       <p className="text-teal-100">
                         {packageItem?.description || ""}
                       </p>
                     </div>
                   </div>
-                  <div className="space-y-4 mb-8 relative z-10">
+                  <div className="space-y-1 xl:space-y-4 mb-2 xl:mb-6 relative z-10">
                     {packageItem.features?.map((feature, featureIndex) => {
                       const isFree =
                         packageItem.title === "Free Trial -1 Month";
@@ -102,13 +102,13 @@ const SubscriptionBeforeLogin = () => {
                             } rounded-full p-1 mt-0.5`}
                           >
                             {isEnabled ? (
-                              <Check className="w-4 h-4" />
+                              <Check className="w-2 xl:w-4 h-2 xl:h-4" />
                             ) : (
-                              <X className="w-4 h-4" />
+                              <X className="w-2 xl:w-4 h-2 xl:h-4" />
                             )}
                           </div>
                           <span
-                            className={`text-sm ${
+                            className={`text-xs xl:text-sm ${
                               isEnabled ? "text-white/90" : "text-white/50"
                             }`}
                           >
@@ -126,7 +126,7 @@ const SubscriptionBeforeLogin = () => {
                     packageItem.title === "Free Trial -1 Month" &&
                     userData?.hasUsedFreeTrial
                   } // ✅ disable if user already used free trial
-                  className={`w-full py-3 px-6 rounded-sm font-semibold  transition-colors duration-300 shadow-md mt-auto relative z-10
+                  className={`w-full py-2 xl:py-3 px-6 rounded-sm font-semibold  transition-colors duration-300 shadow-md mt-auto relative z-10
     ${
       packageItem.title === "Free Trial -1 Month" && userData?.hasUsedFreeTrial
         ? "bg-gray-300 text-gray-600 cursor-not-allowed" // ✅ disabled style
