@@ -1,3 +1,4 @@
+import { baseUrlApi } from "@/redux/baseUrl/baseUrlApi";
 import jsPDF from "jspdf";
 import { useCallback } from "react";
 
@@ -72,7 +73,7 @@ export const exportPedigreeToPDF = async (
           return path;
         } else {
           // const baseUrl = "https://ftp.thepigeonhub.com";
-          const baseUrl = "http://10.10.7.41:5001";
+          const baseUrl = baseUrlApi
           return `${baseUrl}/${path?.replace(/^\/+/, '')}`; // Remove leading slashes
         }
       };

@@ -465,13 +465,12 @@ export default function Navbar() {
       href: "/policy",
     },
   ];
- const logoLink =
-  userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN"
-    ? "/loft-overview"
-    : userData?.role === "USER"
-    ? "/subscription"
-    : "/";
-
+  const logoLink =
+    userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN"
+      ? "/loft-overview"
+      : userData?.role === "USER"
+      ? "/subscription"
+      : "/";
 
   return (
     <>
@@ -785,7 +784,7 @@ export default function Navbar() {
             isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <ul className="p-4 text-center space-y-3">
+          <ul className="flex flex-col items-center p-4 space-y-3">
             {navItems
               .filter((item) => {
                 // If PAIDUSER → hide "Subscription" and "Add Pigeon"
@@ -798,8 +797,14 @@ export default function Navbar() {
                   return false;
                 }
 
-                // If USER → hide "Add Pigeon"
-                if (item.name === "Add Pigeon" && userData?.role === "USER") {
+                // If USER → hide restricted pages
+                if (
+                  (item.name === "Add Pigeon" ||
+                    item.name === "Loft Overview" ||
+                    item.name === "Pigeon Database" ||
+                    item.name === "Home") &&
+                  userData?.role === "USER"
+                ) {
                   return false;
                 }
 
@@ -826,8 +831,12 @@ export default function Navbar() {
                   <li key={item.name}>
                     <Link
                       href={redirectPath}
-                      className="block hover:underline transition-colors duration-200"
                       onClick={() => setIsOpen(false)}
+                      className={`block relative pb-1 text-black transition-all duration-300 ease-in-out ${
+                        pathname === item.path
+                          ? "border-b-2 border-primary text-black"
+                          : "hover:border-b-2 hover:border-primary text-black"
+                      }`}
                     >
                       {item.name}
                     </Link>
