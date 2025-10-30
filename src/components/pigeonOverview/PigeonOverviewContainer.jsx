@@ -398,11 +398,12 @@ const PigeonOverviewContainer = () => {
                   {pigeon?.fatherRingId?.shortInfo && (
                     <p className="text-sm text-gray-600">
                       Story:{" "}
-                      <strong className="text-accent-foreground">
-                        {pigeon?.fatherRingId?.shortInfo}
+                      <strong className="text-accent-foreground whitespace-pre-line">
+                        {pigeon.fatherRingId.shortInfo.replace(/\\n/g, "\n")}
                       </strong>
                     </p>
                   )}
+
                   {pigeon?.fatherRingId?.addresults &&
                     pigeon?.fatherRingId?.addresults.length > 0 && (
                       <div className="text-sm text-gray-600">
@@ -471,8 +472,8 @@ const PigeonOverviewContainer = () => {
                   {pigeon?.motherRingId?.shortInfo && (
                     <p className="text-sm text-gray-600">
                       Story:{" "}
-                      <strong className="text-accent-foreground">
-                        {pigeon?.motherRingId?.shortInfo}
+                      <strong className="text-accent-foreground whitespace-pre-line">
+                        {pigeon.motherRingId.shortInfo.replace(/\\n/g, "\n")}
                       </strong>
                     </p>
                   )}
@@ -584,7 +585,11 @@ const PigeonOverviewContainer = () => {
                 <strong className="text-accent-foreground font-semibold">
                   Your Story:{" "}
                 </strong>
-                <span>{pigeon?.shortInfo || "N/A"}</span>
+                <span className="whitespace-pre-line">
+                  {pigeon?.shortInfo
+                    ? pigeon.shortInfo.replace(/\\n/g, "\n")
+                    : "N/A"}
+                </span>
               </p>
             </div>
             {pigeon?.notes && (

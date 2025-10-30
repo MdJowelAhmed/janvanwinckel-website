@@ -98,7 +98,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
       birthYear: subject.birthYear?.toString(),
       color: "#FFFFE0",
       colorName: subject.color,
-      description: subject.notes || subject.shortInfo,
+      description: subject.shortInfo,
       achievements: formatResults(subject.addresults),
       verified: getPigeonVerification(subject),
       breederVerified: getBreederStatus(subject.breeder),
@@ -127,8 +127,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         birthYear: subject.fatherRingId.birthYear?.toString(),
         color: "#ADD8E6",
         colorName: subject.fatherRingId.color,
-        description:
-          subject.fatherRingId.notes || subject.fatherRingId.shortInfo,
+        description:subject.fatherRingId.shortInfo,
         achievements: formatResults(subject.fatherRingId.addresults),
         verified: getPigeonVerification(subject.fatherRingId),
         breederVerified: getBreederStatus(subject.fatherRingId.breeder),
@@ -170,8 +169,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         birthYear: subject.motherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.motherRingId.color,
-        description:
-          subject.motherRingId.notes || subject.motherRingId.shortInfo,
+        description:subject.motherRingId.shortInfo,
         achievements: formatResults(subject.motherRingId.addresults),
         verified: getPigeonVerification(subject.motherRingId),
         breederVerified: getBreederStatus(subject.motherRingId.breeder),
@@ -220,9 +218,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         birthYear: subject.fatherRingId.fatherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.fatherRingId.fatherRingId.color,
-        description:
-          subject.fatherRingId.fatherRingId.notes ||
-          subject.fatherRingId.fatherRingId.shortInfo ,
+        description:subject.fatherRingId.fatherRingId.shortInfo ,
         achievements: formatResults(
           subject.fatherRingId.fatherRingId.addresults
         ),
@@ -266,9 +262,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         birthYear: subject.fatherRingId.motherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.fatherRingId.motherRingId.color,
-        description:
-          subject.fatherRingId.motherRingId.notes ||
-          subject.fatherRingId.motherRingId.shortInfo,
+        description:subject.fatherRingId.motherRingId.shortInfo,
         achievements:
           formatResults(subject.fatherRingId.motherRingId.addresults) ||
           "Top producer",
@@ -312,12 +306,9 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         birthYear: subject.motherRingId.fatherRingId.birthYear?.toString(),
         color: "#fff",
         colorName: subject.motherRingId.fatherRingId.color,
-        description:
-          subject.motherRingId.fatherRingId.notes ||
-          subject.motherRingId.fatherRingId.shortInfo,
+        description:subject.motherRingId.fatherRingId.shortInfo,
         achievements:
-          formatResults(subject.motherRingId.fatherRingId.addresults) ||
-          "National ace",
+          formatResults(subject.motherRingId.fatherRingId.addresults),
         verified: getPigeonVerification(subject.motherRingId.fatherRingId),
         breederVerified: getBreederStatus(
           subject.motherRingId.fatherRingId.breeder

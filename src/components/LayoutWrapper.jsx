@@ -19,7 +19,8 @@ const LayoutWrapper = ({ children }) => {
     "/register",
     "/profile-dashboard",
     "/contact",
-    "/about-us"
+    "/about-us",
+    "/terms",
   ];
 
   // Dynamic routes accessible without login

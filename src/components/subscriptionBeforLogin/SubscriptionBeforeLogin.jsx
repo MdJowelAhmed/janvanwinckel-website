@@ -55,102 +55,99 @@ const SubscriptionBeforeLogin = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-4 lg:gap-6 xl:gap-8 mx-auto">
-          {/* Static Free Plan */}
+       <div className="grid md:grid-cols-3 gap-4 lg:gap-6 xl:gap-8 mx-auto">
+  {packages && packages.length > 0 ? (
+    packages.map((packageItem, index) => {
+     
+      const isFree = index === 0;
 
-          {/* Dynamic Packages from API */}
-          {packages && packages.length > 0 ? (
-            packages.map((packageItem, index) => (
-              <div
-                key={packageItem._id || index}
-                className="bg-[#088395] rounded-md p-4 lg:p-4 xl:p-8 shadow-xl hover:shadow-2xl hover:bg-accent transition-all duration-300 text-white relative overflow-hidden flex flex-col"
-              >
-                <div className="flex-grow">
-                  <div className="relative z-10 text-center">
-                    <h3 className="text-xl xl:text-2xl font-bold xl:mb-1">
-                      {packageItem.title}
-                    </h3>
-                    <div className="flex items-baseline justify-center mb-0">
-                      <span className="text-xl xl:text-2xl font-bold">
-                        ${packageItem.price}
-                      </span>
-                      <span className="text-teal-200 ml-2">
-                        / {packageItem.paymentType}
-                      </span>
-                    </div>
-
-                    <div className="h-8 flex items-center justify-center">
-                      <p className="text-teal-100">
-                        {packageItem?.description || ""}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-1 xl:space-y-4 mb-2 xl:mb-6 relative z-10">
-                    {packageItem.features?.map((feature, featureIndex) => {
-                      const isFree =
-                        packageItem.title === "Free Trial -1 Month";
-                      const isEnabled = isFree ? featureIndex < 4 : true;
-
-                      return (
-                        <div
-                          key={featureIndex}
-                          className="flex items-start gap-3"
-                        >
-                          <div
-                            className={`${
-                              isEnabled ? "bg-white/20" : "bg-red-500/20"
-                            } rounded-full p-1 mt-0.5`}
-                          >
-                            {isEnabled ? (
-                              <Check className="w-2 xl:w-4 h-2 xl:h-4" />
-                            ) : (
-                              <X className="w-2 xl:w-4 h-2 xl:h-4" />
-                            )}
-                          </div>
-                          <span
-                            className={`text-xs xl:text-sm ${
-                              isEnabled ? "text-white/90" : "text-white/50"
-                            }`}
-                          >
-                            {feature}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handlePurchaseClick(packageItem.paymentLink)}
-                  disabled={
-                    packageItem.title === "Free Trial -1 Month" &&
-                    userData?.hasUsedFreeTrial
-                  } // ✅ disable if user already used free trial
-                  className={`w-full py-2 xl:py-3 px-6 rounded-sm font-semibold  transition-colors duration-300 shadow-md mt-auto relative z-10
-    ${
-      packageItem.title === "Free Trial -1 Month" && userData?.hasUsedFreeTrial
-        ? "bg-gray-300 text-gray-600 cursor-not-allowed" // ✅ disabled style
-        : "bg-white text-teal-600 hover:bg-[#088395] hover:text-white hover:shadow-lg cursor-pointer"
-    }
-  `}
-                >
-                  {packageItem.title === "Free Trial -1 Month" &&
-                  userData?.hasUsedFreeTrial
-                    ? "Already Trialed" // ✅ button text for used trial
-                    : packageItem.title === "Free Trial -1 Month"
-                    ? "30 Days Free Trial"
-                    : "Purchase Now"}
-                </button>
+      return (
+        <div
+          key={packageItem._id || index}
+          className="bg-[#088395] rounded-md p-4 lg:p-4 xl:p-8 shadow-xl hover:shadow-2xl hover:bg-accent transition-all duration-300 text-white relative overflow-hidden flex flex-col"
+        >
+          <div className="flex-grow">
+            <div className="relative z-10 text-center">
+              <h3 className="text-xl xl:text-2xl font-bold xl:mb-1">
+                {isFree ? "Free Trial - 1 Month" : packageItem.title}
+              </h3>
+              <div className="flex items-baseline justify-center mb-0">
+                <span className="text-xl xl:text-2xl font-bold">
+                  ${isFree ? 0 : packageItem.price}
+                </span>
+                <span className="text-teal-200 ml-2">
+                  / {packageItem.paymentType}
+                </span>
               </div>
-            ))
-          ) : (
-            <div className="bg-gradient-to-br w-full from-gray-400 to-gray-500 rounded-3xl p-8 shadow-xl text-white relative overflow-hidden flex items-center justify-center">
-              <div className="text-center">
-                <p>No package available</p>
+
+              <div className="h-8 flex items-center justify-center">
+                <p className="text-teal-100">
+                  {packageItem?.description || ""}
+                </p>
               </div>
             </div>
-          )}
+
+            <div className="space-y-1 xl:space-y-4 mb-2 xl:mb-6 relative z-10">
+              {packageItem.features?.map((feature, featureIndex) => {
+                const isEnabled = isFree ? featureIndex < 4 : true;
+
+                return (
+                  <div
+                    key={featureIndex}
+                    className="flex items-start gap-3"
+                  >
+                    <div
+                      className={`${
+                        isEnabled ? "bg-white/20" : "bg-red-500/20"
+                      } rounded-full p-1 mt-0.5`}
+                    >
+                      {isEnabled ? (
+                        <Check className="w-2 xl:w-4 h-2 xl:h-4" />
+                      ) : (
+                        <X className="w-2 xl:w-4 h-2 xl:h-4" />
+                      )}
+                    </div>
+                    <span
+                      className={`text-xs xl:text-sm ${
+                        isEnabled ? "text-white/90" : "text-white/50"
+                      }`}
+                    >
+                      {feature}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <button
+            onClick={() => handlePurchaseClick(packageItem.paymentLink)}
+            disabled={isFree && userData?.hasUsedFreeTrial}
+            className={`w-full py-2 xl:py-3 px-6 rounded-sm font-semibold transition-colors duration-300 shadow-md mt-auto relative z-10
+              ${
+                isFree && userData?.hasUsedFreeTrial
+                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  : "bg-white text-teal-600 hover:bg-[#088395] hover:text-white hover:shadow-lg cursor-pointer"
+              }`}
+          >
+            {isFree && userData?.hasUsedFreeTrial
+              ? "Already Trialed"
+              : isFree
+              ? "30 Days Free Trial"
+              : "Purchase Now"}
+          </button>
         </div>
+      );
+    })
+  ) : (
+    <div className="bg-gradient-to-br w-full from-gray-400 to-gray-500 rounded-3xl p-8 shadow-xl text-white relative overflow-hidden flex items-center justify-center">
+      <div className="text-center">
+        <p>No package available</p>
+      </div>
+    </div>
+  )}
+</div>
+
       </div>
     </div>
   );

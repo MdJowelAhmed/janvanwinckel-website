@@ -322,7 +322,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onBlur",
+    mode: "onChange", 
     defaultValues: {
       ringNumber: "",
       name: "",
@@ -447,15 +447,15 @@ const AddPigeonContainer = ({ pigeonId }) => {
       if (pigeon.eyePhoto) setEyePhoto({ url: pigeon.eyePhoto });
       if (pigeon.ownershipPhoto)
         setOwnershipPhoto({ url: pigeon.ownershipPhoto });
-     if (pigeon.pedigreePhoto) {
-  const isPdf = pigeon.pedigreePhoto.endsWith(".pdf");
-  setPedigreePhoto({ url: pigeon.pedigreePhoto, isPdf });
-}
+      if (pigeon.pedigreePhoto) {
+        const isPdf = pigeon.pedigreePhoto.endsWith(".pdf");
+        setPedigreePhoto({ url: pigeon.pedigreePhoto, isPdf });
+      }
 
-if (pigeon.DNAPhoto) {
-  const isPdf = pigeon.DNAPhoto.endsWith(".pdf");
-  setDNAPhoto({ url: pigeon.DNAPhoto, isPdf });
-}
+      if (pigeon.DNAPhoto) {
+        const isPdf = pigeon.DNAPhoto.endsWith(".pdf");
+        setDNAPhoto({ url: pigeon.DNAPhoto, isPdf });
+      }
 
       // Load race results
       if (pigeon.results && Array.isArray(pigeon.results)) {
@@ -683,7 +683,7 @@ if (pigeon.DNAPhoto) {
               <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-x-10">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium  mb-2">
                     Ring Number *
                   </label>
                   <input
@@ -702,7 +702,7 @@ if (pigeon.DNAPhoto) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium  mb-2">
                     Name *
                   </label>
                   <input
@@ -716,12 +716,10 @@ if (pigeon.DNAPhoto) {
                             singlePigeon?.data?.name?.trim().toLowerCase() ===
                               value?.trim().toLowerCase()
                           ) {
-                            // Allow same name in edit mode if it's the pigeon's original name
-                            return true;
+                            return true; // allow same name if editing current pigeon
                           }
 
                           const isDuplicate = validatePigeonName(value);
-
                           if (isDuplicate) {
                             return "This pigeon is already registered in our database. To add it to your loft database, go to the Pigeon Database and press the '+' button.";
                           }
@@ -731,7 +729,9 @@ if (pigeon.DNAPhoto) {
                       },
                     })}
                     placeholder="Name"
-                    className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className={`w-full px-3 py-[14px] border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                      errors.name ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
                   {errors.name && (
                     <p className="text-red-500 text-xs mt-1">
@@ -742,7 +742,7 @@ if (pigeon.DNAPhoto) {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Country <span className="text-red-500">*</span>
+                    Country *
                   </label>
 
                   <Controller
@@ -778,7 +778,7 @@ if (pigeon.DNAPhoto) {
 
                 <div className="relative w-full">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Birth Year <span className="text-red-500">*</span>
+                    Birth Year *
                   </label>
 
                   <input
@@ -868,7 +868,7 @@ Bought for USD 50,000`}
               <div className="grid grid-cols-1  lg:grid-cols-2 gap-x-10">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Breeder Name
+                    Loft Name
                   </label>
                   <div className="relative">
                     <input
@@ -899,7 +899,7 @@ Bought for USD 50,000`}
                           }
                         }
                       }}
-                      placeholder="Type or Select Breeder Name"
+                      placeholder="Type or Select Loft Name"
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
 
@@ -1087,7 +1087,7 @@ Bought for USD 50,000`}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium  mb-2">
                       Gender *
                     </label>
                     <Select

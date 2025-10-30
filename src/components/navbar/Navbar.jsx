@@ -465,10 +465,13 @@ export default function Navbar() {
       href: "/policy",
     },
   ];
-   const logoLink =
-    userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN"
-      ? "/loft-overview"
-      : "/";
+ const logoLink =
+  userData?.role === "PAIDUSER" || userData?.role === "SUPER_ADMIN"
+    ? "/loft-overview"
+    : userData?.role === "USER"
+    ? "/subscription"
+    : "/";
+
 
   return (
     <>
