@@ -2,16 +2,30 @@ import jsPDF from "jspdf";
 import { useCallback } from "react";
 
 // Helper function to load image as base64
-const loadImageAsBase64 = async (url) => {
+const loadImageAsBase64 = async (url, isCircular = false) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+      const size = Math.min(img.width, img.height);
+      canvas.width = size;
+      canvas.height = size;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
+      
+      if (isCircular) {
+        // Create circular clipping path
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+      }
+      
+      // Draw image (centered if dimensions differ)
+      const offsetX = (size - img.width) / 2;
+      const offsetY = (size - img.height) / 2;
+      ctx.drawImage(img, offsetX, offsetY, img.width, img.height);
+      
       resolve(canvas.toDataURL("image/png"));
     };
     img.onerror = () => {
@@ -52,13 +66,21 @@ export const exportPedigreeToPDF = async (
     let unspecifiedImage = null;
 
     try {
-      // Base URL for profile images only
-      const baseUrl = "https://ftp.thepigeonhub.com";
+      // Helper to get full image URL
+      const getImageUrl = (path) => {
+        if (path?.startsWith("http://") || path?.startsWith("https://")) {
+          return path;
+        } else {
+          // const baseUrl = "https://ftp.thepigeonhub.com";
+          const baseUrl = "http://10.10.7.41:5001";
+          return `${baseUrl}/${path?.replace(/^\/+/, '')}`; // Remove leading slashes
+        }
+      };
       
       // Load logo from profileData if available, otherwise use default
       const profilePath = profileData?.profile || "/assests/logo.png";
-      const logoUrl = profilePath.startsWith('http') ? profilePath : `${baseUrl}${profilePath}`;
-      logoImage = await loadImageAsBase64(logoUrl);
+      const logoUrl = getImageUrl(profilePath);
+      logoImage = await loadImageAsBase64(logoUrl, true); // true for circular
 
       letterBImage = await loadImageAsBase64("/assests/Letter-B.png");
       letterPImage = await loadImageAsBase64("/assests/Letter-P.png");
