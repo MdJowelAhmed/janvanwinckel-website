@@ -386,6 +386,7 @@ export default function ProfileDashboardComponents() {
                       type="text"
                       name="contact"
                       value={formData.contact}
+                      maxLength={16} 
                       onChange={handleChange}
                       className="w-full border rounded-md focus:ring-2 py-6 focus:ring-red-500 focus:border-red-500"
                       placeholder="Enter your contact number"

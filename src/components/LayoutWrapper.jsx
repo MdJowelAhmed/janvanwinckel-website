@@ -17,7 +17,7 @@ const LayoutWrapper = ({ children }) => {
     "/pigeon-database",
     "/",
     "/register",
-    "/profile-dashboard",
+    // "/profile-dashboard",
     "/contact",
     "/about-us",
     "/terms",

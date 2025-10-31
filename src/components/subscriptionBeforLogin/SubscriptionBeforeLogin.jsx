@@ -38,7 +38,9 @@ const SubscriptionBeforeLogin = () => {
     }
   };
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return   <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>;
 
   return (
     <div className="mb-6 xl:mb-16 mt-6 xl:mt-10 px-4 md:px-8 lg:px-12">
