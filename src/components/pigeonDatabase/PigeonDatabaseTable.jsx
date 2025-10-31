@@ -103,17 +103,38 @@ const PigeonTable = ({
     };
   }, [isGrabbing]);
 
-  const handleDownload = (fileUrl, fileName) => {
+const handleDownload = async (fileUrl, fileName) => {
     if (!fileUrl) return;
-    
-    const fullUrl = getImageUrl(fileUrl);
-    const link = document.createElement('a');
-    link.href = fullUrl;
-    link.download = fileName;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    try {
+      const fullUrl = getImageUrl(fileUrl);
+      
+      // Fetch the file as a blob
+      const response = await fetch(fullUrl);
+      const blob = await response.blob();
+      
+      // Create a blob URL
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      // Create and trigger download
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to download file. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#37B7C3",
+      });
+    }
   };
 
   const getFileName = (url, prefix) => {
