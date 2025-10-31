@@ -14,9 +14,9 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
     birthYear: "",
   });
   const [countries, setCountries] = useState([]);
-  const [yearSearch, setYearSearch] = useState("");
+  const [yearSearch, setYearSearch] = useState("All Years");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [countrySearch, setCountrySearch] = useState("");
+  const [countrySearch, setCountrySearch] = useState("All Countries");
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
   useEffect(() => {
@@ -49,13 +49,19 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   );
 
   const filteredYears = allYears.filter((year) =>
-    year.toString().includes(yearSearch)
+    year.toString().includes(yearSearch === "All Years" ? "" : yearSearch)
   );
 
   const handleSelectYear = (year) => {
-    setYearSearch(year.toString());
-    setShowDropdown(false);
-    handleFilterChange("birthYear", year.toString());
+    if (year === "all") {
+      setYearSearch("All Years");
+      setShowDropdown(false);
+      handleFilterChange("birthYear", "");
+    } else {
+      setYearSearch(year.toString());
+      setShowDropdown(false);
+      handleFilterChange("birthYear", year.toString());
+    }
   };
 
   const handleYearInputChange = (e) => {
@@ -63,20 +69,26 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
     setYearSearch(value);
     setShowDropdown(true);
 
-    // If empty, clear the filter
-    if (value === "") {
-      handleFilterChange("birthYear", "all");
+    // If empty or "All Years", clear the filter
+    if (value === "" || value === "All Years") {
+      handleFilterChange("birthYear", "");
     }
   };
 
   const handleCountrySelect = (country) => {
-    setCountrySearch(country);
-    setShowCountryDropdown(false);
-    handleFilterChange("country", country);
+    if (country === "all") {
+      setCountrySearch("All Countries");
+      setShowCountryDropdown(false);
+      handleFilterChange("country", "all");
+    } else {
+      setCountrySearch(country);
+      setShowCountryDropdown(false);
+      handleFilterChange("country", country);
+    }
   };
 
   const filteredCountries = countries.filter((country) =>
-    country.toLowerCase().includes(countrySearch.toLowerCase())
+    country.toLowerCase().includes(countrySearch === "All Countries" ? "" : countrySearch.toLowerCase())
   );
 
   return (
@@ -118,9 +130,14 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                 setCountrySearch(e.target.value);
                 setShowCountryDropdown(true);
               }}
-              placeholder="Type or Select Country"
+              placeholder="All Countries"
               className="w-full px-3 py-[25px] border border-slate-500 bg-transparent rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              onFocus={() => setShowCountryDropdown(true)}
+              onFocus={() => {
+                if (countrySearch === "All Countries") {
+                  setCountrySearch("");
+                }
+                setShowCountryDropdown(true);
+              }}
               onBlur={() =>
                 setTimeout(() => setShowCountryDropdown(false), 200)
               }
@@ -129,11 +146,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
             {showCountryDropdown && (
               <ul className="absolute z-10 w-full bg-foreground border border-slate-500 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
                 <li
-                  onClick={() => {
-                    setCountrySearch("");
-                    setShowCountryDropdown(false);
-                    handleFilterChange("country", "all");
-                  }}
+                  onClick={() => handleCountrySelect("all")}
                   className="px-3 py-2 hover:bg-teal-600 cursor-pointer border-b border-slate-600"
                 >
                   All Countries
@@ -192,14 +205,25 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               type="text"
               value={yearSearch}
               onChange={handleYearInputChange}
-              placeholder="Type or Select Year"
+              placeholder="All Years"
               className="w-full px-3 py-[25px] border border-slate-500 bg-transparent rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              onFocus={() => setShowDropdown(true)}
+              onFocus={() => {
+                if (yearSearch === "All Years") {
+                  setYearSearch("");
+                }
+                setShowDropdown(true);
+              }}
               onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
             />
 
             {showDropdown && (
               <ul className="absolute z-10 w-full bg-foreground border border-slate-500 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
+                <li
+                  onClick={() => handleSelectYear("all")}
+                  className="px-3 py-2 hover:bg-teal-600 cursor-pointer border-b border-slate-600"
+                >
+                  All Years
+                </li>
                 {filteredYears.length > 0 ? (
                   filteredYears.map((year) => (
                     <li

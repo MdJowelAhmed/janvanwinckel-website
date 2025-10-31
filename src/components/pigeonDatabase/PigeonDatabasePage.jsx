@@ -22,7 +22,7 @@ const PigeonDatabasePage = () => {
   // Build query parameters
   const queryParams = [
     { name: "page", value: currentPage },
-    { name: "limit", value: 10 },
+    { name: "limit", value: 10000 },
     ...(searchTerm ? [{ name: "searchTerm", value: searchTerm }] : []),
     ...(selectedStatus ? [{ name: "status", value: selectedStatus }] : []), // Add status filter
     ...filters,
