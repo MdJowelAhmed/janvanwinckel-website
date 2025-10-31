@@ -427,9 +427,9 @@ const AddPigeonContainer = ({ pigeonId }) => {
         motherRingId: pigeon.motherRingId?.ringNumber || "",
         verified: pigeon.verified || false,
         iconic: pigeon.iconic || false,
-        addresults: Array.isArray(pigeon.addresults)
-          ? pigeon.addresults.join("\\n")
-          : pigeon.addresults || "",
+       addresults: Array.isArray(pigeon.addresults)
+        ? pigeon.addresults.join("\n")
+        : pigeon.addresults || "",
         iconicScore: pigeon.iconicScore || 0,
       });
 
