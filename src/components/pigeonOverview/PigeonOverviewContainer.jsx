@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
 import PigeonPdfExport from "./OverviewExport";
+import SyncHorizontalScroll from "../share/Scrollbar";
 
 const PigeonOverviewContainer = () => {
   const { id } = useParams();
@@ -512,7 +513,7 @@ const PigeonOverviewContainer = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
               <div className="space-y-4">
-                <p className="text-sm text-gray-600 flex items-center gap-2">
+                <div className="text-sm text-gray-600 flex items-center gap-2">
                   <div>
                     {" "}
                     Breeder:{" "}
@@ -529,8 +530,8 @@ const PigeonOverviewContainer = () => {
                       className="w-5 h-5 inline-block"
                     />
                   ) : null}
-                </p>
-                <p className="text-sm text-gray-600 flex items-center gap-2">
+                </div>
+                <div className="text-sm text-gray-600 flex items-center gap-2">
                   <div>
                     Breeder Loft Name:{" "}
                     <strong className="text-accent-foreground">
@@ -546,7 +547,7 @@ const PigeonOverviewContainer = () => {
                       className="w-5 h-5 inline-block"
                     />
                   ) : null}
-                </p>
+                </div>
                 <p className="text-sm text-gray-600">
                   Location:{" "}
                   <strong className="text-accent-foreground">
@@ -630,80 +631,106 @@ const PigeonOverviewContainer = () => {
                     <Spinner />
                   </div>
                 ) : siblings.length > 0 ? (
-                  <div className="overflow-x-auto rounded-lg">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b bg-foreground text-white">
-                          <th className="text-left p-3 font-semibold">Name</th>
-                          <th className="text-left p-3 font-semibold">
-                            Siblings Type
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Ring Number
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Birth Year
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Breeder Rating
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Racing Rating
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Father
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Mother
-                          </th>
-                          <th className="text-left p-3 font-semibold">
-                            Gender
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {siblings.map((sibling, index) => (
-                          <tr
-                            key={sibling._id || index}
-                            className="border-b bg-background text-white"
-                          >
-                            <td className="p-3 font-medium">
-                              {sibling.name || "N/A"}
-                            </td>
+                  <div className="overflow-x-auto whitespace-nowrap  rounded-lg">
+                    <SyncHorizontalScroll
+                      containerClassName="overflow-x-auto border rounded-lg shadow-md bg-red-600 custom-scrollbar hide-scrollbar cursor-grab"
+                      watch={siblings.length}
+                    >
+                      <div
+                        style={{
+                          minWidth:
+                            siblings.length > 0 ? "max-content" : "100%",
+                        }}
+                        className="bg-red-600 rounded-lg"
+                      >
+                        <style>{`
+              div.overflow-x-auto::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+              }
+            `}</style>
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b bg-foreground text-white">
+                              <th className="text-left p-3 font-semibold">
+                                Name
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Siblings Type
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Ring Number
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Birth Year
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Breeder Rating
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Racing Rating
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Father
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Mother
+                              </th>
+                              <th className="text-left p-3 font-semibold">
+                                Gender
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {siblings.map((sibling, index) => (
+                              <tr
+                                key={sibling._id || index}
+                                className="border-b bg-background text-white"
+                              >
+                                <td className="p-3 font-medium">
+                                  {sibling.name || "N/A"}
+                                </td>
 
-                            <td
-                              onClick={() =>
-                                sibling._id &&
-                                router.push(`/pedigree-chart/${sibling._id}`)
-                              }
-                              className="p-3 text-[#3AB27F] cursor-pointer hover:underline hover:text-[#2E8B57] transition-colors"
-                            >
-                              {sibling.type || "N/A"}
-                            </td>
+                                <td
+                                  onClick={() =>
+                                    sibling._id &&
+                                    router.push(
+                                      `/pedigree-chart/${sibling._id}`
+                                    )
+                                  }
+                                  className="p-3 text-[#3AB27F] cursor-pointer hover:underline hover:text-[#2E8B57] transition-colors"
+                                >
+                                  {sibling.type || "N/A"}
+                                </td>
 
-                            <td className="p-3">
-                              {sibling.ringNumber || "N/A"}
-                            </td>
-                            <td className="p-3">
-                              {sibling.birthYear || "N/A"}
-                            </td>
-                            <td className="p-3">
-                              {sibling.breederRating || "N/A"}
-                            </td>
-                            <td className="p-3">
-                              {sibling.racingRating || "N/A"}
-                            </td>
-                            <td className="p-3">
-                              {sibling.fatherRingId?.ringNumber || "N/A"}
-                            </td>
-                            <td className="p-3">
-                              {sibling.motherRingId?.ringNumber || "N/A"}
-                            </td>
-                            <td className="p-3">{sibling.gender || "N/A"}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                                <td className="p-3">
+                                  {sibling.ringNumber || "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  {sibling.birthYear || "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  {sibling.breederRating || "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  {sibling.racingRating || "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  {sibling.fatherRingId?.ringNumber || "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  {sibling.motherRingId?.ringNumber || "N/A"}
+                                </td>
+                                <td className="p-3">
+                                  {sibling.gender || "N/A"}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </SyncHorizontalScroll>
                   </div>
                 ) : (
                   <p className="text-gray-500 italic text-center p-4">

@@ -868,7 +868,7 @@ Bought for USD 50,000`}
               <div className="grid grid-cols-1  lg:grid-cols-2 gap-x-10">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Loft Name
+                    Breeder Name
                   </label>
                   <div className="relative">
                     <input
@@ -899,7 +899,7 @@ Bought for USD 50,000`}
                           }
                         }
                       }}
-                      placeholder="Type or Select Loft Name"
+                      placeholder="Type or Select Breeder Name"
                       className="w-full px-3 py-[14px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
 
