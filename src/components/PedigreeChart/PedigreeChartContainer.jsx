@@ -535,13 +535,13 @@ export default function PigeonPedigreeChart() {
       <div className="relative">
         <div className="absolute bottom-40 2xl:bottom-40 left-8 2xl:left-30 text-black">
           <p className="text-accent-foreground font-bold">
-            {profileData?.name}
+            {profileData?.name.slice(0,24)}
           </p>
           {profileData?.contact && (
             <p>
              
               <span className="text-accent-foreground font-bold text-[12px]">
-                {profileData?.contact}
+                {profileData?.contact.slice(0,16)}
               </span>
             </p>
           )}
@@ -549,7 +549,7 @@ export default function PigeonPedigreeChart() {
             <p>
             
               <span className="text-accent-foreground font-bold text-[12px]">
-                {profileData?.email}
+                {profileData?.email.slice(0,24)}
               </span>
             </p>
           )}
