@@ -499,7 +499,7 @@ export default function PigeonPedigreeChart() {
           alt="The Pigeon Hub Logo"
           width={80}
           height={80}
-          className="absolute h-20 w-20 top-15 2xl:top-20 left-30 2xl:left-50 rounded-full"
+          className="absolute h-20 w-20 top-15 2xl:top-20 left-30 2xl:left-50 rounded-full object-cover"
         />
       </div>
       <div

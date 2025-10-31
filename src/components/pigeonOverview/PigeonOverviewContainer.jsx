@@ -362,70 +362,62 @@ const PigeonOverviewContainer = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {pigeon?.fatherRingId ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600">
-                    Ring Number:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.fatherRingId?.ringNumber || "N/A"}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Name:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.fatherRingId?.name || "N/A"}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Birth Year:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.fatherRingId?.birthYear || "N/A"}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Country:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.fatherRingId?.country || "N/A"}
-                    </strong>
-                  </p>
-                  {pigeon?.fatherRingId?.breeder && (
-                    <p className="text-sm text-gray-600">
-                      Breeder:{" "}
-                      <strong className="text-accent-foreground">
-                        {pigeon?.fatherRingId?.breeder?.breederName || "N/A"}
-                      </strong>
-                    </p>
-                  )}
-                  {pigeon?.fatherRingId?.shortInfo && (
-                    <p className="text-sm text-gray-600">
-                      Story:{" "}
-                      <strong className="text-accent-foreground whitespace-pre-line">
-                        {pigeon.fatherRingId.shortInfo.replace(/\\n/g, "\n")}
-                      </strong>
-                    </p>
-                  )}
-
-                  {pigeon?.fatherRingId?.addresults &&
-                    pigeon?.fatherRingId?.addresults.length > 0 && (
-                      <div className="text-sm text-gray-600">
-                        <p className="font-semibold text-accent-foreground mb-1">
-                          Results:
-                        </p>
-                        <div className="space-y-1">
-                          {pigeon.fatherRingId.addresults.map(
-                            (result, index) => (
-                              <p key={index}>{result}</p>
-                            )
-                          )}
-                        </div>
-                      </div>
-                    )}
-                </div>
-              ) : (
-                <p className="text-gray-500 italic">
-                  Information not available
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  Ring Number:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.fatherRingId?.ringNumber || "N/A"}
+                  </strong>
                 </p>
-              )}
+                <p className="text-sm text-gray-600">
+                  Name:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.fatherRingId?.name || "N/A"}
+                  </strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Birth Year:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.fatherRingId?.birthYear || "N/A"}
+                  </strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Country:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.fatherRingId?.country || "N/A"}
+                  </strong>
+                </p>
+
+                <p className="text-sm text-gray-600">
+                  Breeder:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.fatherRingId?.breeder?.breederName || "N/A"}
+                  </strong>
+                </p>
+
+                 <p className="text-sm text-gray-600">
+                  Story:{" "}
+                  <strong className="text-accent-foreground whitespace-pre-line">
+                    {pigeon?.fatherRingId?.shortInfo?.replace(/\\n/g, "\n") ||
+                      "N/A"}
+                  </strong>
+                </p>
+
+                <div className="flex gap-1">
+                  <p className="font-normal text-[14px]">Results: </p>
+                  <p className="font-semibold text-[14px]">
+                    {/* {safeValue(pigeonData.fatherRingId?.results)} */}
+                    <span className="font-normal text-[14px]">
+                      {Array.isArray(pigeon?.fatherRingId?.addresults) &&
+                      pigeon?.fatherRingId?.addresults.length > 0
+                        ? pigeon?.fatherRingId?.addresults.map(
+                            (result, index) => <div key={index}>{result}</div>
+                          )
+                        : "N/A"}
+                    </span>
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -436,69 +428,63 @@ const PigeonOverviewContainer = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {pigeon?.motherRingId ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600">
-                    Ring Number:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.motherRingId?.ringNumber || "N/A"}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Name:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.motherRingId?.name || "N/A"}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Birth Year:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.motherRingId?.birthYear || "N/A"}
-                    </strong>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Country:{" "}
-                    <strong className="text-accent-foreground">
-                      {pigeon?.motherRingId?.country || "N/A"}
-                    </strong>
-                  </p>
-                  {pigeon?.motherRingId?.breeder && (
-                    <p className="text-sm text-gray-600">
-                      Breeder:{" "}
-                      <strong className="text-accent-foreground">
-                        {pigeon?.motherRingId?.breeder?.breederName || "N/A"}
-                      </strong>
-                    </p>
-                  )}
-                  {pigeon?.motherRingId?.shortInfo && (
-                    <p className="text-sm text-gray-600">
-                      Story:{" "}
-                      <strong className="text-accent-foreground whitespace-pre-line">
-                        {pigeon.motherRingId.shortInfo.replace(/\\n/g, "\n")}
-                      </strong>
-                    </p>
-                  )}
-                  {pigeon?.motherRingId?.addresults &&
-                    pigeon?.motherRingId?.addresults.length > 0 && (
-                      <div className="text-sm text-gray-600">
-                        <p className="font-semibold text-accent-foreground mb-1">
-                          Results:
-                        </p>
-                        <div className="space-y-1">
-                          {pigeon.motherRingId.addresults.map(
-                            (result, index) => (
-                              <p key={index}>{result}</p>
-                            )
-                          )}
-                        </div>
-                      </div>
-                    )}
-                </div>
-              ) : (
-                <p className="text-gray-500 italic">
-                  Information not available
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  Ring Number:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.motherRingId?.ringNumber || "N/A"}
+                  </strong>
                 </p>
-              )}
+                <p className="text-sm text-gray-600">
+                  Name:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.motherRingId?.name || "N/A"}
+                  </strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Birth Year:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.motherRingId?.birthYear || "N/A"}
+                  </strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Country:{" "}
+                  <strong className="text-accent-foreground">
+                    {pigeon?.motherRingId?.country || "N/A"}
+                  </strong>
+                </p>
+               
+                  <p className="text-sm text-gray-600">
+                    Breeder:{" "}
+                    <strong className="text-accent-foreground">
+                      {pigeon?.motherRingId?.breeder?.breederName || "N/A"}
+                    </strong>
+                  </p>
+              
+
+                <p className="text-sm text-gray-600">
+                  Story:{" "}
+                  <strong className="text-accent-foreground whitespace-pre-line">
+                    {pigeon?.motherRingId?.shortInfo?.replace(/\\n/g, "\n") ||
+                      "N/A"}
+                  </strong>
+                </p>
+
+                <div className="flex gap-1">
+                  <p className="font-normal text-[14px]">Results: </p>
+                  <p className="font-semibold text-[14px]">
+                    {/* {safeValue(pigeonData.fatherRingId?.results)} */}
+                    <span className="font-normal text-[14px]">
+                      {Array.isArray(pigeon?.motherRingId?.addresults) &&
+                      pigeon?.motherRingId?.addresults.length > 0
+                        ? pigeon?.motherRingId?.addresults.map(
+                            (result, index) => <div key={index}>{result}</div>
+                          )
+                        : "N/A"}
+                    </span>
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -611,138 +597,133 @@ const PigeonOverviewContainer = () => {
          
         )} */}
 
-         <Card>
-            <CardHeader>
-              <button
-                className="w-full justify-between p-0 h-auto"
-                onClick={() => setShowSiblings(!showSiblings)}
-              >
-                <CardTitle className="text-xl font-bold text-accent flex items-center justify-between gap-2 w-full">
-                  Siblings Information
-                  {showSiblings ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </CardTitle>
-              </button>
-            </CardHeader>
-            {showSiblings && (
-              <CardContent>
-                {siblingsLoading ? (
-                  <div className="flex justify-center p-4">
-                    <Spinner />
-                  </div>
-                ) : siblings.length > 0 ? (
-                  <div className="overflow-x-auto whitespace-nowrap  rounded-lg">
-                    <SyncHorizontalScroll
-                      containerClassName="overflow-x-auto border rounded-lg shadow-md bg-red-600 custom-scrollbar hide-scrollbar cursor-grab"
-                      watch={siblings.length}
+        <Card>
+          <CardHeader>
+            <button
+              className="w-full justify-between p-0 h-auto"
+              onClick={() => setShowSiblings(!showSiblings)}
+            >
+              <CardTitle className="text-xl font-bold text-accent flex items-center justify-between gap-2 w-full">
+                Siblings Information
+                {showSiblings ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </CardTitle>
+            </button>
+          </CardHeader>
+          {showSiblings && (
+            <CardContent>
+              {siblingsLoading ? (
+                <div className="flex justify-center p-4">
+                  <Spinner />
+                </div>
+              ) : siblings.length > 0 ? (
+                <div className="overflow-x-auto whitespace-nowrap  rounded-lg">
+                  <SyncHorizontalScroll
+                    containerClassName="overflow-x-auto border rounded-lg shadow-md bg-red-600 custom-scrollbar hide-scrollbar cursor-grab"
+                    watch={siblings.length}
+                  >
+                    <div
+                      style={{
+                        minWidth: siblings.length > 0 ? "max-content" : "100%",
+                      }}
+                      className="bg-red-600 rounded-lg"
                     >
-                      <div
-                        style={{
-                          minWidth:
-                            siblings.length > 0 ? "max-content" : "100%",
-                        }}
-                        className="bg-red-600 rounded-lg"
-                      >
-                        <style>{`
+                      <style>{`
               div.overflow-x-auto::-webkit-scrollbar {
                 display: none !important;
                 width: 0 !important;
                 height: 0 !important;
               }
             `}</style>
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b bg-foreground text-white">
-                              <th className="text-left p-3 font-semibold">
-                                Name
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Siblings Type
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Ring Number
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Birth Year
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Breeder Rating
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Racing Rating
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Father
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Mother
-                              </th>
-                              <th className="text-left p-3 font-semibold">
-                                Gender
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {siblings.map((sibling, index) => (
-                              <tr
-                                key={sibling._id || index}
-                                className="border-b bg-background text-white"
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b bg-foreground text-white">
+                            <th className="text-left p-3 font-semibold">
+                              Name
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Siblings Type
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Ring Number
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Birth Year
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Breeder Rating
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Racing Rating
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Father
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Mother
+                            </th>
+                            <th className="text-left p-3 font-semibold">
+                              Gender
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {siblings.map((sibling, index) => (
+                            <tr
+                              key={sibling._id || index}
+                              className="border-b bg-background text-white"
+                            >
+                              <td className="p-3 font-medium">
+                                {sibling.name || "N/A"}
+                              </td>
+
+                              <td
+                                onClick={() =>
+                                  sibling._id &&
+                                  router.push(`/pedigree-chart/${sibling._id}`)
+                                }
+                                className="p-3 text-[#3AB27F] cursor-pointer hover:underline hover:text-[#2E8B57] transition-colors"
                               >
-                                <td className="p-3 font-medium">
-                                  {sibling.name || "N/A"}
-                                </td>
+                                {sibling.type || "N/A"}
+                              </td>
 
-                                <td
-                                  onClick={() =>
-                                    sibling._id &&
-                                    router.push(
-                                      `/pedigree-chart/${sibling._id}`
-                                    )
-                                  }
-                                  className="p-3 text-[#3AB27F] cursor-pointer hover:underline hover:text-[#2E8B57] transition-colors"
-                                >
-                                  {sibling.type || "N/A"}
-                                </td>
-
-                                <td className="p-3">
-                                  {sibling.ringNumber || "N/A"}
-                                </td>
-                                <td className="p-3">
-                                  {sibling.birthYear || "N/A"}
-                                </td>
-                                <td className="p-3">
-                                  {sibling.breederRating || "N/A"}
-                                </td>
-                                <td className="p-3">
-                                  {sibling.racingRating || "N/A"}
-                                </td>
-                                <td className="p-3">
-                                  {sibling.fatherRingId?.ringNumber || "N/A"}
-                                </td>
-                                <td className="p-3">
-                                  {sibling.motherRingId?.ringNumber || "N/A"}
-                                </td>
-                                <td className="p-3">
-                                  {sibling.gender || "N/A"}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </SyncHorizontalScroll>
-                  </div>
-                ) : (
-                  <p className="text-gray-500 italic text-center p-4">
-                    No siblings found
-                  </p>
-                )}
-              </CardContent>
-            )}
-          </Card>
+                              <td className="p-3">
+                                {sibling.ringNumber || "N/A"}
+                              </td>
+                              <td className="p-3">
+                                {sibling.birthYear || "N/A"}
+                              </td>
+                              <td className="p-3">
+                                {sibling.breederRating || "N/A"}
+                              </td>
+                              <td className="p-3">
+                                {sibling.racingRating || "N/A"}
+                              </td>
+                              <td className="p-3">
+                                {sibling.fatherRingId?.ringNumber || "N/A"}
+                              </td>
+                              <td className="p-3">
+                                {sibling.motherRingId?.ringNumber || "N/A"}
+                              </td>
+                              <td className="p-3">{sibling.gender || "N/A"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </SyncHorizontalScroll>
+                </div>
+              ) : (
+                <p className="text-gray-500 italic text-center p-4">
+                  No siblings found
+                </p>
+              )}
+            </CardContent>
+          )}
+        </Card>
 
         {/* Race Results */}
         <Card>

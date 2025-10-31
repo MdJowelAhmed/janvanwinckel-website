@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const VideoPlayer = ({ data, onComplete }) => {
   const videoRef = useRef(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const progressRef = useRef(0); // 👈 state এর পরিবর্তে ref ব্যবহার
+  const progressRef = useRef(0); 
 
   const hasRedirectUrl = data?.redirectUrl && data.redirectUrl.trim() !== "";
 

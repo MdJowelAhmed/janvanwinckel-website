@@ -3,49 +3,34 @@ import jsPDF from "jspdf";
 import { useCallback } from "react";
 
 // Helper function to load image as base64 with compression and transparent background
-const loadImageAsBase64 = async (url, isCircular = false, maxSize = 100) => {
+const loadImageAsBase64 = async (url, isCircular = false) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      
-      // Resize image to maximum size to reduce file size
-      let width = img.width;
-      let height = img.height;
-      
-      if (width > maxSize || height > maxSize) {
-        if (width > height) {
-          height = (height / width) * maxSize;
-          width = maxSize;
-        } else {
-          width = (width / height) * maxSize;
-          height = maxSize;
-        }
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
+      const size = Math.min(img.width, img.height);
+      canvas.width = size;
+      canvas.height = size;
       const ctx = canvas.getContext("2d");
-      
-      // Clear canvas to ensure transparency (no background)
-      ctx.clearRect(0, 0, width, height);
-      
+
+
       if (isCircular) {
         // Create circular clipping path
         ctx.beginPath();
-        ctx.arc(width / 2, height / 2, width / 2, 0, Math.PI * 2);
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
         ctx.closePath();
         ctx.clip();
       }
-      
-      // Draw image with better quality
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, width, height);
-      
-      // Always use PNG to preserve transparency
-      resolve(canvas.toDataURL("image/png", 0.8));
+
+
+      // Draw image (centered if dimensions differ)
+      const offsetX = (size - img.width) / 2;
+      const offsetY = (size - img.height) / 2;
+      ctx.drawImage(img, offsetX, offsetY, img.width, img.height);
+
+
+      resolve(canvas.toDataURL("image/png"));
     };
     img.onerror = () => {
       console.error("Failed to load image:", url);
@@ -54,6 +39,12 @@ const loadImageAsBase64 = async (url, isCircular = false, maxSize = 100) => {
     img.src = url;
   });
 };
+
+
+
+
+
+
 
 // Main PDF export function
 export const exportPedigreeToPDF = async (
