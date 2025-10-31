@@ -370,7 +370,7 @@ const handleDownload = async (fileUrl, fileName) => {
                     </TableCell>
 
                     <TableCell>
-                      {pigeon?.breeder?.breederName || "N/A"}
+                      {pigeon?.breeder?.loftName || "N/A"}
                     </TableCell>
 
                     <TableCell className="font-mono text-sm">
