@@ -83,49 +83,49 @@ const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
     {
       label: "All",
       count: stats.all,
-      color: "bg-gray-500",
+      color: "#09B5DD",
       status: "", // Empty string for "All" filter
       active: !selectedStatus || selectedStatus === "",
     },
     {
       label: "Racing",
       count: stats.racing,
-      color: "bg-blue-500",
+      color: "#3AB27F",
       status: "racing",
       active: selectedStatus === "racing",
     },
     {
       label: "Breeding",
       count: stats.breeding,
-      color: "bg-green-500",
+      color: "#FFE4AD",
       status: "breeding",
       active: selectedStatus === "breeding",
     },
     {
       label: "Lost",
       count: stats.lost,
-      color: "bg-red-500",
+      color: "#FD5636",
       status: "lost",
       active: selectedStatus === "lost",
     },
     {
       label: "Sold",
       count: stats.sold,
-      color: "bg-purple-500",
+      color: "#C4CDD6",
       status: "sold",
       active: selectedStatus === "sold",
     },
     {
       label: "Retired",
       count: stats.retired,
-      color: "bg-purple-500",
+      color: "#34B57E",
       status: "Retired",
       active: selectedStatus === "retired",
     },
     {
       label: "Deceased",
       count: stats.deceased,
-      color: "bg-orange-500",
+      color: "#FFBA00",
       status: "deceased",
       active: selectedStatus === "deceased",
     },
@@ -148,28 +148,30 @@ const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
               onClick={() => handleStatusClick(item.status)}
             >
               <div
-                className={`w-3 h-2 rounded-r-2xl ${item.color} transition-all duration-200`}
+                className="w-3 h-2 rounded-r-2xl transition-all duration-200"
+                style={{ backgroundColor: item.color }}
               ></div>
-              <Badge
+
+              <div
                 variant={item.active ? "default" : "secondary"}
                 className={`
                   ${
                     item.active
-                      ? "bg-white text-slate-700 hover:bg-gray-100 shadow-md"
-                      : "bg-slate-600 text-white hover:bg-slate-500"
+                      ? " text-[#B7BBA0] "
+                      : " text-[#B7BBA0] "
                   }
-                  px-3 py-1 text-sm font-medium transition-all duration-200 cursor-pointer
-                  ${item.active ? "ring-2 ring-white ring-opacity-30" : ""}
+                  px-3 py-1 text-sm font-medium  duration-200 cursor-pointer
+                  ${item.active ? "border-b-2 border-[#B7BBA0]" : ""}
                 `}
               >
                 {item.label}
-              </Badge>
+              </div>
             </div>
           ))}
         </div>
 
         {/* Optional: Show active filter indicator */}
-        {selectedStatus && (
+        {/* {selectedStatus && (
           <div className="mt-3 pt-3 border-t border-slate-600">
             <p className="text-sm text-slate-300">
               <span className="text-white font-medium">Active Filter:</span>{" "}
@@ -177,7 +179,7 @@ const PigeonDatabaseOverview = ({ data, onStatusFilter, selectedStatus }) => {
               pigeons
             </p>
           </div>
-        )}
+        )} */}
       </CardContent>
     </div>
   );

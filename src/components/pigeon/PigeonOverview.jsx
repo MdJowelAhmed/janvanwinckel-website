@@ -1,23 +1,24 @@
-import React from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
-  console.log("selected" , selectedStatus)
-  console.log("onFilter" , onStatusFilter)
+  console.log("selected", selectedStatus);
+  console.log("onFilter", onStatusFilter);
   // Calculate statistics from the data
   const getStats = () => {
-    if (!data?.data?.data) return { 
-      all: 0, 
-      racing: 0, 
-      breeding: 0, 
-      lost: 0, 
-      sold: 0, 
-      retired: 0, 
-      deceased: 0 
-    }
+    if (!data?.data?.data)
+      return {
+        all: 0,
+        racing: 0,
+        breeding: 0,
+        lost: 0,
+        sold: 0,
+        retired: 0,
+        deceased: 0,
+      };
 
-    const pigeons = data.data.data
+    const pigeons = data.data.data;
     const stats = {
       all: data.data.pagination?.total || pigeons.length,
       racing: 0,
@@ -25,157 +26,162 @@ const PigeonOverview = ({ data, onStatusFilter, selectedStatus }) => {
       lost: 0,
       sold: 0,
       retired: 0,
-      deceased: 0
-    }
+      deceased: 0,
+    };
 
-    pigeons.forEach(pigeon => {
+    pigeons.forEach((pigeon) => {
       // Check both status and verified fields for proper categorization
-      const status = pigeon.status?.toLowerCase()
-      const isVerified = pigeon.verified
+      const status = pigeon.status?.toLowerCase();
+      const isVerified = pigeon.verified;
 
       if (status) {
         switch (status) {
-          case 'racing':
-            stats.racing++
-            break
-          case 'breeding':
-            stats.breeding++
-            break
-          case 'lost':
-            stats.lost++
-            break
-          case 'sold':
-            stats.sold++
-            break
-          case 'retired':
-            stats.retired++
-            break
-          case 'deceased':
-            stats.deceased++
-            break
+          case "racing":
+            stats.racing++;
+            break;
+          case "breeding":
+            stats.breeding++;
+            break;
+          case "lost":
+            stats.lost++;
+            break;
+          case "sold":
+            stats.sold++;
+            break;
+          case "retired":
+            stats.retired++;
+            break;
+          case "deceased":
+            stats.deceased++;
+            break;
           default:
             // If no specific status but verified field exists
             if (isVerified) {
-              stats.racing++
+              stats.racing++;
             } else {
-              stats.breeding++
+              stats.breeding++;
             }
-            break
+            break;
         }
       } else {
         // Fallback to verified field if status is not available
         if (isVerified) {
-          stats.racing++
+          stats.racing++;
         } else {
-          stats.breeding++
+          stats.breeding++;
         }
       }
-    })
+    });
 
-    return stats
-  }
+    return stats;
+  };
 
-  const stats = getStats()
+  const stats = getStats();
 
   const statItems = [
-    { 
-      label: 'All', 
-      count: stats.all, 
-      color: 'bg-gray-500', 
-      status: '', // Empty string for "All" filter
-      active: !selectedStatus || selectedStatus === '' 
+    {
+      label: "All",
+      count: stats.all,
+      color: "#09B5DD",
+      status: "", // Empty string for "All" filter
+      active: !selectedStatus || selectedStatus === "",
     },
-    { 
-      label: 'Racing', 
-      count: stats.racing, 
-      color: 'bg-blue-500',
-      status: 'Racing',
-      active: selectedStatus === 'Racing'
+    {
+      label: "Racing",
+      count: stats.racing,
+      color: "#3AB27F",
+      status: "Racing",
+      active: selectedStatus === "Racing",
     },
-    { 
-      label: 'Breeding', 
-      count: stats.breeding, 
-      color: 'bg-green-500',
-      status: 'Breeding',
-      active: selectedStatus === 'Breeding'
+    {
+      label: "Breeding",
+      count: stats.breeding,
+      color: "#FFE4AD",
+      status: "Breeding",
+      active: selectedStatus === "Breeding",
     },
-    { 
-      label: 'Lost', 
-      count: stats.lost, 
-      color: 'bg-red-500',
-      status: 'Lost',
-      active: selectedStatus === 'Lost'
+    {
+      label: "Lost",
+      count: stats.lost,
+      color: "#FD5636",
+      status: "Lost",
+      active: selectedStatus === "Lost",
     },
-    { 
-      label: 'Sold', 
-      count: stats.sold, 
-      color: 'bg-purple-500',
-      status: 'Sold',
-      active: selectedStatus === 'Sold'
+    {
+      label: "Sold",
+      count: stats.sold,
+      color: "#C4CDD6",
+      status: "Sold",
+      active: selectedStatus === "Sold",
     },
-    { 
-      label: 'Retired', 
-      count: stats.retired, 
-      color: 'bg-purple-500',
-      status: 'Retired',
-      active: selectedStatus === 'Retired'
+    {
+      label: "Retired",
+      count: stats.retired,
+      color: "#34B57E",
+      status: "Retired",
+      active: selectedStatus === "Retired",
     },
-    { 
-      label: 'Deceased', 
-      count: stats.deceased, 
-      color: 'bg-orange-500',
-      status: 'Deceased',
-      active: selectedStatus === 'Deceased'
-    }
-  ]
+    {
+      label: "Deceased",
+      count: stats.deceased,
+      color: "#FFBA00",
+      status: "Deceased",
+      active: selectedStatus === "Deceased",
+    },
+  ];
 
   const handleStatusClick = (status) => {
     if (onStatusFilter) {
-      onStatusFilter(status)
+      onStatusFilter(status);
     }
-  }
+  };
 
   return (
     <div className="bg-[#44505E] text-white rounded-t-lg">
       <CardContent className="p-4">
         <div className="flex flex-wrap gap-2 gap-x-8 lg:gap-x-12">
           {statItems.map((item, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="flex items-center gap-2 cursor-pointer transition-transform hover:scale-105"
               onClick={() => handleStatusClick(item.status)}
             >
-              <div className={`w-3 h-2 rounded-r-2xl ${item.color} transition-all duration-200`}></div>
-              <Badge
+              <div
+                className="w-3 h-2 rounded-r-2xl transition-all duration-200"
+                style={{ backgroundColor: item.color }}
+              ></div>
+
+              <div
                 variant={item.active ? "default" : "secondary"}
                 className={`
-                  ${item.active
-                    ? 'bg-white text-slate-700 hover:bg-gray-100 shadow-md'
-                    : 'bg-slate-600 text-white hover:bg-slate-500'
+                  ${
+                    item.active
+                      ? "text-[#B7BBA0]"
+                      : "text-[#B7BBA0]"
                   }
                   px-3 py-1 text-sm font-medium transition-all duration-200 cursor-pointer
-                  ${item.active ? 'ring-2 ring-white ring-opacity-30' : ''}
+                  ${item.active ? "border-b-2 border-[#B7BBA0]" : ""}
                 `}
               >
-                {item.label} 
-              </Badge>
+                {item.label}
+              </div>
             </div>
           ))}
         </div>
-        
+
         {/* Optional: Show active filter indicator */}
-        {selectedStatus && (
+        {/* {selectedStatus && (
           <div className="mt-3 pt-3 border-t border-slate-600">
             <p className="text-sm text-slate-300">
-              <span className="text-white font-medium">Active Filter:</span> {
-                statItems.find(item => item.status === selectedStatus)?.label
-              } pigeons
+              <span className="text-white font-medium">Active Filter:</span>{" "}
+              {statItems.find((item) => item.status === selectedStatus)?.label}{" "}
+              pigeons
             </p>
           </div>
-        )}
+        )} */}
       </CardContent>
     </div>
-  )
-}
+  );
+};
 
-export default PigeonOverview
+export default PigeonOverview;

@@ -94,9 +94,9 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   return (
     <div className="bg-foreground text-white rounded-b-lg">
       <CardContent className="p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-8">
           {/* Search */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1">
             <Label
               htmlFor="search"
               className="text-white text-sm font-medium mb-2 block"
