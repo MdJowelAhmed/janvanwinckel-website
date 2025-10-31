@@ -57,30 +57,7 @@ const PigeonTable = ({
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
-  const handleMouseDown = (e) => {
-    if (!tableContainerRef.current) return;
-    setIsGrabbing(true);
-    setStartX(e.pageX - tableContainerRef.current.offsetLeft);
-    setScrollLeft(tableContainerRef.current.scrollLeft);
-    e.preventDefault();
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isGrabbing || !tableContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - tableContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    tableContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseUp = () => {
-    setIsGrabbing(false);
-  };
-
-  const handleMouseLeave = () => {
-    setIsGrabbing(false);
-  };
-
+ 
   useEffect(() => {
     if (isGrabbing) {
       document.body.style.userSelect = "none";
@@ -117,10 +94,7 @@ const PigeonTable = ({
   const pigeons = data.data.data;
   const pagination = data.data.pagination;
 
-  const getRatingStars = (rating) => {
-    const stars = Math.floor(rating / 20);
-    return "★".repeat(stars) + "☆".repeat(5 - stars);
-  };
+
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -174,17 +148,38 @@ const PigeonTable = ({
     }
   };
 
-  const handleDownload = (fileUrl, fileName) => {
+const handleDownload = async (fileUrl, fileName) => {
     if (!fileUrl) return;
 
-    const fullUrl = getImageUrl(fileUrl);
-    const link = document.createElement("a");
-    link.href = fullUrl;
-    link.download = fileName;
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const fullUrl = getImageUrl(fileUrl);
+      
+      // Fetch the file as a blob
+      const response = await fetch(fullUrl);
+      const blob = await response.blob();
+      
+      // Create a blob URL
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      // Create and trigger download
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to download file. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#37B7C3",
+      });
+    }
   };
 
   const getFileName = (url, prefix) => {
