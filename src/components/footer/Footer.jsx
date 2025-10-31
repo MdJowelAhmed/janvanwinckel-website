@@ -13,7 +13,7 @@ export default function Footer() {
           <h2>Learn how to grow 💪audience fast in Pigeon Hub</h2>
         </div>
         <Separator /> */}
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 pb-2">
           <div className="flex  flex-row justify-between items-center gap-8 my-4">
             {/* Left Section - Company Info */}
 

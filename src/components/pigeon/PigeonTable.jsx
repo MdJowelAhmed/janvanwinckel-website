@@ -37,6 +37,7 @@ import Image from "next/image";
 import Swal from "sweetalert2";
 import { DeleteConfirm } from "../share/deleteConfimation";
 import { useMyProfileQuery } from "@/redux/featured/auth/authApi";
+import SyncHorizontalScroll from "../share/Scrollbar";
 
 const PigeonTable = ({
   data,
@@ -82,16 +83,16 @@ const PigeonTable = ({
 
   useEffect(() => {
     if (isGrabbing) {
-      document.body.style.userSelect = 'none';
-      document.body.style.cursor = 'grabbing';
+      document.body.style.userSelect = "none";
+      document.body.style.cursor = "grabbing";
     } else {
-      document.body.style.userSelect = '';
-      document.body.style.cursor = '';
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
     }
 
     return () => {
-      document.body.style.userSelect = '';
-      document.body.style.cursor = '';
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
     };
   }, [isGrabbing]);
 
@@ -175,20 +176,20 @@ const PigeonTable = ({
 
   const handleDownload = (fileUrl, fileName) => {
     if (!fileUrl) return;
-    
+
     const fullUrl = getImageUrl(fileUrl);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = fullUrl;
     link.download = fileName;
-    link.target = '_blank';
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const getFileName = (url, prefix) => {
-    if (!url) return '';
-    const parts = url.split('/');
+    if (!url) return "";
+    const parts = url.split("/");
     const filename = parts[parts.length - 1];
     return `${prefix}_${filename}`;
   };
@@ -198,230 +199,278 @@ const PigeonTable = ({
       <div>
         <CardContent className="p-0">
           <div
-            ref={tableContainerRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            className="overflow-x-auto rounded-lg mb-4"
-            style={{
-              cursor: isGrabbing ? 'grabbing' : 'grab',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              WebkitOverflowScrolling: 'touch',
-            }}
+          // ref={tableContainerRef}
+          // onMouseDown={handleMouseDown}
+          // onMouseMove={handleMouseMove}
+          // onMouseUp={handleMouseUp}
+          // onMouseLeave={handleMouseLeave}
+          // className="overflow-x-auto rounded-lg mb-4"
+          // style={{
+          //   cursor: isGrabbing ? 'grabbing' : 'grab',
+          //   scrollbarWidth: 'none',
+          //   msOverflowStyle: 'none',
+          //   WebkitOverflowScrolling: 'touch',
+          // }}
           >
-            <style>{`
+            <SyncHorizontalScroll
+              containerClassName="overflow-x-auto border rounded-lg shadow-md bg-red-600 custom-scrollbar hide-scrollbar cursor-grab"
+              watch={pigeons.length}
+            >
+                        <div
+            style={{ minWidth: pigeons.length > 0 ? "max-content" : "100%" }}
+            className="bg-red-600 rounded-lg"
+          >
+   <style>{`
               div.overflow-x-auto::-webkit-scrollbar {
                 display: none !important;
                 width: 0 !important;
                 height: 0 !important;
               }
             `}</style>
-            <Table>
-              <TableHeader className="bg-background py-6">
-                <TableRow className="bg-foreground py-5">
-                  <TableHead className="text-white">Image</TableHead>
-                  <TableHead className="text-white">Name</TableHead>
-                  <TableHead className="text-white">Country</TableHead>
-                  <TableHead className="text-white">Breeder</TableHead>
-                  <TableHead className="text-white">Ring Number</TableHead>
-                  <TableHead className="text-white">Birth Year</TableHead>
-                  <TableHead className="text-white">Breeder Rating</TableHead>
-                  <TableHead className="text-white">Racing Rating</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white">Gender</TableHead>
-                  <TableHead className="text-white">Color</TableHead>
-                  <TableHead className="text-white">Location</TableHead>
-                  <TableHead className="text-white w-20">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pigeons.map((pigeon, index) => (
-                  <TableRow
-                    key={pigeon._id}
-                    className="bg-background hover:bg-foreground text-white"
-                  >
-                    <TableCell>
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage
-                          src={
-                            getImageUrl(
-                              pigeon.pigeonPhoto ||
-                                pigeon?.eyePhoto ||
-                                pigeon?.pedigree ||
-                                pigeon?.DNAPhoto ||
-                                pigeon?.ownershipPhoto
-                            ) || "/placeholder-pigeon.jpg"
-                          }
-                          alt={pigeon.name}
-                        />
-                        <AvatarFallback className="bg-blue-100 text-[#3AB27F]">
-                          {pigeon.name?.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-
-                    <TableCell  onClick={() => handlePedigree(pigeon._id)} className="font-medium cursor-pointer text-[#3AB27F]">
-                      {pigeon.name}
-                    </TableCell>
-                    <TableCell>
-                      {(() => {
-                        const countryCode = pigeon.country
-                          ? getCode(pigeon.country)
-                          : null;
-                        return (
-                          countryCode && (
-                            <div className="flex items-center gap-2">
-                              <Image
-                                src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
-                                alt={pigeon.country}
-                                width={24}
-                                height={18}
-                                className="w-5 h-4 rounded-sm"
-                              />
-                              <p className="text-[#B0B6A4]">{countryCode}</p>
-                            </div>
-                          )
-                        );
-                      })()}
-                    </TableCell>
-
-                    <TableCell>
-                      {pigeon?.breeder?.breederName || "N/A"}
-                    </TableCell>
-
-                    <TableCell className="font-mono text-sm">
-                      {pigeon.ringNumber}
-                    </TableCell>
-
-                    <TableCell className="text-[#B0B6A4]">
-                      {pigeon.birthYear}
-                    </TableCell>
-                    <TableCell>{pigeon.breederRating}</TableCell>
-
-                    <TableCell className="">
-                      {pigeon.racingRating || pigeon.racerRating || 0}
-                    </TableCell>
-
-                    <TableCell className="text-[#3AB27F]">
-                      {pigeon.status}
-                    </TableCell>
-
-                    <TableCell className="text-[#3AB27F]">
-                      {pigeon.gender}
-                    </TableCell>
-
-                    <TableCell>{pigeon.color}</TableCell>
-
-                    <TableCell>
-                      {pigeon.location && pigeon.location.length > 20
-                        ? pigeon.location.slice(0, 20) + "..."
-                        : pigeon.location}
-                    </TableCell>
-
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-accent"
-                          >
-                            <MoreHorizontal className="h-4 w-4 text-white font-bold hover:text-white" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          {pigeon?.user?._id === userId && (
-                            <DropdownMenuItem
-                              onClick={() => onEdit(pigeon._id)}
-                              className="cursor-pointer"
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit Pigeon
-                            </DropdownMenuItem>
-                          )}
-
-                          <DropdownMenuItem
-                            onClick={() => handleView(pigeon._id)}
-                            className="cursor-pointer"
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Details
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            onClick={() => handlePedigree(pigeon._id)}
-                            className="cursor-pointer"
-                          >
-                            <GitBranch className="h-4 w-4 mr-2" />
-                            View Pedigree
-                          </DropdownMenuItem>
-
-                          {pigeon.pigeonPhoto && (
-                            <DropdownMenuItem
-                              onClick={() => handleDownload(pigeon.pigeonPhoto, getFileName(pigeon.pigeonPhoto, 'pigeon_photo'))}
-                              className="cursor-pointer"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Pigeon Photo
-                            </DropdownMenuItem>
-                          )}
-
-                          {pigeon.eyePhoto && (
-                            <DropdownMenuItem
-                              onClick={() => handleDownload(pigeon.eyePhoto, getFileName(pigeon.eyePhoto, 'eye_photo'))}
-                              className="cursor-pointer"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Eye Photo
-                            </DropdownMenuItem>
-                          )}
-
-                          {pigeon.ownershipPhoto && (
-                            <DropdownMenuItem
-                              onClick={() => handleDownload(pigeon.ownershipPhoto, getFileName(pigeon.ownershipPhoto, 'ownership_photo'))}
-                              className="cursor-pointer"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Ownership
-                            </DropdownMenuItem>
-                          )}
-
-                          {pigeon.pedigreePhoto && (
-                            <DropdownMenuItem
-                              onClick={() => handleDownload(pigeon.pedigreePhoto, getFileName(pigeon.pedigreePhoto, 'pedigree'))}
-                              className="cursor-pointer"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              Pedigree Photo/PDF
-                            </DropdownMenuItem>
-                          )}
-
-                          {pigeon.DNAPhoto && (
-                            <DropdownMenuItem
-                              onClick={() => handleDownload(pigeon.DNAPhoto, getFileName(pigeon.DNAPhoto, 'dna'))}
-                              className="cursor-pointer"
-                            >
-                              <Download className="h-4 w-4 mr-2" />
-                              DNA Photo/PDF
-                            </DropdownMenuItem>
-                          )}
-
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(pigeon._id)}
-                            className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete Pigeon
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+              <Table scroll={pigeons.length > 0 ? { x: "max-content" } : undefined}
+>
+                <TableHeader className="bg-background py-6">
+                  <TableRow className="bg-foreground py-5">
+                    <TableHead className="text-white">Image</TableHead>
+                    <TableHead className="text-white">Name</TableHead>
+                    <TableHead className="text-white">Country</TableHead>
+                    <TableHead className="text-white">Breeder</TableHead>
+                    <TableHead className="text-white">Ring Number</TableHead>
+                    <TableHead className="text-white">Birth Year</TableHead>
+                    <TableHead className="text-white">Breeder Rating</TableHead>
+                    <TableHead className="text-white">Racing Rating</TableHead>
+                    <TableHead className="text-white">Status</TableHead>
+                    <TableHead className="text-white">Gender</TableHead>
+                    <TableHead className="text-white">Color</TableHead>
+                    <TableHead className="text-white">Location</TableHead>
+                    <TableHead className="text-white w-20">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {pigeons.map((pigeon, index) => (
+                    <TableRow
+                      key={pigeon._id}
+                      className="bg-background hover:bg-foreground text-white"
+                    >
+                      <TableCell>
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage
+                            src={
+                              getImageUrl(
+                                pigeon.pigeonPhoto ||
+                                  pigeon?.eyePhoto ||
+                                  pigeon?.pedigree ||
+                                  pigeon?.DNAPhoto ||
+                                  pigeon?.ownershipPhoto
+                              ) || "/placeholder-pigeon.jpg"
+                            }
+                            alt={pigeon.name}
+                          />
+                          <AvatarFallback className="bg-blue-100 text-[#3AB27F]">
+                            {pigeon.name?.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+
+                      <TableCell
+                        onClick={() => handlePedigree(pigeon._id)}
+                        className="font-medium cursor-pointer text-[#3AB27F]"
+                      >
+                        {pigeon.name}
+                      </TableCell>
+                      <TableCell>
+                        {(() => {
+                          const countryCode = pigeon.country
+                            ? getCode(pigeon.country)
+                            : null;
+                          return (
+                            countryCode && (
+                              <div className="flex items-center gap-2">
+                                <Image
+                                  src={`https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`}
+                                  alt={pigeon.country}
+                                  width={24}
+                                  height={18}
+                                  className="w-5 h-4 rounded-sm"
+                                />
+                                <p className="text-[#B0B6A4]">{countryCode}</p>
+                              </div>
+                            )
+                          );
+                        })()}
+                      </TableCell>
+
+                      <TableCell>
+                        {pigeon?.breeder?.breederName || "N/A"}
+                      </TableCell>
+
+                      <TableCell className="font-mono text-sm">
+                        {pigeon.ringNumber}
+                      </TableCell>
+
+                      <TableCell className="text-[#B0B6A4]">
+                        {pigeon.birthYear}
+                      </TableCell>
+                      <TableCell>{pigeon.breederRating}</TableCell>
+
+                      <TableCell className="">
+                        {pigeon.racingRating || pigeon.racerRating || 0}
+                      </TableCell>
+
+                      <TableCell className="text-[#3AB27F]">
+                        {pigeon.status}
+                      </TableCell>
+
+                      <TableCell className="text-[#3AB27F]">
+                        {pigeon.gender}
+                      </TableCell>
+
+                      <TableCell>{pigeon.color}</TableCell>
+
+                      <TableCell>
+                        {pigeon.location && pigeon.location.length > 20
+                          ? pigeon.location.slice(0, 20) + "..."
+                          : pigeon.location}
+                      </TableCell>
+
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 hover:bg-accent"
+                            >
+                              <MoreHorizontal className="h-4 w-4 text-white font-bold hover:text-white" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            {pigeon?.user?._id === userId && (
+                              <DropdownMenuItem
+                                onClick={() => onEdit(pigeon._id)}
+                                className="cursor-pointer"
+                              >
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit Pigeon
+                              </DropdownMenuItem>
+                            )}
+
+                            <DropdownMenuItem
+                              onClick={() => handleView(pigeon._id)}
+                              className="cursor-pointer"
+                            >
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={() => handlePedigree(pigeon._id)}
+                              className="cursor-pointer"
+                            >
+                              <GitBranch className="h-4 w-4 mr-2" />
+                              View Pedigree
+                            </DropdownMenuItem>
+
+                            {pigeon.pigeonPhoto && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDownload(
+                                    pigeon.pigeonPhoto,
+                                    getFileName(
+                                      pigeon.pigeonPhoto,
+                                      "pigeon_photo"
+                                    )
+                                  )
+                                }
+                                className="cursor-pointer"
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Pigeon Photo
+                              </DropdownMenuItem>
+                            )}
+
+                            {pigeon.eyePhoto && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDownload(
+                                    pigeon.eyePhoto,
+                                    getFileName(pigeon.eyePhoto, "eye_photo")
+                                  )
+                                }
+                                className="cursor-pointer"
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Eye Photo
+                              </DropdownMenuItem>
+                            )}
+
+                            {pigeon.ownershipPhoto && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDownload(
+                                    pigeon.ownershipPhoto,
+                                    getFileName(
+                                      pigeon.ownershipPhoto,
+                                      "ownership_photo"
+                                    )
+                                  )
+                                }
+                                className="cursor-pointer"
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Ownership
+                              </DropdownMenuItem>
+                            )}
+
+                            {pigeon.pedigreePhoto && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDownload(
+                                    pigeon.pedigreePhoto,
+                                    getFileName(
+                                      pigeon.pedigreePhoto,
+                                      "pedigree"
+                                    )
+                                  )
+                                }
+                                className="cursor-pointer"
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Pedigree Photo/PDF
+                              </DropdownMenuItem>
+                            )}
+
+                            {pigeon.DNAPhoto && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDownload(
+                                    pigeon.DNAPhoto,
+                                    getFileName(pigeon.DNAPhoto, "dna")
+                                  )
+                                }
+                                className="cursor-pointer"
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                DNA Photo/PDF
+                              </DropdownMenuItem>
+                            )}
+
+                            <DropdownMenuItem
+                              onClick={() => handleDelete(pigeon._id)}
+                              className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Pigeon
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </div>
+            </SyncHorizontalScroll>
           </div>
         </CardContent>
       </div>

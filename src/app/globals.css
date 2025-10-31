@@ -228,3 +228,24 @@ h3 {
 .cursor-grabbing {
   cursor: grabbing;
 }
+
+
+
+/* scrollbar background color and thumb styling */
+.bottom-sync-scrollbar::-webkit-scrollbar {
+  height: 9px; /* scrollbar height */
+}
+
+.bottom-sync-scrollbar::-webkit-scrollbar-track {
+  background: #212B35; /* scrollbar background color */
+  border-radius: 8px;
+}
+
+.bottom-sync-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #e7e7e7c0; /* scrollbar thumb color (e.g. Tailwind sky-500) */
+  border-radius: 8px;
+}
+
+.bottom-sync-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #e7e7e7c0; /* darker on hover */
+}

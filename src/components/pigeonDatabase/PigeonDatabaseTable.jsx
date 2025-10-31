@@ -45,6 +45,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import SyncHorizontalScroll from "../share/Scrollbar";
 
 const PigeonTable = ({
   data,
@@ -234,19 +235,27 @@ const PigeonTable = ({
       <div>
         <CardContent className="p-0">
           <div
-            ref={tableContainerRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            className="overflow-x-auto rounded-lg mb-4"
-            style={{
-              cursor: isGrabbing ? "grabbing" : "grab",
-              scrollbarWidth: "none", // Firefox
-              msOverflowStyle: "none", // IE and Edge
-            }}
+            // ref={tableContainerRef}
+            // onMouseDown={handleMouseDown}
+            // onMouseMove={handleMouseMove}
+            // onMouseUp={handleMouseUp}
+            // onMouseLeave={handleMouseLeave}
+            // className="overflow-x-auto rounded-lg mb-4"
+            // style={{
+            //   cursor: isGrabbing ? "grabbing" : "grab",
+            //   scrollbarWidth: "none", // Firefox
+            //   msOverflowStyle: "none", // IE and Edge
+            // }}
           >
-            <style>
+              <SyncHorizontalScroll
+              containerClassName="overflow-x-auto border rounded-lg shadow-md bg-red-600 custom-scrollbar hide-scrollbar cursor-grab"
+              watch={pigeons.length}
+            >
+                        <div
+            style={{ minWidth: pigeons.length > 0 ? "max-content" : "100%" }}
+            className="bg-red-600 rounded-lg"
+          > 
+             <style>
               {`
       div.overflow-x-auto::-webkit-scrollbar {
         display: none !important;
@@ -469,6 +478,8 @@ const PigeonTable = ({
                 ))}
               </TableBody>
             </Table>
+          </div>
+          </SyncHorizontalScroll>
           </div>
         </CardContent>
       </div>
