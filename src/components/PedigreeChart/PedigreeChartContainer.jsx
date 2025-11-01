@@ -70,9 +70,9 @@ const PigeonNode = ({ data }) => {
       case "Hen":
         return "/assests/hen.jpg";
       case "Unspecified":
-        return "/assests/unspecific.png";
+        return "/assests/unspefied.png";
       default:
-        return "/assests/unspecific.png";
+        return "/assests/unspefied.png";
     }
   };
 
@@ -256,7 +256,7 @@ const PigeonNode = ({ data }) => {
 
           {data?.iconic && (
             <img
-              src="/assests/Gold-cup.png"
+              src="/assests/Gold-tropy.png"
               alt="Gold Cup"
               width="24"
               height="24"

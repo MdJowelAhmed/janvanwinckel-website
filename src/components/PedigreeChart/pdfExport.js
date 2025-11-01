@@ -98,7 +98,7 @@ export const exportPedigreeToPDF = async (
       // Load small icons with reduced size (30px max)
       letterBImage = await loadImageAsBase64("/assests/Letter-B.png", false, 30);
       letterPImage = await loadImageAsBase64("/assests/Letter-P.png", false, 30);
-      goldCupImage = await loadImageAsBase64("/assests/Gold-cup.png", false, 30);
+      goldCupImage = await loadImageAsBase64("/assests/Gold-tropy.png", false, 30);
       cockImage = await loadImageAsBase64("/assests/cock.png", false, 30);
       goldTrophyImage = await loadImageAsBase64("/assests/Gold-tropy.png", false, 30);
       henImage = await loadImageAsBase64("/assests/hen.jpg", false, 30);
