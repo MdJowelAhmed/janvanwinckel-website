@@ -51,6 +51,7 @@ import { getImageUrl } from "../share/imageUrl";
 
 const PigeonNode = ({ data }) => {
   const countryCode = data.country ? getCode(data.country) : null;
+  console.log("color", data.color);
  
 
   // Check if this is the subject node (generation 0)

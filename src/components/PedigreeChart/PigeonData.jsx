@@ -96,7 +96,8 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
       generation: 0,
       position: "Subject",
       birthYear: subject.birthYear?.toString(),
-      color: "#FFFFE0",
+      // color: "#FFFFE0",
+      color: subject?.colorField || "#fff",
       colorName: subject.color,
       description: subject.shortInfo,
       achievements: formatResults(subject.addresults),
@@ -125,7 +126,8 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 1,
         position: "Father",
         birthYear: subject.fatherRingId.birthYear?.toString(),
-        color: "#ADD8E6",
+        // color: "#ADD8E6",
+        color: subject?.fatherRingId?.colorField || "#fff",
         colorName: subject.fatherRingId.color,
         description:subject.fatherRingId.shortInfo,
         achievements: formatResults(subject.fatherRingId.addresults),
@@ -167,7 +169,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 1,
         position: "Mother",
         birthYear: subject.motherRingId.birthYear?.toString(),
-        color: "#fff",
+        color: subject?.motherRingId?.motherRingId?.colorField || "#fff",
         colorName: subject.motherRingId.color,
         description:subject.motherRingId.shortInfo,
         achievements: formatResults(subject.motherRingId.addresults),
@@ -216,7 +218,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 2,
         position: "Grandfather (FP)",
         birthYear: subject.fatherRingId.fatherRingId.birthYear?.toString(),
-        color: "#fff",
+        color: subject?.fatherRingId?.fatherRingId?.colorField || "#fff",
         colorName: subject.fatherRingId.fatherRingId.color,
         description:subject.fatherRingId.fatherRingId.shortInfo ,
         achievements: formatResults(
@@ -260,7 +262,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 2,
         position: "Grandmother (FP)",
         birthYear: subject.fatherRingId.motherRingId.birthYear?.toString(),
-        color: "#fff",
+        color: subject?.fatherRingId?.motherRingId?.colorField || "#fff",
         colorName: subject.fatherRingId.motherRingId.color,
         description:subject.fatherRingId.motherRingId.shortInfo,
         achievements:
@@ -304,7 +306,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 2,
         position: "Grandfather (MP)",
         birthYear: subject.motherRingId.fatherRingId.birthYear?.toString(),
-        color: "#fff",
+        color: subject.motherRingId.fatherRingId.colorField || "#fff",
         colorName: subject.motherRingId.fatherRingId.color,
         description:subject.motherRingId.fatherRingId.shortInfo,
         achievements:
@@ -347,7 +349,7 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         generation: 2,
         position: "Grandmother (MP)",
         birthYear: subject.motherRingId.motherRingId.birthYear?.toString(),
-        color: "#fff",
+        color: subject.motherRingId.motherRingId.colorField || "#fff",
         colorName: subject.motherRingId.motherRingId.color,
         description:
           subject.motherRingId.motherRingId.notes ||
@@ -404,7 +406,8 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
             generation: 3,
             position: nodeId,
             birthYear: parentPath.birthYear?.toString(),
-            color: color,
+            // color: color,
+            color: parentPath?.colorField || "#fff",
             colorName: parentPath.color,
             // description: parentPath.notes || parentPath.shortInfo,
             achievements: formatResults(parentPath.addresults),
@@ -583,7 +586,8 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
             generation: 4,
             position: `GG-GM (${nodeId})`,
             birthYear: parentPath.motherRingId.birthYear?.toString(),
-            color: motherColor,
+            // color: motherColor,
+            color: parentPath.motherRingId?.colorField || "#fff",
             // colorName: parentPath.motherRingId.color,
             verified: getPigeonVerification(parentPath.motherRingId),
             breederVerified: getBreederStatus(parentPath.motherRingId.breeder),
@@ -619,16 +623,14 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
       "father_3_1",
       { father: { x: 1140, y: -200 }, mother: { x: 1140, y: -70 } },
       "Ancient",
-      "#90EE90",
-      "#90EE90"
+    
     );
     addGen4Node(
       subject.fatherRingId?.fatherRingId?.motherRingId,
       "mother_3_1",
       { father: { x: 1140, y: 60 }, mother: { x: 1140, y: 190 } },
       "Storm",
-      "#FFFFE0",
-      "#FFFFE0"
+    
     );
     addGen4Node(
       subject.fatherRingId?.motherRingId?.fatherRingId,
@@ -659,16 +661,14 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
       "father_3_4",
       { father: { x:1140, y: 1370 }, mother: { x:1140, y: 1500 } },
       "Crimson",
-      "#90EE90",
-      "#90EE90"
+    
     );
     addGen4Node(
       subject.motherRingId?.motherRingId?.motherRingId,
       "mother_3_4",
       { father: { x:1140, y: 1630 }, mother: { x:1140, y: 1760 } },
       "Scarlet",
-      "#FFFFE0",
-      "#FFFFE0"
+     
     );
   }
 
