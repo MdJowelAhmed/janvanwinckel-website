@@ -49,7 +49,7 @@ function TableFooter({
   return (
     <tfoot
       data-slot="table-footer"
-      className={cn("bg-muted/50 border-t font-medium [&>tr]:last:border-b-0", className)}
+      className={cn("bg-background border-t font-medium [&>tr]:last:border-b-0", className)}
       {...props} />
   );
 }
@@ -62,7 +62,7 @@ function TableRow({
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted  transition-colors",
+        "hover:bg-background data-[state=selected]:bg-muted  transition-colors",
         className
       )}
       {...props} />
