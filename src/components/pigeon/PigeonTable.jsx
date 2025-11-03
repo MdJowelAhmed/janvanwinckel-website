@@ -53,7 +53,7 @@ const PigeonTable = ({
   const [deletePigeon] = useDeletePigeonMutation();
   const { data: userData } = useMyProfileQuery();
   const userId = userData?._id;
-
+console.log(data)
   // Sorting state
   const [sortConfig, setSortConfig] = useState({
     key: null,
@@ -96,15 +96,21 @@ const PigeonTable = ({
   };
 
   // Sort pigeons
+// Sort pigeons
   const sortedPigeons = React.useMemo(() => {
+    if (!pigeons || pigeons.length === 0) {
+      return [];
+    }
+    
     let sortedData = [...pigeons];
+    
     if (sortConfig.key && sortConfig.direction) {
       sortedData.sort((a, b) => {
         let aValue, bValue;
 
         if (sortConfig.key === "name") {
-          aValue = a.name?.toLowerCase() || "";
-          bValue = b.name?.toLowerCase() || "";
+          aValue = (a.name?.toLowerCase() || "").trim();
+          bValue = (b.name?.toLowerCase() || "").trim();
         } else if (sortConfig.key === "birthYear") {
           aValue = parseInt(a.birthYear) || 0;
           bValue = parseInt(b.birthYear) || 0;
@@ -119,8 +125,9 @@ const PigeonTable = ({
         return 0;
       });
     }
+    
     return sortedData;
-  }, [pigeons, sortConfig]);
+  }, [pigeons, sortConfig.key, sortConfig.direction]);
 
   if (isLoading) {
     return <TableSkeleton />;
