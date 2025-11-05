@@ -352,7 +352,6 @@ export const convertBackendToExistingFormat = (backendResponse, role) => {
         color: subject.motherRingId.motherRingId.colorField || "#fff",
         colorName: subject.motherRingId.motherRingId.color,
         description:
-          subject.motherRingId.motherRingId.notes ||
           subject.motherRingId.motherRingId.shortInfo ,
         achievements: formatResults(
           subject.motherRingId.motherRingId.addresults

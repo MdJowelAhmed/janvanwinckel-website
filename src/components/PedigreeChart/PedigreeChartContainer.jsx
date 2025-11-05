@@ -111,13 +111,32 @@ const PigeonNode = ({ data }) => {
     }
   };
 
+  const getTextLimits = (generation) => {
+    switch (generation) {
+      case 0:
+        return { description: 'line-clamp-[20]', achievements: 'line-clamp-[15]' };
+      case 1:
+        return { description: 'line-clamp-[20]', achievements: 'line-clamp-[15]' };
+      case 2:
+        return { description: 'line-clamp-[12]', achievements: 'line-clamp-[10]' };
+      case 3:
+        return { description: 'line-clamp-4', achievements: 'line-clamp-3' };
+      case 4:
+        return { description: 'line-clamp-1', achievements: 'line-clamp-1' };
+      default:
+        return { description: 'line-clamp-1', achievements: 'line-clamp-1' };
+    }
+  };
+
+  const textLimits = getTextLimits(data.generation);
+
   return (
     <div
       style={{ backgroundColor: data.color }}
       className={`${getCardSize(data?.generation)} 
         border-b-8 border-r-10 border-black
         text-white rounded-none transition-all duration-300 px-2 py-2
-        ${getGenerationColor(data?.generation)} border`}
+        ${getGenerationColor(data?.generation)} border overflow-hidden`}
     >
       {/* Conditional Handles based on generation */}
       {isSubject ? (
@@ -273,20 +292,20 @@ const PigeonNode = ({ data }) => {
         </div>
       </div>
 
-      <div className="">
-        <div className="flex items-center justify-start gap-2 space-y-2">
+      <div className="overflow-hidden h-full flex flex-col">
+        <div className="flex items-center justify-start gap-2 mb-1 overflow-hidden">
           {data.name && (
-            <h3 className="font-bold text-black truncate">{data.name}</h3>
+            <h3 className="font-bold text-black truncate w-full">{data.name}</h3>
           )}
         </div>
-        <div className="flex items-center justify-start gap-2">
+        <div className="flex items-center justify-start gap-2 mb-1 overflow-hidden">
           {data.owner && (
-            <div className="flex items-center gap-2 text-xl italic text-black">
+            <div className="flex items-center gap-2 text-xl italic text-black min-w-0 flex-1">
               <span className="truncate">{data.owner}</span>
             </div>
           )}
           {data?.breederVerified && (
-            <div className="flex items-center gap-2 text-xl italic text-black">
+            <div className="flex items-center gap-2 text-xl italic text-black flex-shrink-0">
               <img
                 src="/assests/Letter-B.png"
                 alt="Letter B"
@@ -299,29 +318,20 @@ const PigeonNode = ({ data }) => {
         </div>
 
         {data.description && (
-          <div className="">
-            <h2 className="text-black ">
-              {data?.description?.slice(0, 650)}
+          <div className="overflow-hidden mb-1">
+            <h2 className={`text-black break-words ${textLimits.description}`}>
+              {data?.description}
             </h2>
           </div>
         )}
         {data.colorName && (
-          <div className="">
-            <h2 className=" text-black">{data.colorName}</h2>
+          <div className="overflow-hidden mb-1">
+            <h2 className="text-black truncate w-full">{data.colorName}</h2>
           </div>
         )}
         {data.achievements && (
-          <div className="flex items-start gap-1">
-            {/* <p className="text-xs text-black">Results:</p> */}
-            {/* <img
-              src="/assests/Gold-tropy.png"
-              alt="Trophy"
-              width={24}
-              height={24}
-              className="w-6 h-6 mt-[2px]"
-            /> */}
-            <h2   className="text-black whitespace-pre-line break-words max-w-[250px] overflow-hidden"
-              style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+          <div className="overflow-hidden">
+            <h2 className={`text-black break-words ${textLimits.achievements}`} style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
               {data.achievements}
             </h2>
           </div>
