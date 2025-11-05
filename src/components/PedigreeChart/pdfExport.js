@@ -333,27 +333,64 @@ export const exportPedigreeToPDF = async (
       }
 
       // === OWNER ===
-      if (data.owner) {
+if (data.owner) {
         pdf.setFontSize(7);
         pdf.setFont("helvetica", "italic");
         pdf.setTextColor(0, 0, 0);
-        let ownerText = String(data.owner);
-        pdf.text(ownerText, leftMargin, currentY);
+        const ownerText = String(data.owner);
 
-        // Breeder verified badge
+
+        // Split into lines that fit the content width so the owner name doesn't overflow
+        const ownerLines = pdf.splitTextToSize(ownerText, contentWidth);
+        const firstLine = ownerLines.length > 0 ? ownerLines[0] : "";
+
+
+        // Draw first line
+        pdf.text(firstLine, leftMargin, currentY);
+
+
+        // Breeder verified badge: try to render inline after the first line if there's space,
+        // otherwise render on the next line at the left margin.
         if (data.breederVerified && letterBImage) {
-          const ownerWidth = pdf.getTextWidth(ownerText);
-          pdf.addImage(
-            letterBImage,
-            "PNG",
-            leftMargin + ownerWidth + 1,
-            currentY - 2.5,
-            3,
-            3
-          );
+          const firstLineWidth = pdf.getTextWidth(firstLine);
+          const badgeWidth = 3; // px/mm set above when adding image
+          const gap = 1;
+          if (firstLineWidth + gap + badgeWidth < contentWidth) {
+            // place inline
+            pdf.addImage(
+              letterBImage,
+              "PNG",
+              leftMargin + firstLineWidth + gap,
+              currentY - 2.5,
+              badgeWidth,
+              badgeWidth
+            );
+          } else {
+            // place on the next line
+            pdf.addImage(
+              letterBImage,
+              "PNG",
+              leftMargin,
+              currentY + 3 - 2.5,
+              badgeWidth,
+              badgeWidth
+            );
+          }
         }
+
+
+        // Draw any remaining wrapped lines beneath the first
+        for (let i = 1; i < ownerLines.length; i++) {
+          currentY += 3; // line height similar to addWrappedText
+          pdf.text(ownerLines[i], leftMargin, currentY);
+        }
+
+
+        // Advance currentY to leave a small gap after owner block
         currentY += 4;
       }
+
+
 
       // === DESCRIPTION ===
       if (data.description && height > 40 && currentY < y + height - 15) {
