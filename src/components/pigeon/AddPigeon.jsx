@@ -322,7 +322,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
     control,
     formState: { errors },
   } = useForm({
-    mode: "onChange", 
+    mode: "onChange",
     defaultValues: {
       ringNumber: "",
       name: "",
@@ -332,7 +332,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
       breeder: "",
       color: "",
       pattern: "",
-      gender: "N/A",
+      gender: "",
       status: "",
       location: "",
       notes: "",
@@ -416,7 +416,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
             ? pigeon?.breeder?.loftName
             : pigeon?.breeder || "",
         color: pigeon.color || "",
-        gender: pigeon.gender || "N/A",
+        gender: pigeon.gender || "",
         status: pigeon.status || "",
         location: pigeon.location || "",
         notes: pigeon.notes || "",
@@ -427,9 +427,9 @@ const AddPigeonContainer = ({ pigeonId }) => {
         motherRingId: pigeon.motherRingId?.ringNumber || "",
         verified: pigeon.verified || false,
         iconic: pigeon.iconic || false,
-       addresults: Array.isArray(pigeon.addresults)
-        ? pigeon.addresults.join("\n")
-        : pigeon.addresults || "",
+        addresults: Array.isArray(pigeon.addresults)
+          ? pigeon.addresults.join("\n")
+          : pigeon.addresults || "",
         iconicScore: pigeon.iconicScore || 0,
       });
 
@@ -608,7 +608,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
             shortInfo: "",
             breeder: "",
             color: "",
-            gender: "N/A",
+            gender: "",
             status: "",
             location: "",
             notes: "",
@@ -1087,23 +1087,38 @@ Bought for USD 50,000`}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium  mb-2">
-                      Gender *
+                    <label className="block text-sm font-medium mb-2">
+                      Gender <span className="text-red-500">*</span>
                     </label>
-                    <Select
-                      key={watch("gender")}
-                      value={watch("gender") || ""}
-                      onValueChange={(value) => setValue("gender", value)}
-                    >
-                      <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
-                        <SelectValue placeholder="Select Gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Hen">Hen</SelectItem>
-                        <SelectItem value="Cock">Cock</SelectItem>
-                        <SelectItem value="Unspecified">Unspecified</SelectItem>
-                      </SelectContent>
-                    </Select>
+
+                    <Controller
+                      name="gender"
+                      control={control}
+                      rules={{ required: "Gender is required" }} // ✅ Validation rule
+                      render={({ field }) => (
+                        <Select
+                          value={field.value || ""}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg">
+                            <SelectValue placeholder="Select Gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Hen">Hen</SelectItem>
+                            <SelectItem value="Cock">Cock</SelectItem>
+                            <SelectItem value="Unspecified">
+                              Unspecified
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+
+                    {errors.gender && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.gender.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
