@@ -800,7 +800,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
                     placeholder="Select Pigeon Birth Year"
                     className="w-full px-3 py-[14px] border border-gray-300 rounded-lg"
                     onFocus={() => setShowDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 250)}
                   />
 
                   {errors.birthYear && (
@@ -815,7 +815,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
                         filteredYears.map((year) => (
                           <li
                             key={year}
-                            onClick={() => {
+                            onMouseDown={() => {
                               setValue("birthYear", year);
                               setShowDropdown(false);
                             }}
@@ -883,7 +883,7 @@ Bought for USD 50,000`}
                       }}
                       onFocus={() => setShowBreederDropdown(true)}
                       onBlur={() =>
-                        setTimeout(() => setShowBreederDropdown(false), 200)
+                        setTimeout(() => setShowBreederDropdown(false), 250)
                       }
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && breederSearchTerm) {
@@ -921,7 +921,7 @@ Bought for USD 50,000`}
                                   <li
                                     key={breeder._id || breeder.id}
                                     className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
-                                    onClick={() => {
+                                    onMouseDown={() => {
                                       setBreederSearchTerm(breeder.loftName);
                                       setSelectedBreeder(breeder);
                                       setShowBreederDropdown(false);
@@ -935,7 +935,7 @@ Bought for USD 50,000`}
                                 <li
                                   key={breeder._id || breeder.id}
                                   className="px-3 py-2 hover:bg-teal-100 cursor-pointer"
-                                  onClick={() => {
+                                  onMouseDown={() => {
                                     setBreederSearchTerm(breeder.loftName);
                                     setSelectedBreeder(breeder);
                                     setShowBreederDropdown(false);
@@ -945,16 +945,6 @@ Bought for USD 50,000`}
                                   {breeder.loftName}
                                 </li>
                               ))}
-                          {/* {breederSearchTerm &&
-                              breederList.filter((breeder) =>
-                                breeder.breederName
-                                  .toLowerCase()
-                                  .includes(breederSearchTerm.toLowerCase())
-                              ).length === 0 && (
-                                <li className="px-3 py-2 text-gray-500">
-                                  No matches found
-                                </li>
-                              )} */}
                         </ul>
                       )}
                   </div>
@@ -1416,3 +1406,5 @@ Bought for USD 50,000`}
 };
 
 export default AddPigeonContainer;
+
+

@@ -5,7 +5,14 @@ import { Label } from "@/components/ui/label";
 import { CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import { getNames } from "country-list";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+
 
 const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   const [filters, setFilters] = useState({
@@ -19,38 +26,47 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   const [countrySearch, setCountrySearch] = useState("All Countries");
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
+
   useEffect(() => {
     setCountries(getNames().sort());
   }, []);
 
+
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
+
 
     // Convert filters to array for API
     const filterArray = Object.entries(newFilters)
       .filter(([_, val]) => val !== "" && val !== "all")
       .map(([key, value]) => ({ name: key, value }));
 
+
     onFilterChange(filterArray);
   };
+
 
   const handleSearchChange = (e) => {
     // Trim leading and trailing spaces
     onSearch(e.target.value.trim());
   };
 
+
   // Generate last 100 years for dropdown
   const currentYear = new Date().getFullYear();
+
 
   const allYears = Array.from(
     { length: 100 + 3 },
     (_, i) => currentYear + 2 - i
   );
 
+
   const filteredYears = allYears.filter((year) =>
     year.toString().includes(yearSearch === "All Years" ? "" : yearSearch)
   );
+
 
   const handleSelectYear = (year) => {
     if (year === "all") {
@@ -64,16 +80,19 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
     }
   };
 
+
   const handleYearInputChange = (e) => {
     const value = e.target.value;
     setYearSearch(value);
     setShowDropdown(true);
+
 
     // If empty or "All Years", clear the filter
     if (value === "" || value === "All Years") {
       handleFilterChange("birthYear", "");
     }
   };
+
 
   const handleCountrySelect = (country) => {
     if (country === "all") {
@@ -87,9 +106,15 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
     }
   };
 
+
   const filteredCountries = countries.filter((country) =>
-    country.toLowerCase().includes(countrySearch === "All Countries" ? "" : countrySearch.toLowerCase())
+    country
+      .toLowerCase()
+      .includes(
+        countrySearch === "All Countries" ? "" : countrySearch.toLowerCase()
+      )
   );
+
 
   return (
     <div className="bg-foreground text-white rounded-b-lg">
@@ -114,6 +139,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               />
             </div>
           </div>
+
 
           {/* Country Filter */}
           <div className="relative">
@@ -143,10 +169,12 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               }
             />
 
+
             {showCountryDropdown && (
               <ul className="absolute z-10 w-full bg-foreground border border-slate-500 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
                 <li
-                  onClick={() => handleCountrySelect("all")}
+                  // onClick={() => handleCountrySelect("all")}
+                  onMouseDown={() => handleCountrySelect("all")}
                   className="px-3 py-2 hover:bg-teal-600 cursor-pointer border-b border-slate-600"
                 >
                   All Countries
@@ -155,7 +183,8 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                   filteredCountries.map((country) => (
                     <li
                       key={country}
-                      onClick={() => handleCountrySelect(country)}
+                      // onClick={() => handleCountrySelect(country)}
+                      onMouseDown={() => handleCountrySelect(country)}
                       className="px-3 py-2 hover:bg-teal-600 cursor-pointer"
                     >
                       {country}
@@ -168,6 +197,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
             )}
           </div>
 
+
           {/* Gender Filter */}
           <div>
             <Label
@@ -176,6 +206,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
             >
               Gender
             </Label>
+
 
             <Select
               value={filters.gender}
@@ -186,6 +217,7 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                 <SelectValue placeholder="Select Gender" />
               </SelectTrigger>
 
+
               <SelectContent className="bg-primary-foreground text-white border border-slate-600  hover:bg-teal-60">
                 <SelectItem value="all">All Genders</SelectItem>
                 <SelectItem value="Hen">Hen</SelectItem>
@@ -195,11 +227,13 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
             </Select>
           </div>
 
+
           {/* Birth Year Filter */}
           <div className="relative w-full">
             <Label className="block text-sm font-medium text-white mb-2">
               Birth Year
             </Label>
+
 
             <Input
               type="text"
@@ -216,10 +250,12 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
               onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
             />
 
+
             {showDropdown && (
               <ul className="absolute z-10 w-full bg-foreground border border-slate-500 rounded-lg max-h-48 overflow-y-auto shadow-md mt-1">
                 <li
-                  onClick={() => handleSelectYear("all")}
+                  // onClick={() => handleSelectYear("all")}
+                  onMouseDown={() => handleSelectYear("all")}
                   className="px-3 py-2 hover:bg-teal-600 cursor-pointer border-b border-slate-600"
                 >
                   All Years
@@ -228,7 +264,8 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
                   filteredYears.map((year) => (
                     <li
                       key={year}
-                      onClick={() => handleSelectYear(year)}
+                      // onClick={() => handleSelectYear(year)}
+                      onMouseDown={() => handleSelectYear(year)}
                       className="px-3 py-2 hover:bg-teal-600 cursor-pointer"
                     >
                       {year}
@@ -246,4 +283,8 @@ const PigeonFilters = ({ onFilterChange, onSearch, searchTerm }) => {
   );
 };
 
+
 export default PigeonFilters;
+
+
+
