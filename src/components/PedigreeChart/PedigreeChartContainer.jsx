@@ -293,9 +293,9 @@ const PigeonNode = ({ data }) => {
       </div>
 
       <div className="overflow-hidden h-full flex flex-col">
-        <div className="flex items-center justify-start gap-2 mb-1 overflow-hidden">
+        <div className="flex items-center justify-start gap-2  overflow-hidden">
           {data.name && (
-            <h3 className="font-bold text-black truncate w-full">{data.name}</h3>
+            <h3 className="font-bold mt-1 text-black truncate w-full">{data.name}</h3>
           )}
         </div>
         <div className="flex items-center justify-start gap-2 mb-1 overflow-hidden">

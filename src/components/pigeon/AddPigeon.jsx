@@ -416,7 +416,7 @@ const AddPigeonContainer = ({ pigeonId }) => {
             ? pigeon?.breeder?.loftName
             : pigeon?.breeder || "",
         color: pigeon.color || "",
-        gender: pigeon.gender || "",
+        gender: pigeon.gender ,
         status: pigeon.status || "",
         location: pigeon.location || "",
         notes: pigeon.notes || "",
@@ -1076,7 +1076,7 @@ Bought for USD 50,000`}
                     <input type="hidden" {...register("color")} />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium mb-2">
                       Gender <span className="">*</span>
                     </label>
@@ -1087,6 +1087,42 @@ Bought for USD 50,000`}
                       rules={{ required: "Gender is required" }} // ✅ Validation rule
                       render={({ field }) => (
                         <Select
+                          value={field.value || ""}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="w-full px-3 py-[25px] border border-gray-300 rounded-lg">
+                            <SelectValue placeholder="Select Gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Hen">Hen</SelectItem>
+                            <SelectItem value="Cock">Cock</SelectItem>
+                            <SelectItem value="Unspecified">
+                              Unspecified
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+
+                    {errors.gender && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.gender.message}
+                      </p>
+                    )}
+                  </div> */}
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Gender <span className="">*</span>
+                    </label>
+
+                    <Controller
+                      name="gender"
+                      control={control}
+                      rules={{ required: "Gender is required" }}
+                      render={({ field }) => (
+                        <Select
+                          key={field.value || "gender-select"} // Force re-render when value changes
                           value={field.value || ""}
                           onValueChange={field.onChange}
                         >
