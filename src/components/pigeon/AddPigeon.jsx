@@ -1088,7 +1088,7 @@ Bought for USD 50,000`}
 
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Gender <span className="text-red-500">*</span>
+                      Gender <span className="">*</span>
                     </label>
 
                     <Controller
